@@ -12,7 +12,9 @@ import logoImg from '../../assets/logo.svg'
 import Input from '../../components/Input'
 import Button from '../../components/Button'
 
-import { Container, Content, Background } from './styles'
+import {
+  Container, Content, Background, AnimationContainer,
+} from './styles'
 
 interface SignInFormData {
   email: string
@@ -27,8 +29,8 @@ const SignIn: React.FC = () => {
     try {
       formRef.current?.setErrors({})
       const schema = Yup.object().shape({
-        email: Yup.string().required('Email é obrigatório').email('Formato de email inválido'),
-        password: Yup.string().required('Senha é obrigatória'),
+        email: Yup.string().required('E-mail is required').email('Invalid e-mail format'),
+        password: Yup.string().required('Password is required'),
       })
       await schema.validate(data, { abortEarly: false })
       await signIn({ email: data.email, password: data.password })
@@ -36,11 +38,12 @@ const SignIn: React.FC = () => {
       if (err instanceof Yup.ValidationError) {
         const errors = getValidationErrors(err)
         formRef.current?.setErrors(errors)
+        return
       }
       addToast({
         type: 'error',
-        title: 'Erro na autenticação',
-        description: 'Erro ao realizar login',
+        title: 'Authentication error',
+        description: 'Error on login',
       })
     }
   }, [signIn, addToast])
@@ -48,14 +51,16 @@ const SignIn: React.FC = () => {
   return (
     <Container>
       <Content>
-        <img src={logoImg} alt="Expenses" width="231" height="134" />
-        <Form ref={formRef} onSubmit={handleSubmit}>
-          <h1>Faça seu logon</h1>
-          <Input icon={FiMail} name="email" placeholder="E-mail" />
-          <Input icon={FiLock} name="password" type="password" placeholder="Senha" />
-          <Button type="submit">Entrar</Button>
-          <a href="forgot">Esqueci minha senha</a>
-        </Form>
+        <AnimationContainer>
+          <img src={logoImg} alt="Expenses" width="231" height="134" />
+          <Form ref={formRef} onSubmit={handleSubmit}>
+            <h1>Expenses Portal</h1>
+            <Input icon={FiMail} name="email" placeholder="E-mail" />
+            <Input icon={FiLock} name="password" type="password" placeholder="Password" />
+            <Button type="submit">Login</Button>
+            <a href="/">Forgot password?</a>
+          </Form>
+        </AnimationContainer>
       </Content>
       <Background />
     </Container>
