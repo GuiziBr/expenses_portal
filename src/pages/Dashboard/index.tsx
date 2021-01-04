@@ -37,7 +37,7 @@ const Dashboard: React.FC = () => {
 
   useEffect(() => {
     async function loadExpenses(): Promise<void> {
-      const token = localStorage.getItem('@expenses:token')
+      const token = sessionStorage.getItem('@expenses:token')
       const config = { headers: { Authorization: `Bearer ${token}` }}
       const { data } = await api.get('/expenses/balance', config)
 
@@ -45,7 +45,7 @@ const Dashboard: React.FC = () => {
         id: expense.id,
         description: expense.description,
         amount: expense.amount,
-        formattedAmount: `${expense.type === 'outcome' ? ' - ' : ''}${formatAmount(expense.amount)}`,
+        formattedAmount: `${expense.type === 'outcome' ? '- ' : '    '}${formatAmount(expense.amount)}`,
         formattedDate: formatDate(expense.date),
         type: expense.type,
         date: expense.date,

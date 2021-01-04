@@ -77,6 +77,7 @@ export const TableContainer = styled.section`
 
       &.income {
         color: #12a454;
+        padding-left: 44px;
       }
 
       &.outcome {
