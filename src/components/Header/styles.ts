@@ -32,11 +32,6 @@ export const Container = styled.div<ContainerProps>`
           opacity: 0.6;
         }
       }
-      & + nav {
-        a {
-          ;
-        }
-      }
     }
   }
 `

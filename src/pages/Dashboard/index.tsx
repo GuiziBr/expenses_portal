@@ -8,7 +8,7 @@ import api from '../../services/apiClient'
 
 import Header from '../../components/Header'
 
-import formatAmount from '../../utils/formatAmount'
+import { formatAmount } from '../../utils/formatAmount'
 import formatDate from '../../utils/formatDate'
 
 import {
@@ -45,7 +45,7 @@ const Dashboard: React.FC = () => {
         id: expense.id,
         description: expense.description,
         amount: expense.amount,
-        formattedAmount: `${expense.type === 'outcome' ? '- ' : '    '}${formatAmount(expense.amount)}`,
+        formattedAmount: `${expense.type === 'outcome' ? '- ' : ''}${formatAmount(expense.amount)}`,
         formattedDate: formatDate(expense.date),
         type: expense.type,
         date: expense.date,

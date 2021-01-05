@@ -1,8 +1,11 @@
 {
   "cSpell.ignoreWords": [
+    "amount",
     "errored",
+    "hasdescription",
     "is",
     "roboto",
-    "unform"
+    "unform",
+    "unformat"
   ]
 }

@@ -6,7 +6,7 @@ import { Container } from './styles'
 import { useAuth } from '../../hooks/auth'
 
 interface HeaderProps {
-  size?: 'small' | 'large';
+  size?: 'small' | 'large'
 }
 
 const Header: React.FC<HeaderProps> = ({ size = 'large' }) => {
@@ -16,7 +16,7 @@ const Header: React.FC<HeaderProps> = ({ size = 'large' }) => {
       <header>
         <nav>
           <Link to="/dashboard">Dashboard</Link>
-          <Link to="/create">Create Expense</Link>
+          <Link to="/expenses">Create Expense</Link>
         </nav>
         <nav>
           <Link to="/" onClick={signOut}>Logout</Link>

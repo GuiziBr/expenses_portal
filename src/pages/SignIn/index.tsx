@@ -9,7 +9,7 @@ import getValidationErrors from '../../utils/getValidationErrors'
 
 import logoImg from '../../assets/logo.svg'
 
-import Input from '../../components/Input'
+import Input from '../../components/Input/defaultInput'
 import Button from '../../components/Button'
 
 import {
