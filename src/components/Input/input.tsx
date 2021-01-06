@@ -8,10 +8,13 @@ import { Container, Error } from './styles'
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   name: string,
+  isCurrency?: boolean
   icon?: React.ComponentType<IconBaseProps>
 }
 
-const Input: React.FC<InputProps> = ({ name, icon: Icon, ...rest }) => {
+const Input: React.FC<InputProps> = ({
+  name, icon: Icon, isCurrency, ...rest
+}) => {
   const inputRef = useRef<HTMLInputElement>(null)
   const [isFocused, setIsFocused] = useState(false)
   const [isFilled, setIsFilled] = useState(false)
@@ -26,6 +29,15 @@ const Input: React.FC<InputProps> = ({ name, icon: Icon, ...rest }) => {
   const handleInputBlur = useCallback(() => {
     setIsFocused(false)
     setIsFilled(!!inputRef.current?.value)
+  }, [])
+
+  const formatCurrency = useCallback((e: React.FormEvent<HTMLInputElement>) => {
+    let { value } = e.currentTarget
+    value = value.replace(/\D/g, '')
+    value = value.replace(/(\d)(\d{2})$/, '$1,$2')
+    value = value.replace(/(?=(\d{3})+(\D))\B/g, '.')
+    e.currentTarget.value = value
+    return e
   }, [])
 
   useEffect(() => {
@@ -44,6 +56,7 @@ const Input: React.FC<InputProps> = ({ name, icon: Icon, ...rest }) => {
         onBlur={handleInputBlur}
         defaultValue={defaultValue}
         ref={inputRef}
+        onKeyUp={(e) => (isCurrency ? formatCurrency(e) : false)}
         {...rest}
       />
       {error && (

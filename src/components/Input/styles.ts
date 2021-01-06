@@ -6,6 +6,7 @@ interface ContainerProps {
   isFocused: boolean
   isFilled: boolean
   isErrored: boolean
+  isCurrency?: boolean
 }
 
 export const Container = styled.div<ContainerProps>`
@@ -31,9 +32,12 @@ export const Container = styled.div<ContainerProps>`
     color: #ff9000;
   `}
 
+
+
   & + div {
       margin-top: 8px;
     }
+
   input {
     flex: 1;
     background: transparent;

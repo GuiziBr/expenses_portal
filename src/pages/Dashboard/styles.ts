@@ -59,7 +59,7 @@ export const TableContainer = styled.section`
       font-weight: normal;
       padding: 20px 32px;
       text-align: left;
-      font-size: 18px;
+      font-size: 20px;
       line-height: 24px;
     }
 

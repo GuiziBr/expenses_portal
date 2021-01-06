@@ -7,8 +7,11 @@ import {
   endOfMonth, startOfMonth, format,
 } from 'date-fns'
 import * as Yup from 'yup'
+import { HiOutlineCurrencyDollar } from 'react-icons/hi'
+import { MdDateRange, MdTitle } from 'react-icons/md'
 
 import { useToast } from '../../hooks/toast'
+import { useBalance } from '../../hooks/balance'
 import income from '../../assets/income.svg'
 import outcome from '../../assets/outcome.svg'
 import total from '../../assets/total.svg'
@@ -17,15 +20,14 @@ import { formatAmount, unformatAmount } from '../../utils/formatAmount'
 import {
   Container, Card, CardContainer, FormContainer,
 } from './styles'
-import Input from '../../components/Input/defaultInput'
-import CurrencyInput from '../../components/Input/currencyInput'
+import Input from '../../components/Input/input'
 import Button from '../../components/Button'
 import Header from '../../components/Header'
 import getValidationErrors from '../../utils/getValidationErrors'
 
 interface Balance {
   paying: string,
-  payer: string,
+  payed: string,
   total: string
 }
 
@@ -38,7 +40,22 @@ interface Expense {
 const Expenses: React.FC = () => {
   const formRef = useRef<FormHandles>(null)
   const { addToast } = useToast()
+  const { getBalance } = useBalance()
   const [balance, setBalance] = useState<Balance>({} as Balance)
+
+  const updateBalance = useCallback(async () => {
+    await getBalance()
+    const balanceString = sessionStorage.getItem('@expenses:balance')
+    if (balanceString) {
+      const parsedBalance = JSON.parse(balanceString)
+      const updatedBalance = {
+        paying: formatAmount(parsedBalance.paying),
+        payed: formatAmount(parsedBalance.payed),
+        total: formatAmount(parsedBalance.total),
+      }
+      setBalance(updatedBalance)
+    }
+  }, [getBalance])
 
   const handleSubmit = useCallback(async (data: Expense) => {
     try {
@@ -57,12 +74,13 @@ const Expenses: React.FC = () => {
         amount: unformatAmount(data.amount),
       }
       await api.post('/expenses', payload, config)
-      formRef.current?.reset()
+      await updateBalance()
       addToast({
         type: 'success',
         title: 'Create expense',
         description: 'Expense created successfully',
       })
+      formRef.current?.reset()
     } catch (err) {
       if (err instanceof Yup.ValidationError) {
         const errors = getValidationErrors(err)
@@ -75,27 +93,17 @@ const Expenses: React.FC = () => {
         description: 'Error on creating expense',
       })
     }
-  }, [addToast])
+  }, [addToast, updateBalance])
 
   const dateMax = format(endOfMonth(new Date()), 'yyyy-MM-dd')
   const dateMin = format(startOfMonth(new Date()), 'yyyy-MM-dd')
 
   useEffect(() => {
     async function loadExpenses(): Promise<void> {
-      const token = sessionStorage.getItem('@expenses:token')
-      const config = { headers: { Authorization: `Bearer ${token}` }}
-      const { data } = await api.get('/expenses/balance', config)
-
-      const updatedBalance = {
-        paying: formatAmount(data.paying),
-        payer: formatAmount(data.payed),
-        total: formatAmount(data.total),
-      }
-
-      setBalance(updatedBalance)
+      await updateBalance()
     }
     loadExpenses()
-  }, [])
+  }, [updateBalance])
 
   return (
     <>
@@ -114,7 +122,7 @@ const Expenses: React.FC = () => {
               <p>Outcomes</p>
               <img src={outcome} alt="Outcome" />
             </header>
-            <h1>{balance.payer}</h1>
+            <h1>{balance.payed}</h1>
           </Card>
           <Card total>
             <header>
@@ -127,9 +135,9 @@ const Expenses: React.FC = () => {
         <FormContainer>
           <Form ref={formRef} onSubmit={handleSubmit}>
             <h1>Create Expense</h1>
-            <Input name="description" placeholder="Expense description" />
-            <Input name="date" type="date" max={dateMax} min={dateMin} placeholder="Expense date" />
-            <CurrencyInput id="amount" name="amount" placeholder="Expense amount" />
+            <Input icon={MdTitle} name="description" placeholder="Expense description" />
+            <Input icon={MdDateRange} name="date" type="date" max={dateMax} min={dateMin} placeholder="Expense date" />
+            <Input icon={HiOutlineCurrencyDollar} name="amount" placeholder="99,99" isCurrency />
             <Button type="submit">Save</Button>
           </Form>
         </FormContainer>
