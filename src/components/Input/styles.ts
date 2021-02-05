@@ -32,8 +32,6 @@ export const Container = styled.div<ContainerProps>`
     color: #ff9000;
   `}
 
-
-
   & + div {
       margin-top: 8px;
     }

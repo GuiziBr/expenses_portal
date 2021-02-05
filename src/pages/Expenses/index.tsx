@@ -3,9 +3,7 @@ import React, {
 } from 'react'
 import { Form } from '@unform/web'
 import { FormHandles } from '@unform/core'
-import {
-  endOfMonth, startOfMonth, format,
-} from 'date-fns'
+import { endOfDay, startOfMonth, format } from 'date-fns'
 import * as Yup from 'yup'
 import { HiOutlineCurrencyDollar } from 'react-icons/hi'
 import { MdDateRange, MdTitle } from 'react-icons/md'
@@ -20,7 +18,7 @@ import { formatAmount, unformatAmount } from '../../utils/formatAmount'
 import {
   Container, Card, CardContainer, FormContainer,
 } from './styles'
-import Input from '../../components/Input/input'
+import Input from '../../components/Input'
 import Button from '../../components/Button'
 import Header from '../../components/Header'
 import getValidationErrors from '../../utils/getValidationErrors'
@@ -95,7 +93,7 @@ const Expenses: React.FC = () => {
     }
   }, [addToast, updateBalance])
 
-  const dateMax = format(endOfMonth(new Date()), 'yyyy-MM-dd')
+  const dateMax = format(endOfDay(new Date()), 'yyyy-MM-dd')
   const dateMin = format(startOfMonth(new Date()), 'yyyy-MM-dd')
 
   useEffect(() => {

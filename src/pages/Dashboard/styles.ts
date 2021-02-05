@@ -47,13 +47,34 @@ export const Card = styled.div`
   }
 `
 
-export const TableContainer = styled.section`
-  margin-top: 64px;
+export const FormContainer = styled.section`
+  margin-top: 50px;
+  width: 100%;
+  height: 100%;
+  form {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+    div {
+      height: 42px;
+      width: 241px;
+      margin-right: 5px;
+      border-color: #232129;
+    }
+    button {
+      width: 83px;
+      height: 38px;
+      margin: 0 5px;
+    }
+  }
+`
 
+export const TableContainer = styled.section`
+  margin-top: 10px;
   table {
     width: 100%;
     border-spacing: 0 8px;
-
     th {
       color: #969cb3;
       font-weight: normal;
