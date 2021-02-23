@@ -1,12 +1,10 @@
 import styled, { css } from 'styled-components'
-
 import Tooltip from '../Tooltip'
 
 interface ContainerProps {
   isFocused: boolean
   isFilled: boolean
   isErrored: boolean
-  isCurrency?: boolean
 }
 
 export const Container = styled.div<ContainerProps>`
@@ -36,19 +34,22 @@ export const Container = styled.div<ContainerProps>`
       margin-top: 8px;
     }
 
-  input {
+  select {
     flex: 1;
     background: transparent;
     border: 0;
     color: #f4ede8;
-    &::placeholder {
-      color: #666360;
+    option {
+      background: #312E38;
     }
   }
+
+
   svg {
       margin-right: 16px;
     }
 `
+
 export const Error = styled(Tooltip)`
   height: 20px;
   margin-left: 16px;
