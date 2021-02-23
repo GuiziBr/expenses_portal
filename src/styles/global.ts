@@ -14,7 +14,7 @@ export default createGlobalStyle`
     -webkit-font-smoothing: antialiased;
   }
 
-  body, input, button {
+  body, input, button, select {
     font-family: 'Roboto Slab', serif;
     font-size: 16px;
   }
@@ -23,7 +23,7 @@ export default createGlobalStyle`
     font-weight: 500;
   }
 
-  button {
+  button, select {
     cursor: pointer;
   }
 

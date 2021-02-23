@@ -25,6 +25,7 @@ import {
 interface Expense {
   id: string;
   description: string;
+  category: string,
   amount: number;
   formattedAmount: string;
   formattedDate: string;
@@ -119,6 +120,7 @@ const Dashboard: React.FC = () => {
             <thead>
               <tr>
                 <th>Expense</th>
+                <th>Category</th>
                 <th>Amount</th>
                 <th>Date</th>
               </tr>
@@ -127,6 +129,7 @@ const Dashboard: React.FC = () => {
               {expenses.map((expense) => (
                 <tr key={expense.id}>
                   <td className="description">{expense.description}</td>
+                  <td>{expense.category}</td>
                   <td className={expense.type}>{expense.formattedAmount}</td>
                   <td>{expense.formattedDate}</td>
                 </tr>
