@@ -10,6 +10,7 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   name: string,
   isCurrency?: boolean
   icon?: React.ComponentType<IconBaseProps>
+  options?: boolean
 }
 
 const Input: React.FC<InputProps> = ({
