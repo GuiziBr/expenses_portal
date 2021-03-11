@@ -14,7 +14,7 @@ export default createGlobalStyle`
     -webkit-font-smoothing: antialiased;
   }
 
-  body, input, button, select {
+  body, input, button, select, label {
     font-family: 'Roboto Slab', serif;
     font-size: 16px;
   }

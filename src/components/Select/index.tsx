@@ -48,16 +48,9 @@ const Select: React.FC<SelectProps> = ({
   return (
     <Container isErrored={!!error} isFocused={isFocused} isFilled={isFilled}>
       {Icon && <Icon size={20} />}
-      <select
-        onBlur={handleSelectBlur}
-        onFocus={handleSelectFocus}
-        ref={selectRef}
-        defaultValue=""
-      >
+      <select onBlur={handleSelectBlur} onFocus={handleSelectFocus} ref={selectRef} defaultValue="">
         <option value="" disabled hidden>{placeholder}</option>
-        {options.map((option: Option) => (
-          <option key={option.id} value={option.id}>{option.description}</option>
-        ))}
+        {options.map((option: Option) => <option key={option.id} value={option.id}>{option.description}</option>)}
       </select>
       {error && (
       <Error title={error}>

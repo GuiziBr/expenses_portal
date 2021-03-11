@@ -6,6 +6,7 @@ import { FormHandles } from '@unform/core'
 import { endOfDay, startOfMonth, format } from 'date-fns'
 import * as Yup from 'yup'
 import { HiOutlineCurrencyDollar, HiOutlineSelector } from 'react-icons/hi'
+import { IoShareSocialOutline } from 'react-icons/io5'
 import { MdDateRange, MdTitle } from 'react-icons/md'
 
 import { useToast } from '../../hooks/toast'
@@ -22,24 +23,32 @@ import Input from '../../components/Input'
 import Select from '../../components/Select'
 import Button from '../../components/Button'
 import Header from '../../components/Header'
+import CheckboxInput from '../../components/Checkbox'
 import getValidationErrors from '../../utils/getValidationErrors'
 
 interface Balance {
-  paying: string,
-  payed: string,
+  paying: string
+  payed: string
   total: string
 }
 
 interface Expense {
-  description: string,
+  description: string
   category: string
-  date: string,
+  date: string
   amount: string
+  shared: [string]
 }
 
 interface Category {
   id: string
   description: string
+}
+
+interface CheckboxOption {
+  id: string
+  value: string
+  label: string
 }
 
 const Expenses: React.FC = () => {
@@ -48,6 +57,10 @@ const Expenses: React.FC = () => {
   const { getBalance } = useBalance()
   const [balance, setBalance] = useState<Balance>({} as Balance)
   const [categories, setCategories] = useState<Category[]>([])
+
+  const checkboxOptions: CheckboxOption[] = [
+    { id: 'shared', value: 'shared', label: 'Shared Expense' },
+  ]
 
   const loadCategories = useCallback(async () => {
     const token = sessionStorage.getItem('@expenses:token')
@@ -87,6 +100,7 @@ const Expenses: React.FC = () => {
         category_id: data.category,
         date: data.date,
         amount: unformatAmount(data.amount),
+        shared: !!data.shared[0],
       }
       await api.post('/expenses', payload, config)
       await updateBalance()
@@ -152,14 +166,10 @@ const Expenses: React.FC = () => {
           <Form ref={formRef} onSubmit={handleSubmit}>
             <h1>Create Expense</h1>
             <Input icon={MdTitle} name="description" placeholder="Expense description" />
-            <Select
-              icon={HiOutlineSelector}
-              name="category"
-              options={categories}
-              placeholder="Select a category"
-            />
+            <Select icon={HiOutlineSelector} name="category" options={categories} placeholder="Select a category" />
             <Input icon={MdDateRange} name="date" type="date" max={dateMax} min={dateMin} />
             <Input icon={HiOutlineCurrencyDollar} name="amount" placeholder="99,99" isCurrency />
+            <CheckboxInput icon={IoShareSocialOutline} name="shared" options={checkboxOptions} />
             <Button type="submit">Save</Button>
           </Form>
         </FormContainer>
