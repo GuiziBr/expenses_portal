@@ -7,16 +7,19 @@ import { useAuth } from '../../hooks/auth'
 
 interface HeaderProps {
   size?: 'small' | 'large'
+  current: 'PersonalDashboard' | 'SharedDashboard' | 'CreateExpense'
 }
 
-const Header: React.FC<HeaderProps> = ({ size = 'large' }) => {
+const Header: React.FC<HeaderProps> = ({ size = 'large', current }) => {
   const { signOut } = useAuth()
+  const getClassName = (path: string) => (current === path ? 'active' : 'inactive')
   return (
-    <Container size={size}>
+    <Container size={size} current={current}>
       <header>
         <nav>
-          <Link to="/dashboard">Dashboard</Link>
-          <Link to="/expenses">Create Expense</Link>
+          <Link className={getClassName('SharedDashboard')} to="/sharedDashboard">Shared Dashboard</Link>
+          <Link className={getClassName('PersonalDashboard')} to="/personalDashboard">Personal Dashboard</Link>
+          <Link className={getClassName('CreateExpense')} to="/expenses">Create Expense</Link>
         </nav>
         <nav>
           <Link to="/" onClick={signOut}>Logout</Link>

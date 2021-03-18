@@ -43,7 +43,7 @@ interface Request {
   date: string
 }
 
-const Dashboard: React.FC = () => {
+const SharedDashboard: React.FC = () => {
   const formRef = useRef<FormHandles>(null)
   const [expenses, setExpenses] = useState<Expense[]>([])
   const [balance, setBalance] = useState<Balance>({} as Balance)
@@ -84,7 +84,7 @@ const Dashboard: React.FC = () => {
 
   return (
     <>
-      <Header />
+      <Header current="SharedDashboard" />
       <Container>
         <CardContainer>
           <Card>
@@ -104,7 +104,7 @@ const Dashboard: React.FC = () => {
           <Card total>
             <header>
               <p>Balance</p>
-              <img src={total} alt="Saldo" />
+              <img src={total} alt="Balance" />
             </header>
             <h1>{balance.total}</h1>
           </Card>
@@ -142,4 +142,4 @@ const Dashboard: React.FC = () => {
   )
 }
 
-export default Dashboard
+export default SharedDashboard

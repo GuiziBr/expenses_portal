@@ -64,7 +64,7 @@ const Expenses: React.FC = () => {
 
   const loadCategories = useCallback(async () => {
     const token = sessionStorage.getItem('@expenses:token')
-    const config = { headers: { Authorization: `Bearer ${token}` }}
+    const config = { headers: { Authorization: `Bearer ${token}` } }
     const { data } = await api.get('/categories', config)
     setCategories(data)
   }, [])
@@ -94,7 +94,7 @@ const Expenses: React.FC = () => {
       })
       await schema.validate(data, { abortEarly: false })
       const token = sessionStorage.getItem('@expenses:token')
-      const config = { headers: { Authorization: `Bearer ${token}` }}
+      const config = { headers: { Authorization: `Bearer ${token}` } }
       const payload = {
         description: data.description,
         category_id: data.category,
@@ -137,7 +137,7 @@ const Expenses: React.FC = () => {
 
   return (
     <>
-      <Header />
+      <Header current="CreateExpense" />
       <Container>
         <CardContainer>
           <Card>

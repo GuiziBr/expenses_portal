@@ -1,7 +1,8 @@
 import styled from 'styled-components'
 
 interface ContainerProps {
-  size?: 'small' | 'large';
+  size?: 'small' | 'large'
+  current: 'PersonalDashboard' | 'SharedDashboard' | 'CreateExpense'
 }
 
 export const Container = styled.div<ContainerProps>`
@@ -30,6 +31,10 @@ export const Container = styled.div<ContainerProps>`
 
         &:hover {
           opacity: 0.6;
+        }
+
+        &.active {
+          color: #FF872C;
         }
       }
     }
