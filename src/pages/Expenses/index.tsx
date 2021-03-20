@@ -6,7 +6,7 @@ import { FormHandles } from '@unform/core'
 import { endOfDay, startOfMonth, format } from 'date-fns'
 import * as Yup from 'yup'
 import { HiOutlineCurrencyDollar, HiOutlineSelector } from 'react-icons/hi'
-import { IoShareSocialOutline } from 'react-icons/io5'
+import { IoMdCheckboxOutline } from 'react-icons/io'
 import { MdDateRange, MdTitle } from 'react-icons/md'
 
 import { useToast } from '../../hooks/toast'
@@ -37,7 +37,7 @@ interface Expense {
   category: string
   date: string
   amount: string
-  shared: [string]
+  options: [string]
 }
 
 interface Category {
@@ -59,7 +59,8 @@ const Expenses: React.FC = () => {
   const [categories, setCategories] = useState<Category[]>([])
 
   const checkboxOptions: CheckboxOption[] = [
-    { id: 'shared', value: 'shared', label: 'Shared Expense' },
+    { id: 'personal', value: 'personal', label: 'Personal Expense' },
+    { id: 'split', value: 'split', label: 'Split Expense' },
   ]
 
   const loadCategories = useCallback(async () => {
@@ -100,7 +101,8 @@ const Expenses: React.FC = () => {
         category_id: data.category,
         date: data.date,
         amount: unformatAmount(data.amount),
-        shared: !!data.shared[0],
+        personal: data.options[0] === 'personal',
+        split: data.options[0] === 'split',
       }
       await api.post('/expenses', payload, config)
       await updateBalance()
@@ -169,7 +171,7 @@ const Expenses: React.FC = () => {
             <Select icon={HiOutlineSelector} name="category" options={categories} placeholder="Select a category" />
             <Input icon={MdDateRange} name="date" type="date" max={dateMax} min={dateMin} />
             <Input icon={HiOutlineCurrencyDollar} name="amount" placeholder="99,99" isCurrency />
-            <CheckboxInput icon={IoShareSocialOutline} name="shared" options={checkboxOptions} />
+            <CheckboxInput icon={IoMdCheckboxOutline} name="options" options={checkboxOptions} />
             <Button type="submit">Save</Button>
           </Form>
         </FormContainer>

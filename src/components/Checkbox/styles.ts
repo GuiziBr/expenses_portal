@@ -14,6 +14,7 @@ export const Container = styled.div`
   }
   label {
     font-size: 16px;
+    margin-right: 16px;
   }
   input {
     margin-right: 7px;
