@@ -1,6 +1,4 @@
-import React, {
-  useEffect, useRef, InputHTMLAttributes,
-} from 'react'
+import React, { useEffect, useRef, InputHTMLAttributes } from 'react'
 import { useField } from '@unform/core'
 import { IconBaseProps } from 'react-icons/lib'
 import { Container } from './styles'
@@ -15,9 +13,7 @@ interface CheckboxProps extends InputHTMLAttributes<HTMLInputElement> {
   }[];
 }
 
-const CheckboxInput: React.FC<CheckboxProps> = ({
-  name, options, icon: Icon, ...rest
-}) => {
+const CheckboxInput: React.FC<CheckboxProps> = ({ name, options, icon: Icon, ...rest }) => {
   const inputRefs = useRef<HTMLInputElement[]>([])
   const { fieldName, registerField, defaultValue = [] } = useField(name)
 

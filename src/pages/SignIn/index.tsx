@@ -13,9 +13,7 @@ import logoImg from '../../assets/logo.svg'
 import Input from '../../components/Input'
 import Button from '../../components/Button'
 
-import {
-  Container, Content, Background, AnimationContainer,
-} from './styles'
+import { Container, Content, Background, AnimationContainer } from './styles'
 
 interface SignInFormData {
   email: string

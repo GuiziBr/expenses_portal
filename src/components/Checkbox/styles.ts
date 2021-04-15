@@ -1,26 +1,26 @@
 import styled from 'styled-components'
 
 export const Container = styled.div`
-  background: #232129;
-  border-radius: 10px;
-  border: 2px solid #232129;
-  padding: 16px;
+  background: var(--container-background);
+  border-radius: .5rem;
+  border: 2px solid var(--container-background);
+  padding: 1rem;
   width: 100%;
   display: flex;
-  color: #666360;
+  color: var(--iron-gray);
 
   & + div {
-      margin-top: 8px;
+      margin-top: .5rem;
   }
   label {
-    font-size: 16px;
-    margin-right: 16px;
+    font-size: 1rem;
+    margin-right: 1rem;
   }
   input {
-    margin-right: 7px;
+    margin-right: .5rem;
     transform: scale(1.1);
   }
   svg {
-      margin-right: 16px;
+      margin-right: 1rem;
     }
 `

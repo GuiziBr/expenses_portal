@@ -1,7 +1,5 @@
 import { useField } from '@unform/core'
-import React, {
-  SelectHTMLAttributes, useCallback, useEffect, useRef, useState,
-} from 'react'
+import React, { SelectHTMLAttributes, useCallback, useEffect, useRef, useState } from 'react'
 import { IconBaseProps } from 'react-icons'
 import { FiAlertCircle } from 'react-icons/fi'
 
@@ -18,15 +16,11 @@ interface Option {
   description: string
 }
 
-const Select: React.FC<SelectProps> = ({
-  name, icon: Icon, options, placeholder,
-}) => {
+const Select: React.FC<SelectProps> = ({ name, icon: Icon, options, placeholder }) => {
   const selectRef = useRef<HTMLSelectElement>(null)
   const [isFocused, setIsFocused] = useState(false)
   const [isFilled, setIsFilled] = useState(false)
-  const {
-    fieldName, error, registerField,
-  } = useField(name)
+  const { fieldName, error, registerField } = useField(name)
 
   const handleSelectFocus = useCallback(() => {
     setIsFocused(true)
@@ -53,9 +47,9 @@ const Select: React.FC<SelectProps> = ({
         {options.map((option: Option) => <option key={option.id} value={option.id}>{option.description}</option>)}
       </select>
       {error && (
-      <Error title={error}>
-        <FiAlertCircle color="#c53030" size={20} />
-      </Error>
+        <Error title={error}>
+          <FiAlertCircle color="#c53030" size={20} />
+        </Error>
       )}
     </Container>
   )

@@ -1,6 +1,4 @@
-import React, {
-  useCallback, useRef, useState, useEffect,
-} from 'react'
+import React, { useCallback, useRef, useState, useEffect } from 'react'
 import { Form } from '@unform/web'
 import { FormHandles } from '@unform/core'
 import { endOfDay, startOfMonth, format } from 'date-fns'
@@ -16,9 +14,7 @@ import outcome from '../../assets/outcome.svg'
 import total from '../../assets/total.svg'
 import api from '../../services/apiClient'
 import { formatAmount, unformatAmount } from '../../utils/formatAmount'
-import {
-  Container, Card, CardContainer, FormContainer,
-} from './styles'
+import { Container, Card, CardContainer, FormContainer } from './styles'
 import Input from '../../components/Input'
 import Select from '../../components/Select'
 import Button from '../../components/Button'

@@ -8,20 +8,21 @@ export const Container = styled.div`
   width: 100%;
   max-width: 1120px;
   margin: 0 auto;
-  padding: 40px 20px;
+  padding: 2.5rem 1rem;
+
 `
 
 export const CardContainer = styled.section`
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  grid-gap: 32px;
-  margin-top: -150px;
+  grid-gap: 2rem;
+  margin-top: -9.5rem;
 `
 
 export const Card = styled.div`
   background: ${({ total }: CardProps): string => (total ? '#FF872C' : '#fff')};
-  padding: 22px 32px;
-  border-radius: 5px;
+  padding: 1.5rem 2rem;
+  border-radius: .3rem;
   color: ${({ total }: CardProps): string => (total ? '#fff' : '#363F5F')};
 
   header {
@@ -30,15 +31,15 @@ export const Card = styled.div`
     justify-content: space-between;
 
     p {
-      font-size: 18px;
+      font-size: 1rem;
     }
   }
 
   h1 {
-    margin-top: 14px;
-    font-size: 36px;
+    margin-top: 1rem;
+    font-size: 2.25rem;
     font-weight: normal;
-    line-height: 54px;
+    line-height: 3.5rem;
   }
 `
 
@@ -46,21 +47,19 @@ export const FormContainer = styled.div`
   display: flex;
   align-items: stretch;
   place-content: center;
-  margin-top: 50px;
+  margin-top: 3rem;
   form {
-    margin: 20px 0;
-    width: 600px;
+    margin: 1rem 0;
+    width: 35rem;
     text-align: center;
-    font-size: 50px;
-
+    font-size: 3rem;
     h1 {
-      font-size: 50px;
-      margin-bottom: 40px;
+      font-size: 3rem;
+      margin-bottom: 2.5rem;
     }
     button {
-      width: 600px;
-      font-size: 20px;
+      width: 35rem;
+      font-size: 1.25rem;
     }
-
   }
 `

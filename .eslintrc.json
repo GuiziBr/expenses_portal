@@ -1,59 +1,87 @@
 {
   "env": {
-      "browser": true,
-      "es6": true
+    "browser": true,
+    "es2021": true
   },
   "extends": [
-      "plugin:react/recommended",
-      "airbnb",
-      "plugin:@typescript-eslint/recommended"
+    "plugin:react/recommended",
+    "airbnb"
   ],
-  "globals": {
-      "Atomics": "readonly",
-      "SharedArrayBuffer": "readonly"
-  },
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
-      "ecmaFeatures": {
-          "jsx": true
-      },
-      "ecmaVersion": 11,
-      "sourceType": "module"
+    "ecmaFeatures": {
+      "jsx": true
+    },
+    "ecmaVersion": 12,
+    "sourceType": "module"
   },
   "plugins": [
-      "react",
-      "@typescript-eslint",
-      "react-hooks"
+    "react",
+    "@typescript-eslint",
+    "jsx-a11y",
+    "import"
   ],
   "rules": {
+    "no-unused-vars": "off",
+    "max-len": [
+      "error",
+      {
+        "code": 140
+      }
+    ],
+    "react/prop-types": "off",
     "no-param-reassign": "off",
-    "max-len": ["error", { "code": 150 }],
-    "object-curly-spacing": ["warn", "always", {
-      "objectsInObjects": false
-    }],
-    "react/jsx-props-no-spreading":"off",
-    "react/prop-types":"off",
-    "no-unused-expressions": "off",
-    "semi": ["error", "never"],
+    "react/jsx-props-no-spreading": "off",
+    "import/no-unresolved": "error",
     "no-use-before-define": "off",
-    "react-hooks/rules-of-hooks": "error",
-    "react-hooks/exhaustive-deps": "warn",
-    "react/jsx-filename-extension": [1, { "extensions": [".tsx"] }],
-    "import/prefer-default-export": "off",
-    "camelcase": "off",
-    "@typescript-eslint/ban-types": "off",
+    "@typescript-eslint/no-use-before-define": [
+      "error"
+    ],
+    "react/react-in-jsx-scope": "off",
+    "global-require": "off",
+    "no-unused-expressions": [
+      "error",
+      {
+        "allowTaggedTemplates": true
+      }
+    ],
     "import/extensions": [
       "error",
       "ignorePackages",
       {
+        "js": "never",
+        "jsx": "never",
         "ts": "never",
         "tsx": "never"
       }
-   ]
+    ],
+    "react/jsx-filename-extension": [
+      "error",
+      {
+        "extensions": [
+          ".js",
+          ".jsx",
+          ".tsx"
+        ]
+      }
+    ],
+    "import/prefer-default-export": "off",
+    "object-curly-newline": [
+      "error",
+      {
+        "multiline": true
+      }
+    ],
+    "semi": [
+      "warn",
+      "never"
+    ]
   },
   "settings": {
     "import/resolver": {
-      "typescript": {}
+      "typescript": {
+        "alwaysTryTypes": true
+      }
     }
   }
 }

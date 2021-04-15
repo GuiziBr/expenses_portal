@@ -20,7 +20,7 @@ export const Content = styled.div`
 const appearFromLeft = keyframes`
   from {
     opacity: 0;
-    transform: translateX(-50px);
+    transform: translateX(-3rem);
   }
   to {
     opacity: 1;
@@ -34,16 +34,16 @@ export const AnimationContainer = styled.div`
   align-items: center;
   animation: ${appearFromLeft} 1s;
   form {
-      margin: 50px 0;
-      width: 340px;
+      margin: 3rem 0;
+      width: 20rem;
       text-align: center;
       h1 {
-        margin-bottom: 40px;
+        margin-bottom: 2.5rem;
       }
       a {
-        color: #f4ede8;
+        color: var(--input-text);
         display: block;
-        margin-top: 24px;
+        margin-top: 1.5rem;
         text-decoration: none;
         transition: color 0.2s;
         &:hover {
