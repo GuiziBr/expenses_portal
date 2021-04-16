@@ -8,60 +8,59 @@ interface ContainerProps {
 }
 
 export const Container = styled.div<ContainerProps>`
-  background: #232129;
-  border-radius: 10px;
-  border: 2px solid #232129;
-  padding: 16px;
+  background: var(--container-background);
+  border-radius: .3rem;
+  border: 2px solid var(--container-background);
+  padding: 1rem;
   width: 100%;
   display: flex;
   align-items: center;
-  color: #666360;
+  color: var(--iron-gray);
 
   ${(props) => props.isErrored && css`
-    border-color: #c53030;
+    border-color: var(--red);
   `}
 
   ${(props) => props.isFocused && css`
-    color: #ff9000;
-    border-color: #ff9000;
+    color: var(--light-orange);
+    border-color: var(--light-orange);
   `}
 
   ${(props) => props.isFilled && css`
-    color: #ff9000;
+    color: var(--light-orange);
   `}
 
   & + div {
-      margin-top: 8px;
+      margin-top: .5rem;
     }
 
   select {
     flex: 1;
     background: transparent;
     border: 0;
-    color: #f4ede8;
+    color: var(--input-text);
     option {
-      background: #312E38;
+      background: var(--background);
     }
   }
 
-
   svg {
-      margin-right: 16px;
+      margin-right: 1rem;
     }
 `
 
 export const Error = styled(Tooltip)`
-  height: 20px;
-  margin-left: 16px;
+  height: 1.25rem;
+  margin-left: 1rem;
   display: flex;
   svg {
       margin: 0;
     }
   span {
-    background: #c53030;
-    color: #fff;
+    background: var(--red);
+    color: var(--white);
     &::before {
-      border-color: #c53030 transparent;
+      border-color: var(--red) transparent;
     }
   }
 `

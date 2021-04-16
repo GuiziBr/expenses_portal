@@ -1,6 +1,4 @@
-import React, {
-  createContext, useContext, useCallback, useState,
-} from 'react'
+import React, { createContext, useContext, useCallback, useState } from 'react'
 import { v4 as uuid } from 'uuid'
 import ToastContainer from '../components/ToastContainer'
 
@@ -22,9 +20,7 @@ export const ToastProvider: React.FC = ({ children }) => {
   const [messages, setMessages] = useState<ToastMessage[]>([])
   const addToast = useCallback(({ type, title, description }: Omit<ToastMessage, 'id'>) => {
     const id = uuid()
-    const toast = {
-      id, type, title, description,
-    }
+    const toast = { id, type, title, description }
     setMessages((oldMessages) => [...oldMessages, toast])
   }, [])
   const removeToast = useCallback((id: string) => {

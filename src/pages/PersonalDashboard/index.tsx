@@ -1,6 +1,4 @@
-import React, {
-  useState, useEffect, useCallback, useRef,
-} from 'react'
+import React, { useState, useEffect, useCallback, useRef } from 'react'
 import { Form } from '@unform/web'
 import { FormHandles } from '@unform/core'
 import { MdDateRange } from 'react-icons/md'
@@ -16,9 +14,7 @@ import Input from '../../components/Input'
 import { formatAmount } from '../../utils/formatAmount'
 import { assemblePersonalExpense } from '../../assemblers/expensesAssembler'
 
-import {
-  Container, CardContainer, Card, TableContainer, FormContainer,
-} from './styles'
+import { Container, CardContainer, Card, TableContainer, FormContainer } from './styles'
 
 interface Expense {
   id: string;

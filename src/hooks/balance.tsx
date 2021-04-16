@@ -1,6 +1,4 @@
-import React, {
-  createContext, useCallback, useState, useContext,
-} from 'react'
+import React, { createContext, useCallback, useState, useContext } from 'react'
 import api from '../services/apiClient'
 
 interface BalanceState {
@@ -26,8 +24,8 @@ export const BalanceProvider: React.FC = ({ children }) => {
   })
   const getBalance = useCallback(async () => {
     const token = sessionStorage.getItem('@expenses:token')
-    const config = { headers: { Authorization: `Bearer ${token}` }}
-    const { data: { paying, payed, total }} = await api.get('/expenses/balance', config)
+    const config = { headers: { Authorization: `Bearer ${token}` } }
+    const { data: { paying, payed, total } } = await api.get('/expenses/balance', config)
     const balance = { paying, payed, total }
     sessionStorage.setItem('@expenses:balance', JSON.stringify(balance))
     setData({ balance })

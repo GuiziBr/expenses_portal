@@ -3,30 +3,29 @@ import styled from 'styled-components'
 export const Container = styled.div`
   position: relative;
   span {
-    width: 160px;
-    background: #ff9000;
-    padding: 8px;
-    border-radius: 4px;
-    font-size: 14px;
+    width: 10rem;
+    background: var(--light-orange);
+    padding: .5rem;
+    border-radius: .3rem;
+    font-size: 1rem;
     font-weight: 500;
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.4s;
     position: absolute;
-    bottom: calc(100% + 12px);
+    bottom: calc(100% + .75rem);
     left: 50%;
     transform: translateX(-50%);
-    color: #312e38;
+    color: var(--background);
     &::before {
       content: '';
       border-style: solid;
-      border-color: #ff9000 transparent;
-      border-width: 6px 6px 0 6px;
+      border-color: var(--light-orange) transparent;
+      border-width: .4rem .4rem 0 .4rem;
       top: 100%;
       position: absolute;
       left: 50%;
       transform: translateX(-50%);
-
     }
   }
   &:hover span {
