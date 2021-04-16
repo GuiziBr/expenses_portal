@@ -16,7 +16,7 @@ const toastTypeVariations = {
     color: var(--green-blue);
   `,
   error: css`
-    background: var(--light-ping);
+    background: var(--light-pink);
     color: var(--red);
   `,
 }
@@ -25,7 +25,7 @@ export const Container = styled(animated.div)<ContainerProps>`
   width: 22.5rem;
   position: relative;
   padding: 1rem 2rem 1rem 1rem;
-  border-radius: .5rem;
+  border-radius: .3rem;
   box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2);
   display: flex;
 

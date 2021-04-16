@@ -2,7 +2,7 @@ import styled from 'styled-components'
 
 export const Container = styled.div`
   background: var(--container-background);
-  border-radius: .5rem;
+  border-radius: .3rem;
   border: 2px solid var(--container-background);
   padding: 1rem;
   width: 100%;
