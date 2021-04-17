@@ -36,6 +36,7 @@ const PersonalDashboard: React.FC = () => {
   const [balance, setBalance] = useState<String>()
   const [pages, setPages] = useState([])
   const [currentPage, setCurrentPage] = useState(1)
+  const [currentDate, setCurrentDate] = useState<string>()
 
   const updatePageNumbers = (totalCount: number) => {
     const totalPages: Number = Math.ceil(totalCount / constants.pageLimit)
@@ -48,7 +49,7 @@ const PersonalDashboard: React.FC = () => {
 
   const getOffset = () => (currentPage * constants.pageLimit) - constants.pageLimit
 
-  const loadExpenses = useCallback(async (date?: string) => {
+  const loadExpenses = useCallback(async (date: string = currentDate) => {
     const token = sessionStorage.getItem(constants.sessionStorage.token)
     const config: AxiosRequestConfig = {
       headers: { Authorization: `Bearer ${token}` },
@@ -61,11 +62,13 @@ const PersonalDashboard: React.FC = () => {
     updatePageNumbers(headers[constants.headers.totalCount])
     setExpenses(expenseList)
     setBalance(formatAmount(data.balance))
+    setCurrentDate(date)
   }, [currentPage])
 
   const handleSubmit = useCallback(async (data?: Request) => {
     await loadExpenses(data?.date)
-  }, [loadExpenses])
+    setCurrentPage(1)
+  }, [])
 
   useEffect(() => {
     async function loadDashboard(): Promise<void> {
@@ -91,7 +94,7 @@ const PersonalDashboard: React.FC = () => {
         </CardContainer>
         <FormContainer>
           <Form ref={formRef} onSubmit={handleSubmit}>
-            <Input icon={MdDateRange} name="date" type="month" defaultValue={defaultDate} />
+            <Input icon={MdDateRange} name="date" type="month" defaultValue={defaultDate} max={defaultDate} />
             <Button type="submit">Search</Button>
           </Form>
         </FormContainer>

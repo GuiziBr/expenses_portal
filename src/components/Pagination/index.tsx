@@ -10,11 +10,22 @@ interface PaginationProps {
 const Pagination: React.FC<PaginationProps> = ({ currentPage, setCurrentPage, pages }) => (
   <Container>
     <PaginationButton>
-      <PaginationItem onClick={() => setCurrentPage(currentPage - 1)} isDisabled={currentPage === 1}>Previous</PaginationItem>
+      <PaginationItem onClick={() => setCurrentPage(currentPage - 1)} isDisabled={currentPage <= 1}>Previous</PaginationItem>
       {pages.map((page) => (
-        <PaginationItem key={page} isSelected={page === currentPage} onClick={() => setCurrentPage(page)}>{page}</PaginationItem>
+        <PaginationItem
+          key={page}
+          isSelected={page === currentPage}
+          onClick={() => setCurrentPage(page)}
+        >
+          {page}
+        </PaginationItem>
       ))}
-      <PaginationItem onClick={() => setCurrentPage(currentPage + 1)} isDisabled={currentPage === pages.length}>Next</PaginationItem>
+      <PaginationItem
+        onClick={() => setCurrentPage(currentPage + 1)}
+        isDisabled={currentPage === pages.length || pages.length === 0}
+      >
+        Next
+      </PaginationItem>
     </PaginationButton>
   </Container>
 )
