@@ -22,6 +22,12 @@
     "import"
   ],
   "rules": {
+    "no-plusplus": [
+      "error",
+      {
+        "allowForLoopAfterthoughts": true
+      }
+    ],
     "no-unused-vars": "off",
     "max-len": [
       "error",

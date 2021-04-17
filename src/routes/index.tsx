@@ -1,11 +1,10 @@
 import React from 'react'
 import { Switch } from 'react-router-dom'
-
-import Route from './Route'
-import SignIn from '../pages/SignIn'
-import SharedDashboard from '../pages/SharedDashboard'
-import PersonalDashboard from '../pages/PersonalDashboard'
 import Expenses from '../pages/Expenses'
+import PersonalDashboard from '../pages/PersonalDashboard'
+import SharedDashboard from '../pages/SharedDashboard'
+import SignIn from '../pages/SignIn'
+import Route from './Route'
 
 const Routes: React.FC = () => (
   <Switch>

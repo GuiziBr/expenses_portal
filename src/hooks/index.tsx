@@ -1,8 +1,7 @@
 import React from 'react'
-
 import { AuthProvider } from './auth'
-import { ToastProvider } from './toast'
 import { BalanceProvider } from './balance'
+import { ToastProvider } from './toast'
 
 const AppProvider: React.FC = ({ children }) => (
   <AuthProvider>

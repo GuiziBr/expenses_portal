@@ -1,20 +1,19 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react'
-import { Form } from '@unform/web'
 import { FormHandles } from '@unform/core'
-import { MdDateRange } from 'react-icons/md'
+import { Form } from '@unform/web'
+import { AxiosRequestConfig } from 'axios'
 import { format } from 'date-fns'
-import total from '../../assets/total.svg'
-
-import api from '../../services/apiClient'
-
-import Header from '../../components/Header'
-import Button from '../../components/Button'
-import Input from '../../components/Input'
-
-import { formatAmount } from '../../utils/formatAmount'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
+import { MdDateRange } from 'react-icons/md'
 import { assemblePersonalExpense } from '../../assemblers/expensesAssembler'
-
-import { Container, CardContainer, Card, TableContainer, FormContainer } from './styles'
+import total from '../../assets/total.svg'
+import Button from '../../components/Button'
+import Header from '../../components/Header'
+import Input from '../../components/Input'
+import Pagination from '../../components/Pagination'
+import constants from '../../constants'
+import api from '../../services/apiClient'
+import { formatAmount } from '../../utils/formatAmount'
+import { Card, CardContainer, Container, FormContainer, TableContainer } from './styles'
 
 interface Expense {
   id: string;
@@ -35,19 +34,34 @@ const PersonalDashboard: React.FC = () => {
   const formRef = useRef<FormHandles>(null)
   const [expenses, setExpenses] = useState<Expense[]>([])
   const [balance, setBalance] = useState<String>()
-  const loadExpenses = useCallback(async (date?: string) => {
-    const token = sessionStorage.getItem('@expenses:token')
-    const config = {
-      headers: { Authorization: `Bearer ${token}` },
-      params: { date },
+  const [pages, setPages] = useState([])
+  const [currentPage, setCurrentPage] = useState(1)
+
+  const updatePageNumbers = (totalCount: number) => {
+    const totalPages: Number = Math.ceil(totalCount / constants.pageLimit)
+    const arrayPages = []
+    for (let i = 1; i <= totalPages; i++) {
+      arrayPages.push(i)
     }
-    const { data } = await api.get('/expenses/personalBalance', config)
+    setPages(arrayPages)
+  }
+
+  const getOffset = () => (currentPage * constants.pageLimit) - constants.pageLimit
+
+  const loadExpenses = useCallback(async (date?: string) => {
+    const token = sessionStorage.getItem(constants.sessionStorage.token)
+    const config: AxiosRequestConfig = {
+      headers: { Authorization: `Bearer ${token}` },
+      params: { date, offset: getOffset(), limit: constants.pageLimit },
+    }
+    const { data, headers } = await api.get('/expenses/personalBalance', config)
     const expenseList = data.expenses
       .sort((a: { date: string }, b: { date: string }) => ((a.date < b.date) ? 1 : -1))
       .map(assemblePersonalExpense)
+    updatePageNumbers(headers[constants.headers.totalCount])
     setExpenses(expenseList)
     setBalance(formatAmount(data.balance))
-  }, [])
+  }, [currentPage])
 
   const handleSubmit = useCallback(async (data?: Request) => {
     await loadExpenses(data?.date)
@@ -60,7 +74,7 @@ const PersonalDashboard: React.FC = () => {
     loadDashboard()
   }, [loadExpenses])
 
-  const defaultDate = format(new Date(), 'yyyy-MM')
+  const defaultDate = format(new Date(), constants.monthDateFormat)
 
   return (
     <>
@@ -103,6 +117,7 @@ const PersonalDashboard: React.FC = () => {
             </tbody>
           </table>
         </TableContainer>
+        <Pagination currentPage={currentPage} setCurrentPage={setCurrentPage} pages={pages} />
       </Container>
     </>
   )

@@ -1,5 +1,5 @@
-import styled, { css } from 'styled-components'
 import { animated } from 'react-spring'
+import styled, { css } from 'styled-components'
 
 interface ContainerProps {
   type?: 'success' | 'error' | 'info'
@@ -28,13 +28,10 @@ export const Container = styled(animated.div)<ContainerProps>`
   border-radius: .3rem;
   box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2);
   display: flex;
-
   & + div {
     margin-top: .5rem;
   }
-
   ${(props) => toastTypeVariations[props.type || 'info']}
-
   > svg {
     margin: .25rem .75rem 0 0;
   }

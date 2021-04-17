@@ -1,9 +1,7 @@
 import React from 'react'
-
 import { Link } from 'react-router-dom'
-
-import { Container } from './styles'
 import { useAuth } from '../../hooks/auth'
+import { Container } from './styles'
 
 interface HeaderProps {
   size?: 'small' | 'large'

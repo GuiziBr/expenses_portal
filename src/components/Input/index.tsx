@@ -1,17 +1,18 @@
-import React, { InputHTMLAttributes, useEffect, useRef, useState, useCallback } from 'react'
+import { useField } from '@unform/core'
+import React, { InputHTMLAttributes, useCallback, useEffect, useRef, useState } from 'react'
 import { IconBaseProps } from 'react-icons'
 import { FiAlertCircle } from 'react-icons/fi'
-import { useField } from '@unform/core'
 import { Container, Error } from './styles'
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   name: string,
   isCurrency?: boolean
   icon?: React.ComponentType<IconBaseProps>
-  options?: boolean
+  options?: boolean,
+  isClickable?: boolean
 }
 
-const Input: React.FC<InputProps> = ({ name, icon: Icon, isCurrency, ...rest }) => {
+const Input: React.FC<InputProps> = ({ name, icon: Icon, isCurrency, isClickable, ...rest }) => {
   const inputRef = useRef<HTMLInputElement>(null)
   const [isFocused, setIsFocused] = useState(false)
   const [isFilled, setIsFilled] = useState(false)

@@ -1,4 +1,5 @@
-import React, { createContext, useCallback, useState, useContext } from 'react'
+import React, { createContext, useCallback, useContext, useState } from 'react'
+import constants from '../constants'
 import api from '../services/apiClient'
 
 interface AuthState {
@@ -21,8 +22,8 @@ const AuthContext = createContext<AuthContextData>({} as AuthContextData)
 
 export const AuthProvider: React.FC = ({ children }) => {
   const [data, setData] = useState<AuthState>(() => {
-    const token = sessionStorage.getItem('@expenses:token')
-    const user = sessionStorage.getItem('@expenses:user')
+    const token = sessionStorage.getItem(constants.sessionStorage.token)
+    const user = sessionStorage.getItem(constants.sessionStorage.user)
     if (token && user) return { token, user: JSON.parse(user) }
     return {} as AuthState
   })
@@ -32,14 +33,14 @@ export const AuthProvider: React.FC = ({ children }) => {
       password,
     })
     const { token, user } = response.data
-    sessionStorage.setItem('@expenses:token', token)
-    sessionStorage.setItem('@expenses:user', JSON.stringify(user))
+    sessionStorage.setItem(constants.sessionStorage.token, token)
+    sessionStorage.setItem(constants.sessionStorage.user, JSON.stringify(user))
     setData({ token, user })
   }, [])
 
   const signOut = useCallback(() => {
-    sessionStorage.removeItem('@expenses:token')
-    sessionStorage.removeItem('@expenses:user')
+    sessionStorage.removeItem(constants.sessionStorage.token)
+    sessionStorage.removeItem(constants.sessionStorage.user)
     setData({} as AuthState)
   }, [])
 
@@ -52,6 +53,6 @@ export const AuthProvider: React.FC = ({ children }) => {
 
 export function useAuth(): AuthContextData {
   const context = useContext(AuthContext)
-  if (!context) throw new Error('useAuth must be used within an AuthProvider')
+  if (!context) throw new Error(constants.providerErrorMsg('useAuth', 'AuthProvider'))
   return context
 }

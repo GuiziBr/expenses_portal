@@ -24,17 +24,14 @@ export const Card = styled.div`
   padding: 1.5rem 2rem;
   border-radius: .3rem;
   color: ${({ total }: CardProps): string => (total ? '#fff' : '#363F5F')};
-
   header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-
     p {
       font-size: 1rem;
     }
   }
-
   h1 {
     margin-top: 1rem;
     font-size: 2.25rem;

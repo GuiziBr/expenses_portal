@@ -1,3 +1,4 @@
+import constants from '../constants'
 import { formatAmount } from '../utils/formatAmount'
 import formatDate from '../utils/formatDate'
 
@@ -28,7 +29,7 @@ export const assembleExpense = (expense: Expense): FormattedExpense => ({
   description: expense.description,
   category: expense.category.description,
   amount: expense.amount,
-  formattedAmount: `${expense.type === 'outcome' ? '- ' : ''}${formatAmount(expense.amount)}`,
+  formattedAmount: `${expense.type === constants.expenseType.outcome ? '- ' : ''}${formatAmount(expense.amount)}`,
   formattedDate: formatDate(expense.date),
   type: expense.type,
   date: expense.date,

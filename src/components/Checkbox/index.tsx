@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, InputHTMLAttributes } from 'react'
 import { useField } from '@unform/core'
+import React, { InputHTMLAttributes, useEffect, useRef } from 'react'
 import { IconBaseProps } from 'react-icons/lib'
 import { Container } from './styles'
 
