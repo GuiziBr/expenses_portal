@@ -74,7 +74,7 @@ const SharedDashboard: React.FC = () => {
     updatePageNumbers(headers[constants.headers.totalCount])
     setExpenses(expenseList)
     setBalance(updatedBalance)
-  }, [])
+  }, [currentPage])
 
   const handleSubmit = useCallback(async (data?: Request) => {
     await loadExpenses(data?.date)
