@@ -43,6 +43,7 @@ const SharedDashboard: React.FC = () => {
   const [balance, setBalance] = useState<Balance>({} as Balance)
   const [pages, setPages] = useState([])
   const [currentPage, setCurrentPage] = useState(1)
+  const [currentDate, setCurrentDate] = useState<string>()
 
   const updatePageNumbers = (totalCount: number) => {
     const totalPages: Number = Math.ceil(totalCount / constants.pageLimit)
@@ -55,7 +56,7 @@ const SharedDashboard: React.FC = () => {
 
   const getOffset = () => (currentPage * constants.pageLimit) - constants.pageLimit
 
-  const loadExpenses = useCallback(async (date?: string) => {
+  const loadExpenses = useCallback(async (date: string = currentDate) => {
     const token = sessionStorage.getItem(constants.sessionStorage.token)
     const config = {
       headers: { Authorization: `Bearer ${token}` },
@@ -74,10 +75,12 @@ const SharedDashboard: React.FC = () => {
     updatePageNumbers(headers[constants.headers.totalCount])
     setExpenses(expenseList)
     setBalance(updatedBalance)
+    setCurrentDate(date)
   }, [currentPage])
 
   const handleSubmit = useCallback(async (data?: Request) => {
     await loadExpenses(data?.date)
+    setCurrentPage(1)
   }, [loadExpenses])
 
   useEffect(() => {
@@ -87,7 +90,7 @@ const SharedDashboard: React.FC = () => {
     loadDashboard()
   }, [loadExpenses])
 
-  const defaultDate = format(new Date(), constants.dateFormat)
+  const defaultDate = format(new Date(), constants.monthDateFormat)
 
   return (
     <>
@@ -118,7 +121,7 @@ const SharedDashboard: React.FC = () => {
         </CardContainer>
         <FormContainer>
           <Form ref={formRef} onSubmit={handleSubmit}>
-            <Input icon={MdDateRange} name="date" type="month" defaultValue={defaultDate} />
+            <Input icon={MdDateRange} name="date" type="month" defaultValue={defaultDate} max={defaultDate} />
             <Button type="submit">Search</Button>
           </Form>
         </FormContainer>
