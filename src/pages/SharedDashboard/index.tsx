@@ -1,22 +1,20 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react'
-import { Form } from '@unform/web'
 import { FormHandles } from '@unform/core'
-import { MdDateRange } from 'react-icons/md'
+import { Form } from '@unform/web'
 import { format } from 'date-fns'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
+import { MdDateRange } from 'react-icons/md'
+import { assembleExpense } from '../../assemblers/expensesAssembler'
 import income from '../../assets/income.svg'
 import outcome from '../../assets/outcome.svg'
 import total from '../../assets/total.svg'
-
-import api from '../../services/apiClient'
-
-import Header from '../../components/Header'
 import Button from '../../components/Button'
+import Header from '../../components/Header'
 import Input from '../../components/Input'
-
+import Pagination from '../../components/Pagination'
+import constants from '../../constants'
+import api from '../../services/apiClient'
 import { formatAmount } from '../../utils/formatAmount'
-import { assembleExpense } from '../../assemblers/expensesAssembler'
-
-import { Container, CardContainer, Card, TableContainer, FormContainer } from './styles'
+import { Card, CardContainer, Container, FormContainer, TableContainer } from './styles'
 
 interface Expense {
   id: string;
@@ -43,14 +41,27 @@ const SharedDashboard: React.FC = () => {
   const formRef = useRef<FormHandles>(null)
   const [expenses, setExpenses] = useState<Expense[]>([])
   const [balance, setBalance] = useState<Balance>({} as Balance)
+  const [pages, setPages] = useState([])
+  const [currentPage, setCurrentPage] = useState(1)
+
+  const updatePageNumbers = (totalCount: number) => {
+    const totalPages: Number = Math.ceil(totalCount / constants.pageLimit)
+    const arrayPages = []
+    for (let i = 1; i <= totalPages; i++) {
+      arrayPages.push(i)
+    }
+    setPages(arrayPages)
+  }
+
+  const getOffset = () => (currentPage * constants.pageLimit) - constants.pageLimit
 
   const loadExpenses = useCallback(async (date?: string) => {
-    const token = sessionStorage.getItem('@expenses:token')
+    const token = sessionStorage.getItem(constants.sessionStorage.token)
     const config = {
       headers: { Authorization: `Bearer ${token}` },
-      params: { date },
+      params: { date, offset: getOffset(), limit: constants.pageLimit },
     }
-    const { data } = await api.get('/expenses/balance', config)
+    const { data, headers } = await api.get('/expenses/balance', config)
     const expenseList = data.expenses
       .sort((a: { date: string }, b: { date: string }) => ((a.date < b.date) ? 1 : -1))
       .map(assembleExpense)
@@ -60,7 +71,7 @@ const SharedDashboard: React.FC = () => {
       payer: formatAmount(data.payed),
       total: formatAmount(data.total),
     }
-
+    updatePageNumbers(headers[constants.headers.totalCount])
     setExpenses(expenseList)
     setBalance(updatedBalance)
   }, [])
@@ -76,7 +87,7 @@ const SharedDashboard: React.FC = () => {
     loadDashboard()
   }, [loadExpenses])
 
-  const defaultDate = format(new Date(), 'yyyy-MM')
+  const defaultDate = format(new Date(), constants.dateFormat)
 
   return (
     <>
@@ -133,6 +144,7 @@ const SharedDashboard: React.FC = () => {
             </tbody>
           </table>
         </TableContainer>
+        <Pagination currentPage={currentPage} setCurrentPage={setCurrentPage} pages={pages} />
       </Container>
     </>
   )

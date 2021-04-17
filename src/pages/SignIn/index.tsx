@@ -1,19 +1,17 @@
-import React, { useCallback, useRef } from 'react'
-import { FiMail, FiLock } from 'react-icons/fi'
 import { FormHandles } from '@unform/core'
 import { Form } from '@unform/web'
-import * as Yup from 'yup'
+import React, { useCallback, useRef } from 'react'
+import { FiLock, FiMail } from 'react-icons/fi'
 import { useHistory } from 'react-router-dom'
+import * as Yup from 'yup'
+import logoImg from '../../assets/logo.svg'
+import Button from '../../components/Button'
+import Input from '../../components/Input'
+import constants from '../../constants'
 import { useAuth } from '../../hooks/auth'
 import { useToast } from '../../hooks/toast'
 import getValidationErrors from '../../utils/getValidationErrors'
-
-import logoImg from '../../assets/logo.svg'
-
-import Input from '../../components/Input'
-import Button from '../../components/Button'
-
-import { Container, Content, Background, AnimationContainer } from './styles'
+import { AnimationContainer, Background, Container, Content } from './styles'
 
 interface SignInFormData {
   email: string
@@ -29,8 +27,8 @@ const SignIn: React.FC = () => {
     try {
       formRef.current?.setErrors({})
       const schema = Yup.object().shape({
-        email: Yup.string().required('E-mail is required').email('Invalid e-mail format'),
-        password: Yup.string().required('Password is required'),
+        email: Yup.string().required(constants.schemaValidationError.email).email(constants.schemaValidationError.emailFormat),
+        password: Yup.string().required(constants.schemaValidationError.password),
       })
       await schema.validate(data, { abortEarly: false })
       await signIn({ email: data.email, password: data.password })
@@ -43,8 +41,8 @@ const SignIn: React.FC = () => {
       }
       addToast({
         type: 'error',
-        title: 'Authentication error',
-        description: 'Error on login',
+        title: constants.toastAuthError.title,
+        description: constants.toastAuthError.description,
       })
     }
   }, [signIn, addToast, history])

@@ -2,7 +2,6 @@ import { useField } from '@unform/core'
 import React, { SelectHTMLAttributes, useCallback, useEffect, useRef, useState } from 'react'
 import { IconBaseProps } from 'react-icons'
 import { FiAlertCircle } from 'react-icons/fi'
-
 import { Container, Error } from './styles'
 
 interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {

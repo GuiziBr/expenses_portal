@@ -1,6 +1,7 @@
-import React, { createContext, useContext, useCallback, useState } from 'react'
+import React, { createContext, useCallback, useContext, useState } from 'react'
 import { v4 as uuid } from 'uuid'
 import ToastContainer from '../components/ToastContainer'
+import constants from '../constants'
 
 interface ToastContextData {
   addToast(message: Omit<ToastMessage, 'id'>): void
@@ -36,6 +37,6 @@ export const ToastProvider: React.FC = ({ children }) => {
 
 export function useToast(): ToastContextData {
   const context = useContext(ToastContext)
-  if (!context) throw new Error('useToast must be used withing a ToastProvider')
+  if (!context) throw new Error(constants.providerErrorMsg('useToast', 'ToastProvider'))
   return context
 }

@@ -1,7 +1,12 @@
-import styled from 'styled-components'
+import styled, { css } from 'styled-components'
 
 interface CardProps {
-  total?: boolean;
+  total?: boolean
+}
+
+interface PaginationItemProps {
+  isSelected?: boolean
+  isDisabled?: boolean
 }
 
 export const Container = styled.div`
@@ -25,17 +30,14 @@ export const Card = styled.div`
   padding: 1.5rem 2rem;
   border-radius: .3rem;
   color: ${({ total }: CardProps): string => (total ? '#fff' : '#363F5F')};
-
   header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-
     p {
       font-size: 1rem;
     }
   }
-
   h1 {
     margin-top: 1rem;
     font-size: 2.25rem;
@@ -68,11 +70,13 @@ export const FormContainer = styled.section`
 `
 
 export const TableContainer = styled.section`
+  height: 26rem;
   margin-top: .6rem;
   table {
     width: 100%;
     border-spacing: 0 .5rem;
     th {
+      width: 11rem;
       color: var(--light-gray);
       font-weight: normal;
       padding: 1.25rem 2rem;
@@ -80,31 +84,49 @@ export const TableContainer = styled.section`
       font-size: 1.25rem;
       line-height: 1.5rem;
     }
-
     td {
+      width: 11rem;
       padding: 1.25rem 2rem;
       border: 0;
       background: var(--white);
       font-size: 1rem;
       font-weight: normal;
       color: var(--light-gray);
-
       &.description {
         color: var(--blue-wood);
       }
-
       &.income {
         color: var(--green);
         padding-left: 2.75rem;
       }
     }
-
     td:first-child {
       border-radius: .5rem 0 0 .5rem;
     }
-
     td:last-child {
       border-radius: 0 .5rem .5rem 0;
     }
   }
+`
+export const Pagination = styled.div`
+  margin-top: 1rem;
+  display: flex;
+  width: 100%;
+  justify-content: center;
+`
+
+export const PaginationButton = styled.div`
+  display: flex;
+`
+export const PaginationItem = styled.div`
+  ${({ isDisabled }: PaginationItemProps) => isDisabled && css`
+    pointer-events: none;
+    opacity: .5;
+  `}
+  cursor: pointer;
+  padding: .3rem .6rem;
+  ${({ isSelected }: PaginationItemProps) => isSelected && css`
+    background: var(--orange);
+    border-radius: .3rem;
+  `}
 `

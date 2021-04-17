@@ -8,7 +8,6 @@ interface ContainerProps {
 export const Container = styled.div<ContainerProps>`
   background: var(--light-blue);
   padding: 2rem 0;
-
   header {
     width: 1120px;
     margin: 0 auto;
@@ -22,15 +21,12 @@ export const Container = styled.div<ContainerProps>`
         text-decoration: none;
         font-size: 1rem;
         transition: opacity 0.2s;
-
         & + a {
           margin-left: 2rem;
         }
-
         &:hover {
           opacity: 0.6;
         }
-
         &.active {
           color: var(--orange);
         }
