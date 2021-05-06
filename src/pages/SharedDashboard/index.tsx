@@ -3,6 +3,7 @@ import { Form } from '@unform/web'
 import { format } from 'date-fns'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { MdDateRange } from 'react-icons/md'
+import Modal from 'react-modal'
 import { assembleExpense } from '../../assemblers/expensesAssembler'
 import income from '../../assets/income.svg'
 import outcome from '../../assets/outcome.svg'
@@ -10,6 +11,7 @@ import total from '../../assets/total.svg'
 import Button from '../../components/Button'
 import Header from '../../components/Header'
 import Input from '../../components/Input'
+import { NewExpenseModal } from '../../components/NewExpenseModal'
 import Pagination from '../../components/Pagination'
 import constants from '../../constants'
 import api from '../../services/apiClient'
@@ -44,6 +46,17 @@ const SharedDashboard: React.FC = () => {
   const [pages, setPages] = useState([])
   const [currentPage, setCurrentPage] = useState(1)
   const [currentDate, setCurrentDate] = useState<string>()
+  const [isNewExpenseModalOpen, setIsNewExpenseModalOpen] = useState(false)
+
+  Modal.setAppElement('#root')
+
+  function handleOpenNewExpenseModal() {
+    setIsNewExpenseModalOpen(true)
+  }
+
+  function handleCloseNewExpenseModal() {
+    setIsNewExpenseModalOpen(false)
+  }
 
   const updatePageNumbers = (totalCount: number) => {
     const totalPages: Number = Math.ceil(totalCount / constants.pageLimit)
@@ -62,8 +75,8 @@ const SharedDashboard: React.FC = () => {
       headers: { Authorization: `Bearer ${token}` },
       params: { date, offset: getOffset(), limit: constants.pageLimit },
     }
-    const { data, headers } = await api.get('/expenses/balance', config)
-    const expenseList = data.expenses
+    const { data, headers } = await api.get('/expenses/shared', config)
+    const expenseList = data
       .sort((a: { date: string }, b: { date: string }) => ((a.date < b.date) ? 1 : -1))
       .map(assembleExpense)
 
@@ -94,7 +107,8 @@ const SharedDashboard: React.FC = () => {
 
   return (
     <>
-      <Header current="SharedDashboard" />
+      <Header onOpenNewExpenseModal={handleOpenNewExpenseModal} current="SharedDashboard" />
+      <NewExpenseModal isOpen={isNewExpenseModalOpen} onRequestClose={handleCloseNewExpenseModal} />
       <Container>
         <CardContainer>
           <Card>

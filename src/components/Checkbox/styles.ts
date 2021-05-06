@@ -10,7 +10,7 @@ export const Container = styled.div`
   color: var(--iron-gray);
 
   & + div {
-      margin-top: .5rem;
+    margin-top: .5rem;
   }
   label {
     font-size: 1rem;

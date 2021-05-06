@@ -17,6 +17,7 @@ export const Container = styled.div<ContainerProps>`
   display: flex;
   align-items: center;
   color: var(--iron-gray);
+  transition: border-color 0.3s;
   ${(props) => props.isErrored && css`
     border-color: var(--red);
   `}

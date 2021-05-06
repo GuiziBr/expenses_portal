@@ -5,22 +5,36 @@ import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { HiOutlineCurrencyDollar, HiOutlineSelector } from 'react-icons/hi'
 import { IoMdCheckboxOutline } from 'react-icons/io'
 import { MdDateRange, MdTitle } from 'react-icons/md'
+import Modal from 'react-modal'
 import * as Yup from 'yup'
-import income from '../../assets/income.svg'
-import outcome from '../../assets/outcome.svg'
-import total from '../../assets/total.svg'
-import Button from '../../components/Button'
-import CheckboxInput from '../../components/Checkbox'
-import Header from '../../components/Header'
-import Input from '../../components/Input'
-import Select from '../../components/Select'
 import constants from '../../constants'
 import { useBalance } from '../../hooks/balance'
 import { useToast } from '../../hooks/toast'
 import api from '../../services/apiClient'
 import { formatAmount, unformatAmount } from '../../utils/formatAmount'
 import getValidationErrors from '../../utils/getValidationErrors'
-import { Card, CardContainer, Container, FormContainer } from './styles'
+import Button from '../Button'
+import CheckboxInput from '../Checkbox'
+import Input from '../Input'
+import Select from '../Select'
+import { FormContainer } from './styles'
+import closeImg from '../../assets/close.svg'
+
+interface NewExpenseModalProps {
+  isOpen: boolean
+  onRequestClose: () => void
+}
+
+interface Category {
+  id: string
+  description: string
+}
+
+interface CheckboxOption {
+  id: string
+  value: string
+  label: string
+}
 
 interface Balance {
   paying: string
@@ -36,35 +50,11 @@ interface Expense {
   options: [string]
 }
 
-interface Category {
-  id: string
-  description: string
-}
-
-interface CheckboxOption {
-  id: string
-  value: string
-  label: string
-}
-
-const Expenses: React.FC = () => {
+export function NewExpenseModal({ isOpen, onRequestClose }: NewExpenseModalProps) {
   const formRef = useRef<FormHandles>(null)
   const { addToast } = useToast()
-  const { getBalance } = useBalance()
   const [balance, setBalance] = useState<Balance>({} as Balance)
   const [categories, setCategories] = useState<Category[]>([])
-
-  const [isNewExpenseModalOpen, setIsNewExpenseModalOpen] = useState(false)
-
-  function handleOpenNewExpenseModal() {
-    setIsNewExpenseModalOpen(true)
-  }
-
-  function handleCloseNewExpenseModal() {
-    setIsNewExpenseModalOpen(false)
-  }
-
-  const checkboxOptions: CheckboxOption[] = constants.createExpenseCheckboxOptions
 
   const loadCategories = useCallback(async () => {
     const token = sessionStorage.getItem(constants.sessionStorage.token)
@@ -74,7 +64,6 @@ const Expenses: React.FC = () => {
   }, [])
 
   const updateBalance = useCallback(async () => {
-    await getBalance()
     const balanceString = sessionStorage.getItem(constants.sessionStorage.balance)
     if (balanceString) {
       const parsedBalance = JSON.parse(balanceString)
@@ -85,7 +74,7 @@ const Expenses: React.FC = () => {
       }
       setBalance(updatedBalance)
     }
-  }, [getBalance])
+  }, [])
 
   const handleSubmit = useCallback(async (data: Expense) => {
     try {
@@ -115,6 +104,7 @@ const Expenses: React.FC = () => {
         description: constants.toastSuccess.description,
       })
       formRef.current?.reset()
+      onRequestClose()
     } catch (err) {
       if (err instanceof Yup.ValidationError) {
         const errors = getValidationErrors(err)
@@ -129,9 +119,6 @@ const Expenses: React.FC = () => {
     }
   }, [addToast, updateBalance])
 
-  const dateMax = format(endOfDay(new Date()), constants.dateFormat)
-  const dateMin = format(startOfMonth(new Date()), constants.dateFormat)
-
   useEffect(() => {
     async function loadExpenses(): Promise<void> {
       await updateBalance()
@@ -140,47 +127,32 @@ const Expenses: React.FC = () => {
     loadExpenses()
   }, [updateBalance, loadCategories])
 
+  const checkboxOptions: CheckboxOption[] = constants.createExpenseCheckboxOptions
+
+  const dateMax = format(endOfDay(new Date()), constants.dateFormat)
+  const dateMin = format(startOfMonth(new Date()), constants.dateFormat)
+
   return (
-    <>
-      <Header onOpenNewExpenseModal={handleOpenNewExpenseModal} current="CreateExpense" />
-      <Container>
-        <CardContainer>
-          <Card>
-            <header>
-              <p>Incomes</p>
-              <img src={income} alt="Income" />
-            </header>
-            <h1>{balance.paying}</h1>
-          </Card>
-          <Card>
-            <header>
-              <p>Outcomes</p>
-              <img src={outcome} alt="Outcome" />
-            </header>
-            <h1>{balance.payed}</h1>
-          </Card>
-          <Card total>
-            <header>
-              <p>Balance</p>
-              <img src={total} alt="Saldo" />
-            </header>
-            <h1>{balance.total}</h1>
-          </Card>
-        </CardContainer>
-        <FormContainer>
-          <Form ref={formRef} onSubmit={handleSubmit}>
-            <h1>Create Expense</h1>
-            <Input icon={MdTitle} name="description" placeholder="Expense description" />
-            <Select icon={HiOutlineSelector} name="category" options={categories} placeholder="Select a category" />
-            <Input icon={MdDateRange} name="date" type="date" max={dateMax} min={dateMin} isClickable />
-            <Input icon={HiOutlineCurrencyDollar} name="amount" placeholder="99,99" isCurrency />
-            <CheckboxInput icon={IoMdCheckboxOutline} name="options" options={checkboxOptions} />
-            <Button type="submit">Save</Button>
-          </Form>
-        </FormContainer>
-      </Container>
-    </>
+    <Modal
+      isOpen={isOpen}
+      onRequestClose={onRequestClose}
+      overlayClassName="react-modal-overlay"
+      className="react-modal-content"
+    >
+      <button type="button" onClick={onRequestClose} className="react-modal-close">
+        <img src={closeImg} alt="Close Modal" />
+      </button>
+      <FormContainer>
+        <Form ref={formRef} onSubmit={handleSubmit}>
+          <h2>Create Expense</h2>
+          <Input icon={MdTitle} name="description" placeholder="Expense description" />
+          <Select icon={HiOutlineSelector} name="category" options={categories} />
+          <Input icon={MdDateRange} name="date" type="date" max={dateMax} min={dateMin} isClickable />
+          <Input icon={HiOutlineCurrencyDollar} name="amount" placeholder="99,99" isCurrency />
+          <CheckboxInput icon={IoMdCheckboxOutline} name="options" options={checkboxOptions} />
+          <Button type="submit">Save</Button>
+        </Form>
+      </FormContainer>
+    </Modal>
   )
 }
-
-export default Expenses

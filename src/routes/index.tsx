@@ -11,7 +11,7 @@ const Routes: React.FC = () => (
     <Route path="/" exact component={SignIn} />
     <Route path="/sharedDashboard" component={SharedDashboard} isPrivate />
     <Route path="/personalDashboard" component={PersonalDashboard} isPrivate />
-    <Route path="/expenses" component={Expenses} isPrivate />
+    {/* <Route path="/expenses" component={Expenses} isPrivate /> */}
   </Switch>
 )
 
