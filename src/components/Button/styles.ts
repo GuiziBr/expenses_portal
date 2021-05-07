@@ -1,5 +1,4 @@
 import styled from 'styled-components'
-import { shade } from 'polished'
 
 export const Container = styled.button`
   background: var(--light-orange);
@@ -11,8 +10,8 @@ export const Container = styled.button`
   width: 100%;
   font-weight: 500;
   margin-top: 1rem;
-  transition: background-color 0.2s;
+  transition: filter 0.2s;
   &:hover {
-    background: ${shade(0.2, '#ff9000')}
+    filter: brightness(0.7);
   }
 `

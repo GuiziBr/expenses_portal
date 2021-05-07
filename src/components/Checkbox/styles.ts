@@ -8,7 +8,6 @@ export const Container = styled.div`
   width: 100%;
   display: flex;
   color: var(--iron-gray);
-
   & + div {
     margin-top: .5rem;
   }
@@ -21,6 +20,6 @@ export const Container = styled.div`
     transform: scale(1.1);
   }
   svg {
-      margin-right: 1rem;
-    }
+    margin-right: 1rem;
+  }
 `

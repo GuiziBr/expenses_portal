@@ -1,24 +1,26 @@
 import { FormHandles } from '@unform/core'
 import { Form } from '@unform/web'
+import { AxiosRequestConfig } from 'axios'
 import { endOfDay, format, startOfMonth } from 'date-fns'
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { HiOutlineCurrencyDollar, HiOutlineSelector } from 'react-icons/hi'
 import { IoMdCheckboxOutline } from 'react-icons/io'
 import { MdDateRange, MdTitle } from 'react-icons/md'
 import Modal from 'react-modal'
 import * as Yup from 'yup'
+import { assemblePayload } from '../../assemblers/expensesAssembler'
+import closeImg from '../../assets/close.svg'
 import constants from '../../constants'
-import { useBalance } from '../../hooks/balance'
+import { useExpense } from '../../hooks/expense'
 import { useToast } from '../../hooks/toast'
+import { newExpenseSchema } from '../../schemas'
 import api from '../../services/apiClient'
-import { formatAmount, unformatAmount } from '../../utils/formatAmount'
 import getValidationErrors from '../../utils/getValidationErrors'
 import Button from '../Button'
 import CheckboxInput from '../Checkbox'
 import Input from '../Input'
 import Select from '../Select'
 import { FormContainer } from './styles'
-import closeImg from '../../assets/close.svg'
 
 interface NewExpenseModalProps {
   isOpen: boolean
@@ -36,12 +38,6 @@ interface CheckboxOption {
   label: string
 }
 
-interface Balance {
-  paying: string
-  payed: string
-  total: string
-}
-
 interface Expense {
   description: string
   category: string
@@ -52,8 +48,8 @@ interface Expense {
 
 export function NewExpenseModal({ isOpen, onRequestClose }: NewExpenseModalProps) {
   const formRef = useRef<FormHandles>(null)
+  const { createExpense } = useExpense()
   const { addToast } = useToast()
-  const [balance, setBalance] = useState<Balance>({} as Balance)
   const [categories, setCategories] = useState<Category[]>([])
 
   const loadCategories = useCallback(async () => {
@@ -63,41 +59,14 @@ export function NewExpenseModal({ isOpen, onRequestClose }: NewExpenseModalProps
     setCategories(data)
   }, [])
 
-  const updateBalance = useCallback(async () => {
-    const balanceString = sessionStorage.getItem(constants.sessionStorage.balance)
-    if (balanceString) {
-      const parsedBalance = JSON.parse(balanceString)
-      const updatedBalance = {
-        paying: formatAmount(parsedBalance.paying),
-        payed: formatAmount(parsedBalance.payed),
-        total: formatAmount(parsedBalance.total),
-      }
-      setBalance(updatedBalance)
-    }
-  }, [])
-
   const handleSubmit = useCallback(async (data: Expense) => {
     try {
       formRef.current?.setErrors({})
-      const schema = Yup.object().shape({
-        description: Yup.string().required(constants.schemaValidationError.description),
-        category: Yup.string().required(constants.schemaValidationError.category),
-        date: Yup.string().required(constants.schemaValidationError.date),
-        amount: Yup.string().required(constants.schemaValidationError.amount),
-      })
-      await schema.validate(data, { abortEarly: false })
+      await newExpenseSchema.validate(data, { abortEarly: false })
       const token = sessionStorage.getItem(constants.sessionStorage.token)
-      const config = { headers: { Authorization: `Bearer ${token}` } }
-      const payload = {
-        description: data.description,
-        category_id: data.category,
-        date: data.date,
-        amount: unformatAmount(data.amount),
-        personal: data.options[0] === constants.expenseModel.personal,
-        split: data.options[0] === constants.expenseModel.split,
-      }
-      await api.post('/expenses', payload, config)
-      await updateBalance()
+      const config: AxiosRequestConfig = { headers: { Authorization: `Bearer ${token}` } }
+      const payload = assemblePayload(data)
+      await createExpense(payload, config)
       addToast({
         type: 'success',
         title: constants.toastSuccess.title,
@@ -117,15 +86,14 @@ export function NewExpenseModal({ isOpen, onRequestClose }: NewExpenseModalProps
         description: constants.toastError.description,
       })
     }
-  }, [addToast, updateBalance])
+  }, [addToast])
 
   useEffect(() => {
     async function loadExpenses(): Promise<void> {
-      await updateBalance()
       await loadCategories()
     }
     loadExpenses()
-  }, [updateBalance, loadCategories])
+  }, [])
 
   const checkboxOptions: CheckboxOption[] = constants.createExpenseCheckboxOptions
 

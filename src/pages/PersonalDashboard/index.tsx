@@ -16,6 +16,7 @@ import constants from '../../constants'
 import api from '../../services/apiClient'
 import { formatAmount } from '../../utils/formatAmount'
 import { Card, CardContainer, Container, FormContainer, TableContainer } from './styles'
+import { useExpense } from '../../hooks/expense'
 
 interface Expense {
   id: string;
@@ -35,22 +36,15 @@ interface Request {
 const PersonalDashboard: React.FC = () => {
   const formRef = useRef<FormHandles>(null)
   const [expenses, setExpenses] = useState<Expense[]>([])
-  const [balance, setBalance] = useState<String>()
   const [pages, setPages] = useState([])
   const [currentPage, setCurrentPage] = useState(1)
-  const [currentDate, setCurrentDate] = useState<string>('2021-05')
+  const [currentDate, setCurrentDate] = useState<string>()
+  const { balance, getBalance } = useExpense()
+  const defaultDate = format(new Date(), constants.monthDateFormat)
 
   Modal.setAppElement('#root')
 
   const [isNewExpenseModalOpen, setIsNewExpenseModalOpen] = useState(false)
-
-  function handleOpenNewExpenseModal() {
-    setIsNewExpenseModalOpen(true)
-  }
-
-  function handleCloseNewExpenseModal() {
-    setIsNewExpenseModalOpen(false)
-  }
 
   const updatePageNumbers = (totalCount: number) => {
     const totalPages: Number = Math.ceil(totalCount / constants.pageLimit)
@@ -75,9 +69,18 @@ const PersonalDashboard: React.FC = () => {
       .map(assemblePersonalExpense)
     updatePageNumbers(headers[constants.headers.totalCount])
     setExpenses(expenseList)
-    setBalance(formatAmount(data.balance))
     setCurrentDate(date)
+    await getBalance(date)
   }, [currentPage])
+
+  function handleOpenNewExpenseModal() {
+    setIsNewExpenseModalOpen(true)
+  }
+
+  async function handleCloseNewExpenseModal() {
+    setIsNewExpenseModalOpen(false)
+    await loadExpenses()
+  }
 
   const handleSubmit = useCallback(async (data?: Request) => {
     await loadExpenses(data?.date)
@@ -87,15 +90,14 @@ const PersonalDashboard: React.FC = () => {
   useEffect(() => {
     async function loadDashboard(): Promise<void> {
       await loadExpenses()
+      await getBalance()
     }
     loadDashboard()
   }, [loadExpenses])
 
-  const defaultDate = format(new Date(), constants.monthDateFormat)
-
   return (
     <>
-      <Header onOpenNewExpenseModal={handleOpenNewExpenseModal} current="PersonalDashboard" />
+      <Header current="PersonalDashboard" />
       <NewExpenseModal isOpen={isNewExpenseModalOpen} onRequestClose={handleCloseNewExpenseModal} />
       <Container>
         <CardContainer>
@@ -104,10 +106,11 @@ const PersonalDashboard: React.FC = () => {
               <p>Balance</p>
               <img src={total} alt="Balance" />
             </header>
-            <h1>{balance}</h1>
+            <h1>{formatAmount(balance.personalBalance)}</h1>
           </Card>
         </CardContainer>
         <FormContainer>
+          <Button type="button" onClick={handleOpenNewExpenseModal}>Create Expense</Button>
           <Form ref={formRef} onSubmit={handleSubmit}>
             <Input icon={MdDateRange} name="date" type="month" defaultValue={defaultDate} max={defaultDate} />
             <Button type="submit">Search</Button>

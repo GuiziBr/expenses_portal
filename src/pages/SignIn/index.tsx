@@ -10,6 +10,7 @@ import Input from '../../components/Input'
 import constants from '../../constants'
 import { useAuth } from '../../hooks/auth'
 import { useToast } from '../../hooks/toast'
+import { signInSchema } from '../../schemas'
 import getValidationErrors from '../../utils/getValidationErrors'
 import { AnimationContainer, Background, Container, Content } from './styles'
 
@@ -26,11 +27,7 @@ const SignIn: React.FC = () => {
   const handleSubmit = useCallback(async (data: SignInFormData) => {
     try {
       formRef.current?.setErrors({})
-      const schema = Yup.object().shape({
-        email: Yup.string().required(constants.schemaValidationError.email).email(constants.schemaValidationError.emailFormat),
-        password: Yup.string().required(constants.schemaValidationError.password),
-      })
-      await schema.validate(data, { abortEarly: false })
+      await signInSchema.validate(data, { abortEarly: false })
       await signIn({ email: data.email, password: data.password })
       history.push('/sharedDashboard')
     } catch (err) {

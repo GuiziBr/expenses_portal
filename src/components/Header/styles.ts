@@ -17,33 +17,21 @@ export const Container = styled.div<ContainerProps>`
     justify-content: space-between;
     nav {
       display: flex;
-      /* justify-content: space-between; */
+      justify-content: space-between;
       a {
-          color: var(--white);
-          text-decoration: none;
-          font-size: 1rem;
-          transition: opacity 0.2s;
-          & + a {
-            margin-left: 2rem;
-          }
-          &:hover {
-            opacity: 0.6;
-          }
-          &.active {
-            color: var(--orange);
-          }
-      }
-      button {
-        height: 21px;
-        width: 130px;
-        padding: 0;
-        background: transparent;
-        margin-left: 2rem;
-        margin-top: 0;
         color: var(--white);
+        text-decoration: none;
+        font-size: 1rem;
+        transition: opacity 0.2s;
+        & + a {
+          margin-left: 2rem;
+        }
         &:hover {
           opacity: 0.6;
-          background: transparent;
+        }
+        &.active {
+          color: var(--orange);
+          pointer-events: none;
         }
       }
     }

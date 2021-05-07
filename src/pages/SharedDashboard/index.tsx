@@ -1,5 +1,6 @@
 import { FormHandles } from '@unform/core'
 import { Form } from '@unform/web'
+import { AxiosRequestConfig } from 'axios'
 import { format } from 'date-fns'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { MdDateRange } from 'react-icons/md'
@@ -14,6 +15,7 @@ import Input from '../../components/Input'
 import { NewExpenseModal } from '../../components/NewExpenseModal'
 import Pagination from '../../components/Pagination'
 import constants from '../../constants'
+import { useExpense } from '../../hooks/expense'
 import api from '../../services/apiClient'
 import { formatAmount } from '../../utils/formatAmount'
 import { Card, CardContainer, Container, FormContainer, TableContainer } from './styles'
@@ -29,12 +31,6 @@ interface Expense {
   date: Date;
 }
 
-interface Balance {
-  paying: string,
-  payer: string,
-  total: string
-}
-
 interface Request {
   date: string
 }
@@ -42,21 +38,15 @@ interface Request {
 const SharedDashboard: React.FC = () => {
   const formRef = useRef<FormHandles>(null)
   const [expenses, setExpenses] = useState<Expense[]>([])
-  const [balance, setBalance] = useState<Balance>({} as Balance)
   const [pages, setPages] = useState([])
   const [currentPage, setCurrentPage] = useState(1)
   const [currentDate, setCurrentDate] = useState<string>()
   const [isNewExpenseModalOpen, setIsNewExpenseModalOpen] = useState(false)
+  const defaultDate = format(new Date(), constants.monthDateFormat)
+
+  const { balance, getBalance } = useExpense()
 
   Modal.setAppElement('#root')
-
-  function handleOpenNewExpenseModal() {
-    setIsNewExpenseModalOpen(true)
-  }
-
-  function handleCloseNewExpenseModal() {
-    setIsNewExpenseModalOpen(false)
-  }
 
   const updatePageNumbers = (totalCount: number) => {
     const totalPages: Number = Math.ceil(totalCount / constants.pageLimit)
@@ -71,7 +61,7 @@ const SharedDashboard: React.FC = () => {
 
   const loadExpenses = useCallback(async (date: string = currentDate) => {
     const token = sessionStorage.getItem(constants.sessionStorage.token)
-    const config = {
+    const config: AxiosRequestConfig = {
       headers: { Authorization: `Bearer ${token}` },
       params: { date, offset: getOffset(), limit: constants.pageLimit },
     }
@@ -80,16 +70,20 @@ const SharedDashboard: React.FC = () => {
       .sort((a: { date: string }, b: { date: string }) => ((a.date < b.date) ? 1 : -1))
       .map(assembleExpense)
 
-    const updatedBalance = {
-      paying: formatAmount(data.paying),
-      payer: formatAmount(data.payed),
-      total: formatAmount(data.total),
-    }
     updatePageNumbers(headers[constants.headers.totalCount])
     setExpenses(expenseList)
-    setBalance(updatedBalance)
     setCurrentDate(date)
+    await getBalance(date)
   }, [currentPage])
+
+  function handleOpenNewExpenseModal() {
+    setIsNewExpenseModalOpen(true)
+  }
+
+  async function handleCloseNewExpenseModal() {
+    setIsNewExpenseModalOpen(false)
+    await loadExpenses()
+  }
 
   const handleSubmit = useCallback(async (data?: Request) => {
     await loadExpenses(data?.date)
@@ -99,15 +93,14 @@ const SharedDashboard: React.FC = () => {
   useEffect(() => {
     async function loadDashboard(): Promise<void> {
       await loadExpenses()
+      await getBalance()
     }
     loadDashboard()
   }, [loadExpenses])
 
-  const defaultDate = format(new Date(), constants.monthDateFormat)
-
   return (
     <>
-      <Header onOpenNewExpenseModal={handleOpenNewExpenseModal} current="SharedDashboard" />
+      <Header current="SharedDashboard" />
       <NewExpenseModal isOpen={isNewExpenseModalOpen} onRequestClose={handleCloseNewExpenseModal} />
       <Container>
         <CardContainer>
@@ -116,24 +109,25 @@ const SharedDashboard: React.FC = () => {
               <p>Incomes</p>
               <img src={income} alt="Income" />
             </header>
-            <h1>{balance.paying}</h1>
+            <h1>{formatAmount(balance.sharedBalance?.paying)}</h1>
           </Card>
           <Card>
             <header>
               <p>Outcomes</p>
               <img src={outcome} alt="Outcome" />
             </header>
-            <h1>{balance.payer}</h1>
+            <h1>{formatAmount(balance.sharedBalance?.payed)}</h1>
           </Card>
           <Card total>
             <header>
               <p>Balance</p>
               <img src={total} alt="Balance" />
             </header>
-            <h1>{balance.total}</h1>
+            <h1>{formatAmount(balance.sharedBalance?.total)}</h1>
           </Card>
         </CardContainer>
         <FormContainer>
+          <Button type="button" onClick={handleOpenNewExpenseModal}>Create Expense</Button>
           <Form ref={formRef} onSubmit={handleSubmit}>
             <Input icon={MdDateRange} name="date" type="month" defaultValue={defaultDate} max={defaultDate} />
             <Button type="submit">Search</Button>
