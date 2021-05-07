@@ -16,6 +16,9 @@ export const PaginationButton = styled.div`
   display: flex;
 `
 export const PaginationItem = styled.div`
+  :hover {
+    filter: brightness(0.7);
+  }
   ${({ isDisabled }: PaginationItemProps) => isDisabled && css`
     pointer-events: none;
     opacity: .5;
@@ -25,5 +28,7 @@ export const PaginationItem = styled.div`
   ${({ isSelected }: PaginationItemProps) => isSelected && css`
     background: var(--orange);
     border-radius: .3rem;
+    pointer-events: none;
   `}
+
 `

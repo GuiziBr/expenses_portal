@@ -32,7 +32,6 @@ export const Card = styled.div`
     display: flex;
     align-items: center;
     justify-content: space-between;
-
     p {
       font-size: 1rem;
     }
@@ -49,21 +48,27 @@ export const FormContainer = styled.section`
   margin-top: 3rem;
   width: 100%;
   height: 100%;
+  display: flex;
+  justify-content: space-between;
+  button:nth-child(1) {
+    width: 9.5rem;
+    margin: 0;
+  }
+  button {
+    width: 5.5rem;
+    height: 2.5rem;
+    margin: 0 0 0 .3rem;
+  }
   form {
     display: flex;
     flex-direction: row;
     justify-content: flex-end;
     align-items: center;
     div {
-      height: 2.5rem;
+      height: 2.55rem;
       width: 15rem;
       margin-right: .3rem;
       border-color: var(--container-background);
-    }
-    button {
-      width: 5.5rem;
-      height: 2.5rem;
-      margin: 0 .3rem;
     }
   }
 `

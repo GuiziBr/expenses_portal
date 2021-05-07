@@ -17,7 +17,6 @@ const Header: React.FC<HeaderProps> = ({ size = 'large', current }) => {
         <nav>
           <Link className={getClassName('SharedDashboard')} to="/sharedDashboard">Shared Dashboard</Link>
           <Link className={getClassName('PersonalDashboard')} to="/personalDashboard">Personal Dashboard</Link>
-          <Link className={getClassName('CreateExpense')} to="/expenses">Create Expense</Link>
         </nav>
         <nav>
           <Link to="/" onClick={signOut}>Logout</Link>

@@ -27,8 +27,8 @@ export const Container = styled.div<ContainerProps>`
     color: var(--light-orange);
   `}
   & + div {
-      margin-top: .5rem;
-    }
+    margin-top: .5rem;
+  }
   select {
     flex: 1;
     background: transparent;
@@ -39,8 +39,8 @@ export const Container = styled.div<ContainerProps>`
     }
   }
   svg {
-      margin-right: 1rem;
-    }
+    margin-right: 1rem;
+  }
 `
 
 export const Error = styled(Tooltip)`
@@ -48,8 +48,8 @@ export const Error = styled(Tooltip)`
   margin-left: 1rem;
   display: flex;
   svg {
-      margin: 0;
-    }
+    margin: 0;
+  }
   span {
     background: var(--red);
     color: var(--white);

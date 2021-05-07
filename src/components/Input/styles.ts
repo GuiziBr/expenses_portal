@@ -17,6 +17,7 @@ export const Container = styled.div<ContainerProps>`
   display: flex;
   align-items: center;
   color: var(--iron-gray);
+  transition: border-color 0.3s;
   ${(props) => props.isErrored && css`
     border-color: var(--red);
   `}
@@ -40,16 +41,16 @@ export const Container = styled.div<ContainerProps>`
     }
   }
   svg {
-      margin-right: 1rem;
-    }
+    margin-right: 1rem;
+  }
 `
 export const Error = styled(Tooltip)`
   height: 1.25rem;
   margin-left: 1rem;
   display: flex;
   svg {
-      margin: 0;
-    }
+    margin: 0;
+  }
   span {
     background: var(--red);
     color: var(--white);

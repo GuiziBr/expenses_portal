@@ -16,6 +16,8 @@ export const Container = styled.div<ContainerProps>`
     align-items: center;
     justify-content: space-between;
     nav {
+      display: flex;
+      justify-content: space-between;
       a {
         color: var(--white);
         text-decoration: none;
@@ -29,6 +31,7 @@ export const Container = styled.div<ContainerProps>`
         }
         &.active {
           color: var(--orange);
+          pointer-events: none;
         }
       }
     }

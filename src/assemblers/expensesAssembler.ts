@@ -1,5 +1,5 @@
 import constants from '../constants'
-import { formatAmount } from '../utils/formatAmount'
+import { formatAmount, unformatAmount } from '../utils/formatAmount'
 import formatDate from '../utils/formatDate'
 
 interface Expense {
@@ -24,6 +24,14 @@ interface FormattedExpense {
   date: Date
 }
 
+interface Payload {
+  description: string
+  category: string
+  date: string
+  amount: string
+  options: [string]
+}
+
 export const assembleExpense = (expense: Expense): FormattedExpense => ({
   id: expense.id,
   description: expense.description,
@@ -43,4 +51,13 @@ export const assemblePersonalExpense = (expense: Omit<Expense, 'type'>): Omit<Fo
   formattedAmount: formatAmount(expense.amount),
   formattedDate: formatDate(expense.date),
   date: expense.date,
+})
+
+export const assemblePayload = (data: Payload) => ({
+  description: data.description,
+  category_id: data.category,
+  date: data.date,
+  amount: unformatAmount(data.amount),
+  personal: data.options[0] === constants.expenseModel.personal,
+  split: data.options[0] === constants.expenseModel.split,
 })
