@@ -57,11 +57,11 @@ const PersonalDashboard: React.FC = () => {
 
   const getOffset = () => (currentPage * constants.pageLimit) - constants.pageLimit
 
-  const loadExpenses = useCallback(async (date: string = currentDate) => {
+  const loadExpenses = useCallback(async (date?: string) => {
     const token = sessionStorage.getItem(constants.sessionStorage.token)
     const config: AxiosRequestConfig = {
       headers: { Authorization: `Bearer ${token}` },
-      params: { date, offset: getOffset(), limit: constants.pageLimit },
+      params: { date: date || currentDate, offset: getOffset(), limit: constants.pageLimit },
     }
     const { data, headers } = await api.get('/expenses/personal', config)
     const expenseList = data
@@ -69,8 +69,10 @@ const PersonalDashboard: React.FC = () => {
       .map(assemblePersonalExpense)
     updatePageNumbers(headers[constants.headers.totalCount])
     setExpenses(expenseList)
-    setCurrentDate(date)
-    await getBalance(date)
+    if (date) {
+      setCurrentDate(date)
+      await getBalance(date)
+    }
   }, [currentPage])
 
   function handleOpenNewExpenseModal() {
@@ -82,15 +84,15 @@ const PersonalDashboard: React.FC = () => {
     await loadExpenses()
   }
 
-  const handleSubmit = useCallback(async (data?: Request) => {
-    await loadExpenses(data?.date)
+  const handleSubmit = useCallback(async (data: Request) => {
+    await loadExpenses(data.date)
     setCurrentPage(1)
   }, [])
 
   useEffect(() => {
     async function loadDashboard(): Promise<void> {
       await loadExpenses()
-      await getBalance()
+      await getBalance(currentDate)
     }
     loadDashboard()
   }, [loadExpenses])
