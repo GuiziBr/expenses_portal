@@ -13,20 +13,21 @@ import Input from '../../components/Input'
 import { NewExpenseModal } from '../../components/NewExpenseModal'
 import Pagination from '../../components/Pagination'
 import constants from '../../constants'
+import { useExpense } from '../../hooks/expense'
 import api from '../../services/apiClient'
 import { formatAmount } from '../../utils/formatAmount'
 import { Card, CardContainer, Container, FormContainer, TableContainer } from './styles'
-import { useExpense } from '../../hooks/expense'
 
 interface Expense {
-  id: string;
-  description: string;
-  category: string,
-  amount: number;
-  formattedAmount: string;
-  formattedDate: string;
-  type: 'income' | 'outcome';
-  date: Date;
+  id: string
+  description: string
+  category: string
+  amount: number
+  formattedAmount: string
+  formattedDate: string
+  type: 'income' | 'outcome'
+  date: Date
+  paymentType: string
 }
 
 interface Request {
@@ -125,6 +126,7 @@ const PersonalDashboard: React.FC = () => {
                 <th>Expense</th>
                 <th>Category</th>
                 <th>Amount</th>
+                <th>Payment</th>
                 <th>Date</th>
               </tr>
             </thead>
@@ -134,6 +136,7 @@ const PersonalDashboard: React.FC = () => {
                   <td className="description">{expense.description}</td>
                   <td>{expense.category}</td>
                   <td className="income">{expense.formattedAmount}</td>
+                  <td>{expense.paymentType}</td>
                   <td>{expense.formattedDate}</td>
                 </tr>
               ))}

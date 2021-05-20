@@ -32,6 +32,11 @@ interface Category {
   description: string
 }
 
+interface PaymentType {
+  id: string
+  description: string
+}
+
 interface CheckboxOption {
   id: string
   value: string
@@ -44,6 +49,7 @@ interface Expense {
   date: string
   amount: string
   options: [string]
+  paymentType: string
 }
 
 export function NewExpenseModal({ isOpen, onRequestClose }: NewExpenseModalProps) {
@@ -51,12 +57,22 @@ export function NewExpenseModal({ isOpen, onRequestClose }: NewExpenseModalProps
   const { createExpense } = useExpense()
   const { addToast } = useToast()
   const [categories, setCategories] = useState<Category[]>([])
+  const [paymentTypes, setPaymentTypes] = useState<PaymentType[]>([])
+
+  const sortList = (data:[], field: string) => data.sort((a, b) => ((a[field] > b[field]) ? 1 : -1))
 
   const loadCategories = useCallback(async () => {
     const token = sessionStorage.getItem(constants.sessionStorage.token)
-    const config = { headers: { Authorization: `Bearer ${token}` } }
+    const config = { headers: { Authorization: `Bearer ${token}` }}
     const { data } = await api.get('/categories', config)
-    setCategories(data)
+    setCategories(sortList(data, 'description'))
+  }, [])
+
+  const loadPaymentTypes = useCallback(async () => {
+    const token = sessionStorage.getItem(constants.sessionStorage.token)
+    const config = { headers: { Authorization: `Bearer ${token}` }}
+    const { data } = await api.get('/paymentType', config)
+    setPaymentTypes(sortList(data, 'description'))
   }, [])
 
   const handleSubmit = useCallback(async (data: Expense) => {
@@ -64,7 +80,7 @@ export function NewExpenseModal({ isOpen, onRequestClose }: NewExpenseModalProps
       formRef.current?.setErrors({})
       await newExpenseSchema.validate(data, { abortEarly: false })
       const token = sessionStorage.getItem(constants.sessionStorage.token)
-      const config: AxiosRequestConfig = { headers: { Authorization: `Bearer ${token}` } }
+      const config: AxiosRequestConfig = { headers: { Authorization: `Bearer ${token}` }}
       const payload = assemblePayload(data)
       await createExpense(payload, config)
       addToast({
@@ -90,7 +106,10 @@ export function NewExpenseModal({ isOpen, onRequestClose }: NewExpenseModalProps
 
   useEffect(() => {
     async function loadExpenses(): Promise<void> {
-      await loadCategories()
+      await Promise.all([
+        loadCategories(),
+        loadPaymentTypes(),
+      ])
     }
     loadExpenses()
   }, [])
@@ -114,7 +133,8 @@ export function NewExpenseModal({ isOpen, onRequestClose }: NewExpenseModalProps
         <Form ref={formRef} onSubmit={handleSubmit}>
           <h2>Create Expense</h2>
           <Input icon={MdTitle} name="description" placeholder="Expense description" />
-          <Select icon={HiOutlineSelector} name="category" options={categories} />
+          <Select icon={HiOutlineSelector} name="category" options={categories} placeholder="Select category" />
+          <Select icon={HiOutlineSelector} name="paymentType" options={paymentTypes} placeholder="Select payment Type" />
           <Input icon={MdDateRange} name="date" type="date" max={dateMax} min={dateMin} isClickable />
           <Input icon={HiOutlineCurrencyDollar} name="amount" placeholder="99,99" isCurrency />
           <CheckboxInput icon={IoMdCheckboxOutline} name="options" options={checkboxOptions} />

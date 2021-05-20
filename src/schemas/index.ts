@@ -11,4 +11,5 @@ export const newExpenseSchema = Yup.object().shape({
   category: Yup.string().required(constants.schemaValidationError.category),
   date: Yup.string().required(constants.schemaValidationError.date),
   amount: Yup.string().required(constants.schemaValidationError.amount),
+  paymentType: Yup.string().required(constants.schemaValidationError.paymentType),
 })
