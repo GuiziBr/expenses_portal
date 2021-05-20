@@ -11,6 +11,7 @@ interface Expense {
   formattedDate: string
   type: 'income' | 'outcome'
   date: Date
+  'payment_type': { description: string }
 }
 
 interface FormattedExpense {
@@ -22,6 +23,7 @@ interface FormattedExpense {
   formattedDate: string
   type: 'income' | 'outcome'
   date: Date
+  paymentType: string
 }
 
 interface Payload {
@@ -30,6 +32,7 @@ interface Payload {
   date: string
   amount: string
   options: [string]
+  paymentType: string
 }
 
 export const assembleExpense = (expense: Expense): FormattedExpense => ({
@@ -41,6 +44,7 @@ export const assembleExpense = (expense: Expense): FormattedExpense => ({
   formattedDate: formatDate(expense.date),
   type: expense.type,
   date: expense.date,
+  paymentType: expense.payment_type.description,
 })
 
 export const assemblePersonalExpense = (expense: Omit<Expense, 'type'>): Omit<FormattedExpense, 'type'> => ({
@@ -51,6 +55,7 @@ export const assemblePersonalExpense = (expense: Omit<Expense, 'type'>): Omit<Fo
   formattedAmount: formatAmount(expense.amount),
   formattedDate: formatDate(expense.date),
   date: expense.date,
+  paymentType: expense.payment_type.description,
 })
 
 export const assemblePayload = (data: Payload) => ({
@@ -60,4 +65,5 @@ export const assemblePayload = (data: Payload) => ({
   amount: unformatAmount(data.amount),
   personal: data.options[0] === constants.expenseModel.personal,
   split: data.options[0] === constants.expenseModel.split,
+  payment_type_id: data.paymentType,
 })

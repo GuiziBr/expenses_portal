@@ -21,14 +21,15 @@ import { formatAmount } from '../../utils/formatAmount'
 import { Card, CardContainer, Container, FormContainer, TableContainer } from './styles'
 
 interface Expense {
-  id: string;
-  description: string;
-  category: string,
-  amount: number;
-  formattedAmount: string;
-  formattedDate: string;
-  type: 'income' | 'outcome';
-  date: Date;
+  id: string
+  description: string
+  category: string
+  amount: number
+  formattedAmount: string
+  formattedDate: string
+  type: 'income' | 'outcome'
+  date: Date
+  paymentType: string
 }
 
 interface Request {
@@ -142,6 +143,7 @@ const SharedDashboard: React.FC = () => {
                 <th>Expense</th>
                 <th>Category</th>
                 <th>Amount</th>
+                <th>Payment</th>
                 <th>Date</th>
               </tr>
             </thead>
@@ -151,6 +153,7 @@ const SharedDashboard: React.FC = () => {
                   <td className="description">{expense.description}</td>
                   <td>{expense.category}</td>
                   <td className={expense.type}>{expense.formattedAmount}</td>
+                  <td>{expense.paymentType}</td>
                   <td>{expense.formattedDate}</td>
                 </tr>
               ))}

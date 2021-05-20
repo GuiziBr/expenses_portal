@@ -4,13 +4,13 @@ import { IconBaseProps } from 'react-icons/lib'
 import { Container } from './styles'
 
 interface CheckboxProps extends InputHTMLAttributes<HTMLInputElement> {
-  name: string;
+  name: string
   icon?: React.ComponentType<IconBaseProps>
   options: {
     id: string
     value: string
     label: string
-  }[];
+  }[]
 }
 
 const CheckboxInput: React.FC<CheckboxProps> = ({ name, options, icon: Icon, ...rest }) => {

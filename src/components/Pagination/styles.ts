@@ -6,7 +6,7 @@ interface PaginationItemProps {
 }
 
 export const Container = styled.div`
-  margin-top: 1rem;
+  margin-top: 1.8rem;
   display: flex;
   width: 100%;
   justify-content: center;
@@ -30,5 +30,4 @@ export const PaginationItem = styled.div`
     border-radius: .3rem;
     pointer-events: none;
   `}
-
 `

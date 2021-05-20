@@ -1,6 +1,6 @@
 import { AxiosRequestConfig } from 'axios'
 import { format } from 'date-fns'
-import React, { createContext, useCallback, useContext, useEffect, useState } from 'react'
+import React, { createContext, useCallback, useContext, useState } from 'react'
 import constants from '../constants'
 import api from '../services/apiClient'
 
@@ -36,9 +36,9 @@ export const ExpenseProvider: React.FC = ({ children }) => {
 
   const getBalance = useCallback(async (date: string = defaultDate) => {
     const token = sessionStorage.getItem(constants.sessionStorage.token)
-    const config: AxiosRequestConfig = { headers: { Authorization: `Bearer ${token}` }, params: { date } }
+    const config: AxiosRequestConfig = { headers: { Authorization: `Bearer ${token}` }, params: { date }}
     const response = await api.get('/balance', config)
-    const { data: { personalBalance, sharedBalance } } = response
+    const { data: { personalBalance, sharedBalance }} = response
     setBalance({ personalBalance, sharedBalance })
   }, [])
 

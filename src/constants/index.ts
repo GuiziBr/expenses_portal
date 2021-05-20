@@ -24,6 +24,7 @@ const constants = {
     email: 'E-mail is required',
     emailFormat: 'Invalid e-mail format',
     password: 'Password is required',
+    paymentType: 'Payment type is required',
   },
   toastSuccess: {
     title: 'Create expense',
