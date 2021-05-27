@@ -10,7 +10,8 @@ import Modal from 'react-modal'
 import * as Yup from 'yup'
 import { assemblePayload } from '../../assemblers/expensesAssembler'
 import closeImg from '../../assets/close.svg'
-import constants from '../../constants'
+import constants from '../../constants/constants'
+import errors from '../../constants/errors'
 import { useExpense } from '../../hooks/expense'
 import { useToast } from '../../hooks/toast'
 import { newExpenseSchema } from '../../schemas'
@@ -92,14 +93,16 @@ export function NewExpenseModal({ isOpen, onRequestClose }: NewExpenseModalProps
       onRequestClose()
     } catch (err) {
       if (err instanceof Yup.ValidationError) {
-        const errors = getValidationErrors(err)
-        formRef.current?.setErrors(errors)
+        const error = getValidationErrors(err)
+        formRef.current?.setErrors(error)
         return
       }
       addToast({
         type: 'error',
-        title: constants.toastError.title,
-        description: constants.toastError.description,
+        title: errors.toastErrors.title.creation,
+        description: err.response.data.message === errors.alreadyExistingExpense
+          ? errors.toastErrors.description.existingExpense
+          : errors.toastErrors.description.creation,
       })
     }
   }, [addToast])

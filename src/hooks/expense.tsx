@@ -1,7 +1,8 @@
 import { AxiosRequestConfig } from 'axios'
 import { format } from 'date-fns'
 import React, { createContext, useCallback, useContext, useState } from 'react'
-import constants from '../constants'
+import constants from '../constants/constants'
+import errors from '../constants/errors'
 import api from '../services/apiClient'
 
 interface BalanceState {
@@ -55,6 +56,6 @@ export const ExpenseProvider: React.FC = ({ children }) => {
 
 export function useExpense(): ExpenseContextData {
   const context = useContext(BalanceContext)
-  if (!context) throw new Error(constants.providerErrorMsg('useExpense', 'ExpenseProvider'))
+  if (!context) throw new Error(errors.providerErrorMsg('useExpense', 'ExpenseProvider'))
   return context
 }
