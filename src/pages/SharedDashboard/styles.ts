@@ -115,9 +115,3 @@ export const TableContainer = styled.section`
     }
   }
 `
-export const Pagination = styled.div`
-  margin-top: 2rem;
-  display: flex;
-  width: 100%;
-  justify-content: center;
-`

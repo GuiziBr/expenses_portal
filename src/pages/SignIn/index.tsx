@@ -7,7 +7,7 @@ import * as Yup from 'yup'
 import logoImg from '../../assets/logo.svg'
 import Button from '../../components/Button'
 import Input from '../../components/Input'
-import constants from '../../constants'
+import errors from '../../constants/errors'
 import { useAuth } from '../../hooks/auth'
 import { useToast } from '../../hooks/toast'
 import { signInSchema } from '../../schemas'
@@ -32,14 +32,14 @@ const SignIn: React.FC = () => {
       history.push('/sharedDashboard')
     } catch (err) {
       if (err instanceof Yup.ValidationError) {
-        const errors = getValidationErrors(err)
-        formRef.current?.setErrors(errors)
+        const error = getValidationErrors(err)
+        formRef.current?.setErrors(error)
         return
       }
       addToast({
         type: 'error',
-        title: constants.toastAuthError.title,
-        description: constants.toastAuthError.description,
+        title: errors.toastErrors.title.authentication,
+        description: errors.toastErrors.description.login,
       })
     }
   }, [signIn, addToast, history])

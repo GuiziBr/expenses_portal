@@ -1,5 +1,6 @@
 import React, { createContext, useCallback, useContext, useState } from 'react'
-import constants from '../constants'
+import constants from '../constants/constants'
+import errors from '../constants/errors'
 import api from '../services/apiClient'
 
 interface AuthState {
@@ -53,6 +54,6 @@ export const AuthProvider: React.FC = ({ children }) => {
 
 export function useAuth(): AuthContextData {
   const context = useContext(AuthContext)
-  if (!context) throw new Error(constants.providerErrorMsg('useAuth', 'AuthProvider'))
+  if (!context) throw new Error(errors.providerErrorMsg('useAuth', 'AuthProvider'))
   return context
 }
