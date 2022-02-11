@@ -9,7 +9,7 @@ export const Container = styled.div<ContainerProps>`
   background: var(--light-blue);
   padding: 2rem 0;
   header {
-    width: 1120px;
+    max-width: 1120px;
     margin: 0 auto;
     padding: ${({ size }) => (size === 'small' ? '0 1.25rem ' : '0 1.25rem 10rem')};
     display: flex;
@@ -34,6 +34,9 @@ export const Container = styled.div<ContainerProps>`
           pointer-events: none;
         }
       }
+    }
+    @media(max-width: 720px) {
+
     }
   }
 `

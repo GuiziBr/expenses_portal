@@ -45,7 +45,7 @@ const SignIn: React.FC = () => {
   }, [signIn, addToast, history])
 
   return (
-    <Container>
+    <Container className="container">
       <Content>
         <AnimationContainer>
           <img src={logoImg} alt="Expenses" width="231" height="134" />

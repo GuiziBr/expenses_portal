@@ -22,7 +22,7 @@ export default createGlobalStyle`
     --light-gray: #969CB3;
     --blue-wood: #363F5F;
     --green: #12A454;
-    --pink: #E83F5B
+    --pink: #E83F5B;
   }
   * {
     margin: 0;
@@ -36,6 +36,7 @@ export default createGlobalStyle`
     }
     @media(max-width: 720px){
       font-size: 87.5%;
+      width: 100vh;
     }
   }
   body {
