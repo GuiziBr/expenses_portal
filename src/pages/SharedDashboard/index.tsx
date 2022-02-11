@@ -43,14 +43,17 @@ const SharedDashboard: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1)
   const [currentDate, setCurrentDate] = useState<string>()
   const [isNewExpenseModalOpen, setIsNewExpenseModalOpen] = useState(false)
+  const [isDeskTopScreen] = useState<boolean>(window.innerWidth > 720)
   const defaultDate = format(new Date(), constants.monthDateFormat)
 
   const { balance, getBalance } = useExpense()
 
   Modal.setAppElement('#root')
 
+  const currentPageLimit = isDeskTopScreen ? constants.desktopPageLimit : constants.mobilePageLimit
+
   const updatePageNumbers = (totalCount: number) => {
-    const totalPages: Number = Math.ceil(totalCount / constants.pageLimit)
+    const totalPages: Number = Math.ceil(totalCount / currentPageLimit)
     const arrayPages = []
     for (let i = 1; i <= totalPages; i++) {
       arrayPages.push(i)
@@ -58,13 +61,13 @@ const SharedDashboard: React.FC = () => {
     setPages(arrayPages)
   }
 
-  const getOffset = () => (currentPage * constants.pageLimit) - constants.pageLimit
+  const getOffset = () => (currentPage * currentPageLimit) - currentPageLimit
 
   const loadExpenses = useCallback(async (date?: string) => {
     const token = sessionStorage.getItem(constants.sessionStorage.token)
     const config: AxiosRequestConfig = {
       headers: { Authorization: `Bearer ${token}` },
-      params: { date: date || currentDate, offset: getOffset(), limit: constants.pageLimit },
+      params: { date: date || currentDate, offset: getOffset(), limit: currentPageLimit },
     }
     const { data, headers } = await api.get('/expenses/shared', config)
     const expenseList = data

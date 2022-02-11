@@ -1,12 +1,7 @@
-import styled, { css } from 'styled-components'
+import styled from 'styled-components'
 
 interface CardProps {
   total?: boolean;
-}
-
-interface PaginationItemProps {
-  isSelected?: boolean
-  isDisabled?: boolean
 }
 
 export const Container = styled.div`
@@ -76,6 +71,9 @@ export const FormContainer = styled.section`
 export const TableContainer = styled.section`
   height: 26rem;
   margin-top: .6rem;
+  @media(max-width: 720px){
+    height: 55rem;
+  }
   table {
     width: 100%;
     border-spacing: 0 .5rem;

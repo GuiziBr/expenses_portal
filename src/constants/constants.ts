@@ -1,5 +1,6 @@
 export default {
-  pageLimit: 5,
+  desktopPageLimit: 5,
+  mobilePageLimit: 10,
   createExpenseCheckboxOptions: [
     { id: 'personal', value: 'personal', label: 'Personal Expense' },
     { id: 'split', value: 'split', label: 'Split Expense' },
