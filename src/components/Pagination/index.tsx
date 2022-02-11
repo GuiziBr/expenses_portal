@@ -8,8 +8,8 @@ interface PaginationProps {
 }
 
 const Pagination: React.FC<PaginationProps> = ({ currentPage, setCurrentPage, pages }) => (
-  <Container className="pagination">
-    <PaginationButton className="pagination-button">
+  <Container>
+    <PaginationButton>
       <PaginationItem onClick={() => setCurrentPage(currentPage - 1)} isDisabled={currentPage <= 1}>Previous</PaginationItem>
       {pages.map((page) => (
         <PaginationItem

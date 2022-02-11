@@ -10,6 +10,9 @@ export const Container = styled.div`
   display: flex;
   width: 100%;
   justify-content: center;
+  @media(max-width: 720px) {
+    margin-top: 0;
+  }
 `
 
 export const PaginationButton = styled.div`

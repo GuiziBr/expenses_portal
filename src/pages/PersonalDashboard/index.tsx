@@ -104,7 +104,7 @@ const PersonalDashboard: React.FC = () => {
   return (
     <>
       <Header current="PersonalDashboard" />
-      <NewExpenseModal isOpen={isNewExpenseModalOpen} onRequestClose={handleCloseNewExpenseModal} />
+      <NewExpenseModal isOpen={isNewExpenseModalOpen} onRequestClose={handleCloseNewExpenseModal} isDeskTopScreen={isDeskTopScreen} />
       <Container>
         <CardContainer>
           <Card total>
@@ -127,9 +127,9 @@ const PersonalDashboard: React.FC = () => {
             <thead>
               <tr>
                 <th>Expense</th>
-                <th>Category</th>
+                {isDeskTopScreen && <th>Category</th>}
                 <th>Amount</th>
-                <th>Payment</th>
+                {isDeskTopScreen && <th>Payment</th>}
                 <th>Date</th>
               </tr>
             </thead>
@@ -137,9 +137,9 @@ const PersonalDashboard: React.FC = () => {
               {expenses.map((expense) => (
                 <tr key={expense.id}>
                   <td className="description">{expense.description}</td>
-                  <td>{expense.category}</td>
+                  {isDeskTopScreen && <td>{expense.category}</td>}
                   <td className="income">{expense.formattedAmount}</td>
-                  <td>{expense.paymentType}</td>
+                  {isDeskTopScreen && <td>{expense.paymentType}</td>}
                   <td>{expense.formattedDate}</td>
                 </tr>
               ))}

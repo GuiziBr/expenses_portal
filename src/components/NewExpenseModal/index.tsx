@@ -26,6 +26,7 @@ import { FormContainer } from './styles'
 interface NewExpenseModalProps {
   isOpen: boolean
   onRequestClose: () => void
+  isDeskTopScreen: boolean
 }
 
 interface Category {
@@ -53,7 +54,7 @@ interface Expense {
   paymentType: string
 }
 
-export function NewExpenseModal({ isOpen, onRequestClose }: NewExpenseModalProps) {
+export function NewExpenseModal({ isOpen, onRequestClose, isDeskTopScreen }: NewExpenseModalProps) {
   const formRef = useRef<FormHandles>(null)
   const { createExpense } = useExpense()
   const { addToast } = useToast()
@@ -117,7 +118,7 @@ export function NewExpenseModal({ isOpen, onRequestClose }: NewExpenseModalProps
     loadExpenses()
   }, [])
 
-  const checkboxOptions: CheckboxOption[] = constants.createExpenseCheckboxOptions
+  const checkboxOptions: CheckboxOption[] = constants.createExpenseCheckboxOptions[isDeskTopScreen ? 'desktopLabel' : 'mobileLabel']
 
   const dateMax = format(endOfDay(new Date()), constants.dateFormat)
   const dateMin = format(startOfMonth(new Date()), constants.dateFormat)
