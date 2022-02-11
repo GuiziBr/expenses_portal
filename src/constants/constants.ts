@@ -1,10 +1,16 @@
 export default {
   desktopPageLimit: 5,
   mobilePageLimit: 10,
-  createExpenseCheckboxOptions: [
-    { id: 'personal', value: 'personal', label: 'Personal Expense' },
-    { id: 'split', value: 'split', label: 'Split Expense' },
-  ],
+  createExpenseCheckboxOptions: {
+    desktopLabel: [
+      { id: 'personal', value: 'personal', label: 'Personal Expense' },
+      { id: 'split', value: 'split', label: 'Split Expense' },
+    ],
+    mobileLabel: [
+      { id: 'personal', value: 'personal', label: 'Personal' },
+      { id: 'split', value: 'split', label: 'Split' },
+    ],
+  },
   monthDateFormat: 'yyyy-MM',
   dateFormat: 'yyyy-MM-dd',
   expenseType: {

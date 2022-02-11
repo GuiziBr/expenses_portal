@@ -8,6 +8,9 @@ interface ContainerProps {
 export const Container = styled.div<ContainerProps>`
   background: var(--light-blue);
   padding: 2rem 0;
+  @media(max-width: 720px) {
+    padding-bottom: 0;
+  }
   header {
     max-width: 1120px;
     margin: 0 auto;
@@ -34,9 +37,6 @@ export const Container = styled.div<ContainerProps>`
           pointer-events: none;
         }
       }
-    }
-    @media(max-width: 720px) {
-
     }
   }
 `
