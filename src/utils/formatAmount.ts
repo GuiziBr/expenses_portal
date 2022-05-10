@@ -1,6 +1,6 @@
-export const formatAmount = (valueInCents: number = 0): string => Intl.NumberFormat('pt-BR', {
+export const formatAmount = (valueInCents: number = 0): string => Intl.NumberFormat('en-CA', {
   style: 'currency',
-  currency: 'BRL',
+  currency: 'CAD',
 }).format(valueInCents / 100)
 
-export const unformatAmount = (formattedValue: string): number => Number(formattedValue.replace(/[.]/ig, '').replace(/,/, '.'))
+export const unformatAmount = (formattedValue: string): number => Number(formattedValue.replace(/[,]/ig, ''))
