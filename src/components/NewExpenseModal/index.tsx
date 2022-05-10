@@ -140,7 +140,7 @@ export function NewExpenseModal({ isOpen, onRequestClose, isDeskTopScreen }: New
           <Select icon={HiOutlineSelector} name="category" options={categories} placeholder="Select category" />
           <Select icon={HiOutlineSelector} name="paymentType" options={paymentTypes} placeholder="Select payment Type" />
           <Input icon={MdDateRange} name="date" type="date" max={dateMax} min={dateMin} isClickable />
-          <Input icon={HiOutlineCurrencyDollar} name="amount" placeholder="99,99" isCurrency />
+          <Input icon={HiOutlineCurrencyDollar} name="amount" placeholder="99.99" isCurrency />
           <CheckboxInput icon={IoMdCheckboxOutline} name="options" options={checkboxOptions} />
           <Button type="submit">Save</Button>
         </Form>
