@@ -3,7 +3,7 @@ import styled from 'styled-components'
 export const Container = styled.div`
   position: relative;
   span {
-    width: 10rem;
+    width: 13rem;
     background: var(--light-orange);
     padding: .5rem;
     border-radius: .3rem;
@@ -17,6 +17,7 @@ export const Container = styled.div`
     left: 50%;
     transform: translateX(-50%);
     color: var(--background);
+    text-align: center;
     &::before {
       content: '';
       border-style: solid;

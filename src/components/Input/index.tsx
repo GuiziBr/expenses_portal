@@ -9,10 +9,10 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   isCurrency?: boolean
   icon?: React.ComponentType<IconBaseProps>
   options?: boolean,
-  isClickable?: boolean
+  cleanError?: () => void
 }
 
-const Input: React.FC<InputProps> = ({ name, icon: Icon, isCurrency, isClickable, ...rest }) => {
+const Input: React.FC<InputProps> = ({ name, icon: Icon, isCurrency, cleanError, ...rest }) => {
   const inputRef = useRef<HTMLInputElement>(null)
   const [isFocused, setIsFocused] = useState(false)
   const [isFilled, setIsFilled] = useState(false)
@@ -25,6 +25,7 @@ const Input: React.FC<InputProps> = ({ name, icon: Icon, isCurrency, isClickable
   const handleInputBlur = useCallback(() => {
     setIsFocused(false)
     setIsFilled(!!inputRef.current?.value)
+    if (cleanError) cleanError()
   }, [])
 
   const formatCurrency = useCallback((e: React.FormEvent<HTMLInputElement>) => {

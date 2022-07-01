@@ -9,8 +9,18 @@ export default {
     emailFormat: 'Invalid e-mail format',
     password: 'Password is required',
     paymentType: 'Payment type is required',
+    bank: 'Bank name is required',
+    store: 'Store name is required',
   },
   alreadyExistingExpense: 'This expense is already registered',
+  alreadyExistingPaymentType: 'Payment type already exists',
+  alreadyExistingCategory: 'Category already exists',
+  alreadyExistingBank: 'Bank already exists',
+  alreadyExistingStore: 'Store already exists',
+  alreadyExitingUpdatePaymentType: 'There is already a payment type with same description',
+  alreadyExitingUpdateCategory: 'There is already a category with same description',
+  alreadyExitingUpdateBank: 'There is already a bank with same name',
+  alreadyExitingUpdateStore: 'There is already a store with same name',
   toastErrors: {
     title: {
       authentication: 'Authentication error',
