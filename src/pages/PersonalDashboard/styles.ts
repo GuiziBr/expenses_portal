@@ -82,7 +82,7 @@ export const FormContainer = styled.section`
       margin-top: 1rem;
     }
     div {
-      height: 2.55rem;
+      height: 2.6rem;
       width: 15rem;
       margin-right: .3rem;
       border-color: var(--container-background);

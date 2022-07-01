@@ -59,4 +59,8 @@ export const Container = styled(animated.div)<ContainerProps>`
       margin-top: 0;
     }
   `}
+  @media(max-width: 720px) {
+    width: 20rem;
+  }
+
 `

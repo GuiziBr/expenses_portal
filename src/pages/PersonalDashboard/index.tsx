@@ -129,7 +129,7 @@ const PersonalDashboard: React.FC = () => {
                 <th>Expense</th>
                 {isDeskTopScreen && <th>Category</th>}
                 <th>Amount</th>
-                {isDeskTopScreen && <th>Payment</th>}
+                {isDeskTopScreen && <th>Payment Type</th>}
                 <th>Date</th>
               </tr>
             </thead>

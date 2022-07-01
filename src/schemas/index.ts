@@ -13,3 +13,11 @@ export const newExpenseSchema = Yup.object().shape({
   amount: Yup.string().required(errors.schemaValidationError.amount),
   paymentType: Yup.string().required(errors.schemaValidationError.paymentType),
 })
+
+export const newPaymentTypeSchema = Yup.object().shape({ description: Yup.string().required(errors.schemaValidationError.paymentType) })
+
+export const newCategorySchema = Yup.object().shape({ description: Yup.string().required(errors.schemaValidationError.category) })
+
+export const newBankSchema = Yup.object().shape({ name: Yup.string().required(errors.schemaValidationError.bank) })
+
+export const newStoreSchema = Yup.object().shape({ name: Yup.string().required(errors.schemaValidationError.bank) })

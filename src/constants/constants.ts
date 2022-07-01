@@ -31,4 +31,32 @@ export default {
     split: 'split',
   },
   headers: { totalCount: 'x-total-count' },
+  menuTitles: {
+    desktopTitles: {
+      shared: 'Shared Dashboard',
+      personal: 'Personal Dashboard',
+    },
+    mobileTitles: {
+      shared: 'Shared',
+      personal: 'Personal',
+    },
+  },
+  dropdownItems: [
+    {
+      path: '/bankManagement',
+      title: 'Bank',
+    },
+    {
+      path: '/categoryManagement',
+      title: 'Category',
+    },
+    {
+      path: '/paymentTypeManagement',
+      title: 'Payment Type',
+    },
+    {
+      path: '/storeManagement',
+      title: 'Store',
+    },
+  ],
 }
