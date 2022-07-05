@@ -4,6 +4,7 @@ import { AxiosRequestConfig } from 'axios'
 import React, { FocusEvent, useCallback, useEffect, useRef, useState } from 'react'
 import { AiFillEdit, AiOutlineSave } from 'react-icons/ai'
 import { FaTrashAlt } from 'react-icons/fa'
+import { GiConfirmed } from 'react-icons/gi'
 import { MdTitle } from 'react-icons/md'
 import * as Yup from 'yup'
 import Button from '../../../components/Button'
@@ -24,7 +25,8 @@ interface IPaymentType {
   createdAt: string
   updatedAt: string
   disabled: boolean
-  mode: 'edit' | 'save'
+  editMode: 'edit' | 'save'
+  deleteMode: 'delete' | 'confirm'
   className: string | null
 }
 
@@ -50,7 +52,8 @@ const PaymentTypeManagement: React.FC = () => {
         createdAt: formatDate(paymentType.created_at),
         updatedAt: formatDate(paymentType.updated_at),
         disabled: true,
-        mode: 'edit',
+        editMode: 'edit',
+        deleteMode: 'delete',
       }))
     setPaymentTypes(paymentTypesList)
   }, [])
@@ -85,7 +88,7 @@ const PaymentTypeManagement: React.FC = () => {
     }
   }
 
-  const handleDelete = async (paymentTypeId: string) => {
+  const handleConfirmDelete = async (paymentTypeId: string) => {
     try {
       const token = sessionStorage.getItem(constants.sessionStorage.token)
       const config: AxiosRequestConfig = { headers: { Authorization: `Bearer ${token}` }}
@@ -108,9 +111,17 @@ const PaymentTypeManagement: React.FC = () => {
   const handleEditPaymentType = (paymentTypeId: string) => {
     setPaymentTypes(paymentTypes.map((paymentType) => ({
       ...paymentType,
-      disabled: paymentType.id !== paymentTypeId && paymentType.mode === 'edit',
-      mode: paymentType.id === paymentTypeId ? 'save' : paymentType.mode,
+      disabled: paymentType.id !== paymentTypeId && paymentType.editMode === 'edit',
+      editMode: paymentType.id === paymentTypeId ? 'save' : paymentType.editMode,
       className: paymentType.id === paymentTypeId ? 'editable' : null,
+    })))
+  }
+
+  const handleDeletePaymentType = (paymentTypeId: string) => {
+    setPaymentTypes(paymentTypes.map((paymentType) => ({
+      ...paymentType,
+      disabled: paymentType.id !== paymentTypeId && paymentType.deleteMode === 'delete',
+      deleteMode: paymentType.id === paymentTypeId ? 'confirm' : paymentType.deleteMode,
     })))
   }
 
@@ -147,7 +158,7 @@ const PaymentTypeManagement: React.FC = () => {
       ...paymentType,
       description: paymentType.id === paymentTypeId ? input.value : paymentType.description,
       disabled: paymentType.id === paymentTypeId,
-      mode: paymentType.id === paymentTypeId ? 'edit' : paymentType.mode,
+      editMode: paymentType.id === paymentTypeId ? 'edit' : paymentType.editMode,
       className: paymentType.id === paymentTypeId ? 'null' : paymentType.className,
     })))
   }
@@ -178,52 +189,61 @@ const PaymentTypeManagement: React.FC = () => {
             <Button type="submit">Save</Button>
           </Form>
         </FormContainer>
-        <TableContainer>
-          <table>
-            <thead>
-              <tr>
-                <th>Payment Type</th>
-                <th>Created</th>
-                {isDeskTopScreen && <th>Updated</th>}
-              </tr>
-            </thead>
-            <tbody>
-              {paymentTypes.map((paymentType) => (
-                <tr key={paymentType.id} id={paymentType.id}>
-                  <td className="description" onDoubleClick={() => handleEditPaymentType(paymentType.id)}>
-                    <input
-                      name="payment-description"
-                      type="text"
-                      defaultValue={paymentType.description}
-                      disabled={paymentType.disabled}
-                      onBlur={(event) => handleOnBlur(event, paymentType.id)}
-                      id={`input-${paymentType.id}`}
-                      className={paymentType.className}
-                      onFocus={(event) => handleOnFocus(event.target)}
-                    />
-                  </td>
-                  <td>{paymentType.createdAt}</td>
-                  {isDeskTopScreen && <td className="date-updated">{paymentType.updatedAt}</td>}
-                  <td>
-                    <Button
-                      type="button"
-                      onClick={() => (paymentType.mode === 'edit'
-                        ? handleEditPaymentType(paymentType.id)
-                        : handleUpdatePaymentType(paymentType.id))}
-                    >
-                      { paymentType.mode === 'edit' ? <AiFillEdit color="#5636D3" /> : <AiOutlineSave color="#5636D3" /> }
-                    </Button>
-                  </td>
-                  <td>
-                    <Button type="button" onClick={() => handleDelete(paymentType.id)}>
-                      <FaTrashAlt color="#FF872C" />
-                    </Button>
-                  </td>
+        {paymentTypes.length > 0 && (
+          <TableContainer>
+            <table>
+              <thead>
+                <tr>
+                  <th>Payment Type</th>
+                  <th>Created</th>
+                  {isDeskTopScreen && <th>Updated</th>}
+                  <th>Edit</th>
+                  <th>Delete</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </TableContainer>
+              </thead>
+              <tbody>
+                {paymentTypes.map((paymentType) => (
+                  <tr key={paymentType.id} id={paymentType.id}>
+                    <td className="description" onDoubleClick={() => handleEditPaymentType(paymentType.id)}>
+                      <input
+                        name="payment-description"
+                        type="text"
+                        defaultValue={paymentType.description}
+                        disabled={paymentType.disabled}
+                        onBlur={(event) => handleOnBlur(event, paymentType.id)}
+                        id={`input-${paymentType.id}`}
+                        className={paymentType.className}
+                        onFocus={(event) => handleOnFocus(event.target)}
+                      />
+                    </td>
+                    <td>{paymentType.createdAt}</td>
+                    {isDeskTopScreen && <td className="date-updated">{paymentType.updatedAt}</td>}
+                    <td>
+                      <Button
+                        type="button"
+                        onClick={() => (paymentType.editMode === 'edit'
+                          ? handleEditPaymentType(paymentType.id)
+                          : handleUpdatePaymentType(paymentType.id))}
+                      >
+                        { paymentType.editMode === 'edit' ? <AiFillEdit color="#5636D3" /> : <AiOutlineSave color="#5636D3" /> }
+                      </Button>
+                    </td>
+                    <td>
+                      <Button
+                        type="button"
+                        onClick={() => (paymentType.deleteMode === 'delete'
+                          ? handleDeletePaymentType(paymentType.id)
+                          : handleConfirmDelete(paymentType.id))}
+                      >
+                        {paymentType.deleteMode === 'delete' ? <FaTrashAlt color="#FF872C" /> : <GiConfirmed color="#FF872C" />}
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </TableContainer>
+        )}
       </Container>
     </>
   )

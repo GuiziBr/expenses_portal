@@ -145,35 +145,39 @@ const SharedDashboard: React.FC = () => {
             <Button type="submit">Search</Button>
           </Form>
         </FormContainer>
-        <TableContainer>
-          <table>
-            <thead>
-              <tr>
-                <th>Expense</th>
-                {isDeskTopScreen && <th>Category</th>}
-                <th>Amount</th>
-                {isDeskTopScreen && <th>Type</th>}
-                <th>Date</th>
-                {isDeskTopScreen && <th>Bank</th>}
-                {isDeskTopScreen && <th>Store</th>}
-              </tr>
-            </thead>
-            <tbody>
-              {expenses.map((expense) => (
-                <tr key={expense.id}>
-                  <td className="description">{expense.description}</td>
-                  {isDeskTopScreen && <td>{expense.category}</td>}
-                  <td className={expense.type}>{expense.formattedAmount}</td>
-                  {isDeskTopScreen && <td>{expense.paymentType}</td>}
-                  <td>{expense.formattedDate}</td>
-                  {isDeskTopScreen && <td>{expense.bank}</td>}
-                  {isDeskTopScreen && <td>{expense.store}</td>}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </TableContainer>
-        <Pagination currentPage={currentPage} setCurrentPage={setCurrentPage} pages={pages} />
+        {expenses.length > 0 && (
+          <>
+            <TableContainer>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Expense</th>
+                    {isDeskTopScreen && <th>Category</th>}
+                    <th>Amount</th>
+                    {isDeskTopScreen && <th>Type</th>}
+                    <th>Date</th>
+                    {isDeskTopScreen && <th>Bank</th>}
+                    {isDeskTopScreen && <th>Store</th>}
+                  </tr>
+                </thead>
+                <tbody>
+                  {expenses.map((expense) => (
+                    <tr key={expense.id}>
+                      <td className="description">{expense.description}</td>
+                      {isDeskTopScreen && <td>{expense.category}</td>}
+                      <td className={expense.type}>{expense.formattedAmount}</td>
+                      {isDeskTopScreen && <td>{expense.paymentType}</td>}
+                      <td>{expense.formattedDate}</td>
+                      {isDeskTopScreen && <td>{expense.bank}</td>}
+                      {isDeskTopScreen && <td>{expense.store}</td>}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </TableContainer>
+            <Pagination currentPage={currentPage} setCurrentPage={setCurrentPage} pages={pages} />
+          </>
+        )}
       </Container>
     </>
   )
