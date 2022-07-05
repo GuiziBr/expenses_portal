@@ -39,6 +39,16 @@ interface PaymentType {
   description: string
 }
 
+interface Bank {
+  id: string
+  name: string
+}
+
+interface Store {
+  id: string
+  name: string
+}
+
 interface CheckboxOption {
   id: string
   value: string
@@ -60,6 +70,8 @@ export function NewExpenseModal({ isOpen, onRequestClose, isDeskTopScreen }: New
   const { addToast } = useToast()
   const [categories, setCategories] = useState<Category[]>([])
   const [paymentTypes, setPaymentTypes] = useState<PaymentType[]>([])
+  const [banks, setBanks] = useState<Bank[]>([])
+  const [stores, setStores] = useState<Store[]>([])
 
   const sortList = (data:[], field: string) => data.sort((a, b) => ((a[field] > b[field]) ? 1 : -1))
 
@@ -75,6 +87,20 @@ export function NewExpenseModal({ isOpen, onRequestClose, isDeskTopScreen }: New
     const config = { headers: { Authorization: `Bearer ${token}` }}
     const { data } = await api.get('/paymentType', config)
     setPaymentTypes(sortList(data, 'description'))
+  }, [])
+
+  const loadBanks = useCallback(async () => {
+    const token = sessionStorage.getItem(constants.sessionStorage.token)
+    const config = { headers: { Authorization: `Bearer ${token}` }}
+    const { data } = await api.get('/banks', config)
+    setBanks(sortList(data, 'name'))
+  }, [])
+
+  const loadStores = useCallback(async () => {
+    const token = sessionStorage.getItem(constants.sessionStorage.token)
+    const config = { headers: { Authorization: `Bearer ${token}` }}
+    const { data } = await api.get('/stores', config)
+    setStores(sortList(data, 'name'))
   }, [])
 
   const handleSubmit = useCallback(async (data: Expense) => {
@@ -113,6 +139,8 @@ export function NewExpenseModal({ isOpen, onRequestClose, isDeskTopScreen }: New
       await Promise.all([
         loadCategories(),
         loadPaymentTypes(),
+        loadBanks(),
+        loadStores(),
       ])
     }
     loadExpenses()
@@ -138,7 +166,9 @@ export function NewExpenseModal({ isOpen, onRequestClose, isDeskTopScreen }: New
           <h2>Create Expense</h2>
           <Input icon={MdTitle} name="description" placeholder="Expense description" />
           <Select icon={HiOutlineSelector} name="category" options={categories} placeholder="Select category" />
-          <Select icon={HiOutlineSelector} name="paymentType" options={paymentTypes} placeholder="Select payment Type" />
+          <Select icon={HiOutlineSelector} name="paymentType" options={paymentTypes} placeholder="Select payment type" />
+          <Select icon={HiOutlineSelector} name="bank" options={banks} placeholder="Select bank" />
+          <Select icon={HiOutlineSelector} name="store" options={stores} placeholder="Select store" />
           <Input icon={MdDateRange} name="date" type="date" max={dateMax} min={dateMin} />
           <Input icon={HiOutlineCurrencyDollar} name="amount" placeholder="99.99" isCurrency />
           <CheckboxInput icon={IoMdCheckboxOutline} name="options" options={checkboxOptions} />

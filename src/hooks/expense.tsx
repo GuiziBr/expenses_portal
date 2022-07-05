@@ -23,10 +23,13 @@ interface ExpenseContextData {
 interface Payload {
   description: string
   'category_id': string
+  'payment_type_id': string
   date: string
   amount: number
   personal: boolean
   split: boolean
+  'bank_id'?: string
+  'store_id'?: string
 }
 
 const BalanceContext = createContext<ExpenseContextData>({} as ExpenseContextData)

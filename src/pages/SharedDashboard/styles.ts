@@ -5,7 +5,7 @@ interface CardProps {
 }
 
 export const Container = styled.div`
-  width: 100%;
+  width: 100vw;
   max-width: 1120px;
   margin: 0 auto;
   padding: 2.5rem 1rem;
@@ -118,7 +118,7 @@ export const TableContainer = styled.section`
       width: 11rem;
       color: var(--light-gray);
       font-weight: normal;
-      padding: 1.25rem 2rem;
+      padding: 1.25rem 1.5rem;
       text-align: left;
       font-size: 1.25rem;
       line-height: 1.5rem;
@@ -130,7 +130,7 @@ export const TableContainer = styled.section`
     }
     td {
       width: 11rem;
-      padding: 1.25rem 2rem;
+      padding: 1.25rem 1.5rem;
       border: 0;
       background: var(--white);
       font-size: 1rem;

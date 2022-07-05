@@ -28,6 +28,8 @@ interface Expense {
   type: 'income' | 'outcome'
   date: Date
   paymentType: string
+  bank?: string
+  store?: string
 }
 
 interface Request {
@@ -129,8 +131,10 @@ const PersonalDashboard: React.FC = () => {
                 <th>Expense</th>
                 {isDeskTopScreen && <th>Category</th>}
                 <th>Amount</th>
-                {isDeskTopScreen && <th>Payment Type</th>}
+                {isDeskTopScreen && <th>Type</th>}
                 <th>Date</th>
+                {isDeskTopScreen && <th>Bank</th>}
+                {isDeskTopScreen && <th>Store</th>}
               </tr>
             </thead>
             <tbody>
@@ -141,6 +145,8 @@ const PersonalDashboard: React.FC = () => {
                   <td className="income">{expense.formattedAmount}</td>
                   {isDeskTopScreen && <td>{expense.paymentType}</td>}
                   <td>{expense.formattedDate}</td>
+                  {isDeskTopScreen && <td>{expense.bank}</td>}
+                  {isDeskTopScreen && <td>{expense.store}</td>}
                 </tr>
               ))}
             </tbody>

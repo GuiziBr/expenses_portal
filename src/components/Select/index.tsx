@@ -12,7 +12,8 @@ interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
 
 interface Option {
   id: string
-  description: string
+  description?: string
+  name?: string
 }
 
 const Select: React.FC<SelectProps> = ({ name, icon: Icon, options, placeholder }) => {
@@ -43,7 +44,7 @@ const Select: React.FC<SelectProps> = ({ name, icon: Icon, options, placeholder 
       {Icon && <Icon size={20} />}
       <select onBlur={handleSelectBlur} onFocus={handleSelectFocus} ref={selectRef} defaultValue="">
         <option value="" disabled hidden>{placeholder}</option>
-        {options.map((option: Option) => <option key={option.id} value={option.id}>{option.description}</option>)}
+        {options.map((option: Option) => <option key={option.id} value={option.id}>{option.description || option.name}</option>)}
       </select>
       {error && (
         <Error title={error}>
