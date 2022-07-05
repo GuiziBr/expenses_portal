@@ -12,6 +12,8 @@ export const newExpenseSchema = Yup.object().shape({
   date: Yup.string().required(errors.schemaValidationError.date),
   amount: Yup.string().required(errors.schemaValidationError.amount),
   paymentType: Yup.string().required(errors.schemaValidationError.paymentType),
+  bank: Yup.string(),
+  store: Yup.string(),
 })
 
 export const newPaymentTypeSchema = Yup.object().shape({ description: Yup.string().required(errors.schemaValidationError.paymentType) })

@@ -119,7 +119,7 @@ export const TableContainer = styled.section`
       width: 11rem;
       color: var(--light-gray);
       font-weight: normal;
-      padding: 1.25rem 2rem;
+      padding: 1.25rem 1.5rem;
       text-align: left;
       font-size: 1.25rem;
       line-height: 1.5rem;
@@ -131,11 +131,12 @@ export const TableContainer = styled.section`
     }
     td {
       width: 11rem;
-      padding: 1.25rem 2rem;
+      padding: 1.25rem 1.5rem;
       border: 0;
       background: var(--white);
       font-size: 1rem;
       font-weight: normal;
+      text-align: left;
       @media(max-width: 720px) {
         width: 33.3vw;
         padding: 1rem 1.5rem;
@@ -149,7 +150,6 @@ export const TableContainer = styled.section`
       }
       &.income {
         color: var(--green);
-        padding-left: 2.75rem;
         @media(max-width: 720px) {
           display: flex;
           align-items: center;
