@@ -4,6 +4,7 @@ import { AxiosRequestConfig } from 'axios'
 import React, { FocusEvent, useCallback, useEffect, useRef, useState } from 'react'
 import { AiFillEdit, AiOutlineSave } from 'react-icons/ai'
 import { FaTrashAlt } from 'react-icons/fa'
+import { GiConfirmed } from 'react-icons/gi'
 import { MdTitle } from 'react-icons/md'
 import * as Yup from 'yup'
 import Button from '../../../components/Button'
@@ -24,7 +25,8 @@ interface ICategory {
   createdAt: string
   updatedAt: string
   disabled: boolean
-  mode: 'edit' | 'save'
+  editMode: 'edit' | 'save'
+  deleteMode: 'delete' | 'confirm'
   className: string | null
 }
 
@@ -50,7 +52,8 @@ const CategoryManagement: React.FC = () => {
         createdAt: formatDate(category.created_at),
         updatedAt: formatDate(category.updated_at),
         disabled: true,
-        mode: 'edit',
+        editMode: 'edit',
+        deleteMode: 'delete',
       }))
     setCategories(categoriesList)
   }, [])
@@ -61,7 +64,7 @@ const CategoryManagement: React.FC = () => {
       await newCategorySchema.validate(payload, { abortEarly: false })
       const token = sessionStorage.getItem(constants.sessionStorage.token)
       const config: AxiosRequestConfig = { headers: { Authorization: `Bearer ${token}` }}
-      await api.post('/category', payload, config)
+      await api.post('/categories', payload, config)
       addToast({
         type: 'success',
         title: 'Create Category',
@@ -85,11 +88,11 @@ const CategoryManagement: React.FC = () => {
     }
   }
 
-  const handleDelete = async (categoryId: string) => {
+  const handleConfirmDelete = async (categoryId: string) => {
     try {
       const token = sessionStorage.getItem(constants.sessionStorage.token)
       const config: AxiosRequestConfig = { headers: { Authorization: `Bearer ${token}` }}
-      await api.delete(`/category/${categoryId}`, config)
+      await api.delete(`/categories/${categoryId}`, config)
       addToast({
         type: 'success',
         title: 'Delete Category',
@@ -108,9 +111,17 @@ const CategoryManagement: React.FC = () => {
   const handleEditCategory = (categoryId: string) => {
     setCategories(categories.map((category) => ({
       ...category,
-      disabled: category.id !== categoryId && category.mode === 'edit',
-      mode: category.id === categoryId ? 'save' : category.mode,
+      disabled: category.id !== categoryId && category.editMode === 'edit',
+      editMode: category.id === categoryId ? 'save' : category.editMode,
       className: category.id === categoryId ? 'editable' : null,
+    })))
+  }
+
+  const handleDeleteCategory = (categoryId: string) => {
+    setCategories(categories.map((category) => ({
+      ...category,
+      disabled: category.id !== categoryId && category.deleteMode === 'delete',
+      deleteMode: category.id === categoryId ? 'confirm' : category.deleteMode,
     })))
   }
 
@@ -126,7 +137,7 @@ const CategoryManagement: React.FC = () => {
       const token = sessionStorage.getItem(constants.sessionStorage.token)
       const config: AxiosRequestConfig = { headers: { Authorization: `Bearer ${token}` }}
       try {
-        await api.patch(`/category/${categoryId}`, payload, config)
+        await api.patch(`/categories/${categoryId}`, payload, config)
         addToast({
           type: 'success',
           title: 'Update Category',
@@ -147,7 +158,7 @@ const CategoryManagement: React.FC = () => {
       ...category,
       description: category.id === categoryId ? input.value : category.description,
       disabled: category.id === categoryId,
-      mode: category.id === categoryId ? 'edit' : category.mode,
+      editMode: category.id === categoryId ? 'edit' : category.editMode,
       className: category.id === categoryId ? 'null' : category.className,
     })))
   }
@@ -178,52 +189,61 @@ const CategoryManagement: React.FC = () => {
             <Button type="submit">Save</Button>
           </Form>
         </FormContainer>
-        <TableContainer>
-          <table>
-            <thead>
-              <tr>
-                <th>Category</th>
-                <th>Created</th>
-                {isDeskTopScreen && <th>Updated</th>}
-              </tr>
-            </thead>
-            <tbody>
-              {categories.map((category) => (
-                <tr key={category.id} id={category.id}>
-                  <td className="description" onDoubleClick={() => handleEditCategory(category.id)}>
-                    <input
-                      name="category-description"
-                      type="text"
-                      defaultValue={category.description}
-                      disabled={category.disabled}
-                      onBlur={(event) => handleOnBlur(event, category.id)}
-                      id={`input-${category.id}`}
-                      className={category.className}
-                      onFocus={(event) => handleOnFocus(event.target)}
-                    />
-                  </td>
-                  <td className="date-created">{category.createdAt}</td>
-                  {isDeskTopScreen && <td className="date-updated">{category.updatedAt}</td>}
-                  <td>
-                    <Button
-                      type="button"
-                      onClick={() => (category.mode === 'edit'
-                        ? handleEditCategory(category.id)
-                        : handleUpdateCategory(category.id))}
-                    >
-                      { category.mode === 'edit' ? <AiFillEdit color="#5636D3" /> : <AiOutlineSave color="#5636D3" /> }
-                    </Button>
-                  </td>
-                  <td>
-                    <Button type="button" onClick={() => handleDelete(category.id)}>
-                      <FaTrashAlt color="#FF872C" />
-                    </Button>
-                  </td>
+        {categories.length > 0 && (
+          <TableContainer>
+            <table>
+              <thead>
+                <tr>
+                  <th>Category</th>
+                  <th>Created</th>
+                  {isDeskTopScreen && <th>Updated</th>}
+                  <th>Edit</th>
+                  <th>Delete</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </TableContainer>
+              </thead>
+              <tbody>
+                {categories.map((category) => (
+                  <tr key={category.id} id={category.id}>
+                    <td className="description" onDoubleClick={() => handleEditCategory(category.id)}>
+                      <input
+                        name="category-description"
+                        type="text"
+                        defaultValue={category.description}
+                        disabled={category.disabled}
+                        onBlur={(event) => handleOnBlur(event, category.id)}
+                        id={`input-${category.id}`}
+                        className={category.className}
+                        onFocus={(event) => handleOnFocus(event.target)}
+                      />
+                    </td>
+                    <td className="date-created">{category.createdAt}</td>
+                    {isDeskTopScreen && <td className="date-updated">{category.updatedAt}</td>}
+                    <td>
+                      <Button
+                        type="button"
+                        onClick={() => (category.editMode === 'edit'
+                          ? handleEditCategory(category.id)
+                          : handleUpdateCategory(category.id))}
+                      >
+                        { category.editMode === 'edit' ? <AiFillEdit color="#5636D3" /> : <AiOutlineSave color="#5636D3" /> }
+                      </Button>
+                    </td>
+                    <td>
+                      <Button
+                        type="button"
+                        onClick={() => (category.deleteMode === 'delete'
+                          ? handleDeleteCategory(category.id)
+                          : handleConfirmDelete(category.id))}
+                      >
+                        {category.deleteMode === 'delete' ? <FaTrashAlt color="#FF872C" /> : <GiConfirmed color="#FF872C" />}
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </TableContainer>
+        )}
       </Container>
     </>
   )

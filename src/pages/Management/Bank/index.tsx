@@ -4,6 +4,7 @@ import { AxiosRequestConfig } from 'axios'
 import React, { FocusEvent, useCallback, useEffect, useRef, useState } from 'react'
 import { AiFillEdit, AiOutlineSave } from 'react-icons/ai'
 import { FaTrashAlt } from 'react-icons/fa'
+import { GiConfirmed } from 'react-icons/gi'
 import { MdTitle } from 'react-icons/md'
 import * as Yup from 'yup'
 import Button from '../../../components/Button'
@@ -24,7 +25,8 @@ interface IBank {
   createdAt: string
   updatedAt: string
   disabled: boolean
-  mode: 'edit' | 'save'
+  editMode: 'edit' | 'save'
+  deleteMode: 'delete' | 'confirm'
   className: string | null
 }
 
@@ -50,7 +52,8 @@ const BankManagement: React.FC = () => {
         createdAt: formatDate(bank.created_at),
         updatedAt: formatDate(bank.updated_at),
         disabled: true,
-        mode: 'edit',
+        editMode: 'edit',
+        deleteMode: 'delete',
       }))
     setBanks(banksList)
   }, [])
@@ -85,7 +88,7 @@ const BankManagement: React.FC = () => {
     }
   }
 
-  const handleDelete = async (bankId: string) => {
+  const handleConfirmDelete = async (bankId: string) => {
     try {
       const token = sessionStorage.getItem(constants.sessionStorage.token)
       const config: AxiosRequestConfig = { headers: { Authorization: `Bearer ${token}` }}
@@ -108,9 +111,17 @@ const BankManagement: React.FC = () => {
   const handleEditBank = (bankId: string) => {
     setBanks(banks.map((bank) => ({
       ...bank,
-      disabled: bank.id !== bankId && bank.mode === 'edit',
-      mode: bank.id === bankId ? 'save' : bank.mode,
+      disabled: bank.id !== bankId && bank.editMode === 'edit',
+      editMode: bank.id === bankId ? 'save' : bank.editMode,
       className: bank.id === bankId ? 'editable' : null,
+    })))
+  }
+
+  const handleDeleteBank = (bankId: string) => {
+    setBanks(banks.map((bank) => ({
+      ...bank,
+      disabled: bank.id !== bankId && bank.deleteMode === 'delete',
+      deleteMode: bank.id === bankId ? 'confirm' : bank.deleteMode,
     })))
   }
 
@@ -147,7 +158,7 @@ const BankManagement: React.FC = () => {
       ...bank,
       name: bank.id === bankId ? input.value : bank.name,
       disabled: bank.id === bankId,
-      mode: bank.id === bankId ? 'edit' : bank.mode,
+      editMode: bank.id === bankId ? 'edit' : bank.editMode,
       className: bank.id === bankId ? 'null' : bank.className,
     })))
   }
@@ -178,52 +189,61 @@ const BankManagement: React.FC = () => {
             <Button type="submit">Save</Button>
           </Form>
         </FormContainer>
-        <TableContainer>
-          <table>
-            <thead>
-              <tr>
-                <th>Bank</th>
-                <th>Created</th>
-                {isDeskTopScreen && <th>Updated</th>}
-              </tr>
-            </thead>
-            <tbody>
-              {banks.map((bank) => (
-                <tr key={bank.id} id={bank.id}>
-                  <td onDoubleClick={() => handleEditBank(bank.id)}>
-                    <input
-                      name="bank-name"
-                      type="text"
-                      defaultValue={bank.name}
-                      disabled={bank.disabled}
-                      onBlur={(event) => handleOnBlur(event, bank.id)}
-                      id={`input-${bank.id}`}
-                      className={bank.className}
-                      onFocus={(event) => handleOnFocus(event.target)}
-                    />
-                  </td>
-                  <td>{bank.createdAt}</td>
-                  {isDeskTopScreen && <td className="date-updated">{bank.updatedAt}</td>}
-                  <td>
-                    <Button
-                      type="button"
-                      onClick={() => (bank.mode === 'edit'
-                        ? handleEditBank(bank.id)
-                        : handleUpdateBank(bank.id))}
-                    >
-                      { bank.mode === 'edit' ? <AiFillEdit color="#5636D3" /> : <AiOutlineSave color="#5636D3" /> }
-                    </Button>
-                  </td>
-                  <td>
-                    <Button type="button" onClick={() => handleDelete(bank.id)}>
-                      <FaTrashAlt color="#FF872C" />
-                    </Button>
-                  </td>
+        {banks.length > 0 && (
+          <TableContainer>
+            <table>
+              <thead>
+                <tr>
+                  <th>Bank</th>
+                  <th>Created</th>
+                  {isDeskTopScreen && <th>Updated</th>}
+                  <th>Edit</th>
+                  <th>Delete</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </TableContainer>
+              </thead>
+              <tbody>
+                {banks.map((bank) => (
+                  <tr key={bank.id} id={bank.id}>
+                    <td onDoubleClick={() => handleEditBank(bank.id)}>
+                      <input
+                        name="bank-name"
+                        type="text"
+                        defaultValue={bank.name}
+                        disabled={bank.disabled}
+                        onBlur={(event) => handleOnBlur(event, bank.id)}
+                        id={`input-${bank.id}`}
+                        className={bank.className}
+                        onFocus={(event) => handleOnFocus(event.target)}
+                      />
+                    </td>
+                    <td>{bank.createdAt}</td>
+                    {isDeskTopScreen && <td className="date-updated">{bank.updatedAt}</td>}
+                    <td>
+                      <Button
+                        type="button"
+                        onClick={() => (bank.editMode === 'edit'
+                          ? handleEditBank(bank.id)
+                          : handleUpdateBank(bank.id))}
+                      >
+                        { bank.editMode === 'edit' ? <AiFillEdit color="#5636D3" /> : <AiOutlineSave color="#5636D3" /> }
+                      </Button>
+                    </td>
+                    <td>
+                      <Button
+                        type="button"
+                        onClick={() => (bank.deleteMode === 'delete'
+                          ? handleDeleteBank(bank.id)
+                          : handleConfirmDelete(bank.id))}
+                      >
+                        {bank.deleteMode === 'delete' ? <FaTrashAlt color="#FF872C" /> : <GiConfirmed color="#FF872C" />}
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </TableContainer>
+        )}
       </Container>
     </>
   )

@@ -148,7 +148,6 @@ export const TableContainer = styled.section`
       }
       &.income {
         color: var(--green);
-        padding-left: 2.75rem;
         @media(max-width: 720px) {
           display: flex;
           align-items: center;

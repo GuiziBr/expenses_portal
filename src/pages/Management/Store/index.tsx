@@ -4,6 +4,7 @@ import { AxiosRequestConfig } from 'axios'
 import React, { FocusEvent, useCallback, useEffect, useRef, useState } from 'react'
 import { AiFillEdit, AiOutlineSave } from 'react-icons/ai'
 import { FaTrashAlt } from 'react-icons/fa'
+import { GiConfirmed } from 'react-icons/gi'
 import { MdTitle } from 'react-icons/md'
 import * as Yup from 'yup'
 import Button from '../../../components/Button'
@@ -24,7 +25,8 @@ interface IStore {
   createdAt: string
   updatedAt: string
   disabled: boolean
-  mode: 'edit' | 'save'
+  editMode: 'edit' | 'save'
+  deleteMode: 'delete' | 'confirm'
   className: string | null
 }
 
@@ -50,7 +52,8 @@ const StoreManagement: React.FC = () => {
         createdAt: formatDate(store.created_at),
         updatedAt: formatDate(store.updated_at),
         disabled: true,
-        mode: 'edit',
+        editMode: 'edit',
+        deleteMode: 'delete',
       }))
     setStores(storesList)
   }, [])
@@ -85,7 +88,7 @@ const StoreManagement: React.FC = () => {
     }
   }
 
-  const handleDelete = async (storeId: string) => {
+  const handleConfirmDelete = async (storeId: string) => {
     try {
       const token = sessionStorage.getItem(constants.sessionStorage.token)
       const config: AxiosRequestConfig = { headers: { Authorization: `Bearer ${token}` }}
@@ -108,9 +111,17 @@ const StoreManagement: React.FC = () => {
   const handleEditStore = (storeId: string) => {
     setStores(stores.map((store) => ({
       ...store,
-      disabled: store.id !== storeId && store.mode === 'edit',
-      mode: store.id === storeId ? 'save' : store.mode,
+      disabled: store.id !== storeId && store.editMode === 'edit',
+      editMode: store.id === storeId ? 'save' : store.editMode,
       className: store.id === storeId ? 'editable' : null,
+    })))
+  }
+
+  const handleDeleteStore = (storeId: string) => {
+    setStores(stores.map((store) => ({
+      ...store,
+      disabled: store.id !== storeId && store.deleteMode === 'delete',
+      deleteMode: store.id === storeId ? 'confirm' : store.deleteMode,
     })))
   }
 
@@ -147,7 +158,7 @@ const StoreManagement: React.FC = () => {
       ...store,
       name: store.id === storeId ? input.value : store.name,
       disabled: store.id === storeId,
-      mode: store.id === storeId ? 'edit' : store.mode,
+      editMode: store.id === storeId ? 'edit' : store.editMode,
       className: store.id === storeId ? 'null' : store.className,
     })))
   }
@@ -178,52 +189,62 @@ const StoreManagement: React.FC = () => {
             <Button type="submit">Save</Button>
           </Form>
         </FormContainer>
-        <TableContainer>
-          <table>
-            <thead>
-              <tr>
-                <th>Store</th>
-                <th>Created</th>
-                {isDeskTopScreen && <th>Updated</th>}
-              </tr>
-            </thead>
-            <tbody>
-              {stores.map((store) => (
-                <tr key={store.id} id={store.id}>
-                  <td className="name" onDoubleClick={() => handleEditStore(store.id)}>
-                    <input
-                      name="store-name"
-                      type="text"
-                      defaultValue={store.name}
-                      disabled={store.disabled}
-                      onBlur={(event) => handleOnBlur(event, store.id)}
-                      id={`input-${store.id}`}
-                      className={store.className}
-                      onFocus={(event) => handleOnFocus(event.target)}
-                    />
-                  </td>
-                  <td>{store.createdAt}</td>
-                  {isDeskTopScreen && <td className="date-updated">{store.updatedAt}</td>}
-                  <td>
-                    <Button
-                      type="button"
-                      onClick={() => (store.mode === 'edit'
-                        ? handleEditStore(store.id)
-                        : handleUpdateStore(store.id))}
-                    >
-                      { store.mode === 'edit' ? <AiFillEdit color="#5636D3" /> : <AiOutlineSave color="#5636D3" /> }
-                    </Button>
-                  </td>
-                  <td>
-                    <Button type="button" onClick={() => handleDelete(store.id)}>
-                      <FaTrashAlt color="#FF872C" />
-                    </Button>
-                  </td>
+        {stores.length > 0 && (
+          <TableContainer>
+            <table>
+              <thead>
+                <tr>
+                  <th>Store</th>
+                  <th>Created</th>
+                  {isDeskTopScreen && <th>Updated</th>}
+                  <th>Edit</th>
+                  <th>Delete</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </TableContainer>
+              </thead>
+              <tbody>
+                {stores.map((store) => (
+                  <tr key={store.id} id={store.id}>
+                    <td className="name" onDoubleClick={() => handleEditStore(store.id)}>
+                      <input
+                        name="store-name"
+                        type="text"
+                        defaultValue={store.name}
+                        disabled={store.disabled}
+                        onBlur={(event) => handleOnBlur(event, store.id)}
+                        id={`input-${store.id}`}
+                        className={store.className}
+                        onFocus={(event) => handleOnFocus(event.target)}
+                      />
+                    </td>
+                    <td>{store.createdAt}</td>
+                    {isDeskTopScreen && <td className="date-updated">{store.updatedAt}</td>}
+                    <td>
+                      <Button
+                        type="button"
+                        onClick={() => (store.editMode === 'edit'
+                          ? handleEditStore(store.id)
+                          : handleUpdateStore(store.id))}
+                      >
+                        { store.editMode === 'edit' ? <AiFillEdit color="#5636D3" /> : <AiOutlineSave color="#5636D3" /> }
+                      </Button>
+                    </td>
+                    <td>
+                      <Button
+                        type="button"
+                        onClick={() => (store.deleteMode === 'delete'
+                          ? handleDeleteStore(store.id)
+                          : handleConfirmDelete(store.id))}
+                      >
+                        {store.deleteMode === 'delete' ? <FaTrashAlt color="#FF872C" /> : <GiConfirmed color="#FF872C" />}
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </TableContainer>
+        )}
+
       </Container>
     </>
   )
