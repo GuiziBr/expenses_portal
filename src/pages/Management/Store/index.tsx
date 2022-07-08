@@ -109,18 +109,20 @@ const StoreManagement: React.FC = () => {
   }
 
   const handleEditStore = (storeId: string) => {
-    setStores(stores.map((store) => ({
-      ...store,
-      disabled: store.id !== storeId && store.editMode === 'edit',
-      editMode: store.id === storeId ? 'save' : store.editMode,
-      className: store.id === storeId ? 'editable' : null,
-    })))
+    setStores(stores.map((store) => {
+      const isSameStore = store.id === storeId
+      return {
+        ...store,
+        disabled: !isSameStore && store.editMode === 'edit',
+        editMode: isSameStore ? 'save' : store.editMode,
+        className: isSameStore || store.className === 'editable' ? 'editable' : null,
+      }
+    }))
   }
 
   const handleDeleteStore = (storeId: string) => {
     setStores(stores.map((store) => ({
       ...store,
-      disabled: store.id !== storeId && store.deleteMode === 'delete',
       deleteMode: store.id === storeId ? 'confirm' : store.deleteMode,
     })))
   }
@@ -154,13 +156,18 @@ const StoreManagement: React.FC = () => {
         input.value = selectedStore.name
       }
     }
-    setStores(stores.map((store) => ({
-      ...store,
-      name: store.id === storeId ? input.value : store.name,
-      disabled: store.id === storeId,
-      editMode: store.id === storeId ? 'edit' : store.editMode,
-      className: store.id === storeId ? 'null' : store.className,
-    })))
+    setStores(stores.map((store) => (
+      store.id === storeId
+        ? {
+          ...store,
+          name: input.value,
+          disabled: true,
+          editMode: 'edit',
+          className: 'null',
+          deleteMode: 'delete',
+        }
+        : store
+    )))
   }
 
   const handleOnBlur = (event: FocusEvent<HTMLInputElement>, storeId: string) => {
@@ -185,7 +192,7 @@ const StoreManagement: React.FC = () => {
       <Container>
         <FormContainer>
           <Form ref={formRef} onSubmit={handleNewStore}>
-            <Input icon={MdTitle} name="name" placeholder="Store" cleanError={() => formRef.current?.setErrors({})} />
+            <Input icon={MdTitle} name="name" placeholder="Store" cleanError={() => formRef.current?.setErrors({})} maxLength={20} />
             <Button type="submit">Save</Button>
           </Form>
         </FormContainer>

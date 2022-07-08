@@ -1,7 +1,7 @@
 import { FormHandles } from '@unform/core'
 import { Form } from '@unform/web'
 import { AxiosRequestConfig } from 'axios'
-import { endOfDay, format, startOfMonth } from 'date-fns'
+import { endOfDay, format, getYear } from 'date-fns'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { HiOutlineCurrencyDollar, HiOutlineSelector } from 'react-icons/hi'
 import { IoMdCheckboxOutline } from 'react-icons/io'
@@ -149,7 +149,7 @@ export function NewExpenseModal({ isOpen, onRequestClose, isDeskTopScreen }: New
   const checkboxOptions: CheckboxOption[] = constants.createExpenseCheckboxOptions[isDeskTopScreen ? 'desktopLabel' : 'mobileLabel']
 
   const dateMax = format(endOfDay(new Date()), constants.dateFormat)
-  const dateMin = format(startOfMonth(new Date()), constants.dateFormat)
+  const dateMin = format(new Date(getYear(new Date()), 0, 1), constants.dateFormat)
 
   return (
     <Modal
@@ -164,13 +164,13 @@ export function NewExpenseModal({ isOpen, onRequestClose, isDeskTopScreen }: New
       <FormContainer>
         <Form ref={formRef} onSubmit={handleSubmit}>
           <h2>Create Expense</h2>
-          <Input icon={MdTitle} name="description" placeholder="Expense description" />
+          <Input icon={MdTitle} name="description" placeholder="Expense description" maxLength={35} />
           <Select icon={HiOutlineSelector} name="category" options={categories} placeholder="Select category" />
           <Select icon={HiOutlineSelector} name="paymentType" options={paymentTypes} placeholder="Select payment type" />
           <Select icon={HiOutlineSelector} name="bank" options={banks} placeholder="Select bank" />
           <Select icon={HiOutlineSelector} name="store" options={stores} placeholder="Select store" />
           <Input icon={MdDateRange} name="date" type="date" max={dateMax} min={dateMin} />
-          <Input icon={HiOutlineCurrencyDollar} name="amount" placeholder="99.99" isCurrency />
+          <Input icon={HiOutlineCurrencyDollar} name="amount" placeholder="99.99" isCurrency maxLength={8} />
           <CheckboxInput icon={IoMdCheckboxOutline} name="options" options={checkboxOptions} />
           <Button type="submit">Save</Button>
         </Form>

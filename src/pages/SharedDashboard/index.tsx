@@ -32,6 +32,10 @@ interface Expense {
   paymentType: string
   bank?: string
   store?: string
+  dueDate: Date
+  formattedDueDate: string
+  mobileFormatDate: string
+  mobileFormatDueDate: string
 }
 
 interface Request {
@@ -154,8 +158,9 @@ const SharedDashboard: React.FC = () => {
                     <th>Expense</th>
                     {isDeskTopScreen && <th>Category</th>}
                     <th>Amount</th>
-                    {isDeskTopScreen && <th>Type</th>}
-                    <th>Date</th>
+                    {isDeskTopScreen && <th>Method</th>}
+                    <th>Purchase</th>
+                    <th>{`${isDeskTopScreen ? 'Due Date' : 'Due'}`}</th>
                     {isDeskTopScreen && <th>Bank</th>}
                     {isDeskTopScreen && <th>Store</th>}
                   </tr>
@@ -167,7 +172,8 @@ const SharedDashboard: React.FC = () => {
                       {isDeskTopScreen && <td>{expense.category}</td>}
                       <td className={expense.type}>{expense.formattedAmount}</td>
                       {isDeskTopScreen && <td>{expense.paymentType}</td>}
-                      <td>{expense.formattedDate}</td>
+                      <td>{isDeskTopScreen ? expense.formattedDate : expense.mobileFormatDate}</td>
+                      <td>{isDeskTopScreen ? expense.formattedDueDate : expense.mobileFormatDueDate}</td>
                       {isDeskTopScreen && <td>{expense.bank}</td>}
                       {isDeskTopScreen && <td>{expense.store}</td>}
                     </tr>
