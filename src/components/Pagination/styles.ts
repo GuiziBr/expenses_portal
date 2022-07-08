@@ -6,7 +6,7 @@ interface PaginationItemProps {
 }
 
 export const Container = styled.div`
-  margin-top: 4.8rem;
+  margin-top: 6rem;
   display: flex;
   width: 100%;
   justify-content: center;
