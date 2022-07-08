@@ -14,6 +14,9 @@ interface Expense {
   'payment_type': { description: string }
   bank?: { name: string }
   store?: { name: string }
+  'due_date': Date
+  mobileFormatDate: string
+  mobileFormatDueDate: string
 }
 
 interface FormattedExpense {
@@ -28,6 +31,10 @@ interface FormattedExpense {
   paymentType: string
   bank?: string
   store?: string
+  dueDate: Date
+  formattedDueDate: string
+  mobileFormatDate: string
+  mobileFormatDueDate: string
 }
 
 interface Payload {
@@ -53,6 +60,10 @@ export const assembleExpense = (expense: Expense): FormattedExpense => ({
   paymentType: expense.payment_type.description,
   bank: expense.bank?.name,
   store: expense.store?.name,
+  dueDate: expense.due_date,
+  formattedDueDate: formatDate(expense.due_date),
+  mobileFormatDate: formatDate(expense.date, false),
+  mobileFormatDueDate: formatDate(expense.due_date, false),
 })
 
 export const assemblePersonalExpense = (expense: Omit<Expense, 'type'>): Omit<FormattedExpense, 'type'> => ({
@@ -66,6 +77,10 @@ export const assemblePersonalExpense = (expense: Omit<Expense, 'type'>): Omit<Fo
   paymentType: expense.payment_type.description,
   bank: expense.bank?.name,
   store: expense.store?.name,
+  dueDate: expense.due_date,
+  formattedDueDate: formatDate(expense.due_date),
+  mobileFormatDate: formatDate(expense.date, false),
+  mobileFormatDueDate: formatDate(expense.due_date, false),
 })
 
 export const assemblePayload = (data: Payload) => ({

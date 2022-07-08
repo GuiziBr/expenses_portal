@@ -109,18 +109,20 @@ const BankManagement: React.FC = () => {
   }
 
   const handleEditBank = (bankId: string) => {
-    setBanks(banks.map((bank) => ({
-      ...bank,
-      disabled: bank.id !== bankId && bank.editMode === 'edit',
-      editMode: bank.id === bankId ? 'save' : bank.editMode,
-      className: bank.id === bankId ? 'editable' : null,
-    })))
+    setBanks(banks.map((bank) => {
+      const isSameBank = bank.id === bankId
+      return {
+        ...bank,
+        disabled: !isSameBank && bank.editMode === 'edit',
+        editMode: isSameBank ? 'save' : bank.editMode,
+        className: isSameBank || bank.className === 'editable' ? 'editable' : null,
+      }
+    }))
   }
 
   const handleDeleteBank = (bankId: string) => {
     setBanks(banks.map((bank) => ({
       ...bank,
-      disabled: bank.id !== bankId && bank.deleteMode === 'delete',
       deleteMode: bank.id === bankId ? 'confirm' : bank.deleteMode,
     })))
   }
@@ -154,13 +156,18 @@ const BankManagement: React.FC = () => {
         input.value = selectedBank.name
       }
     }
-    setBanks(banks.map((bank) => ({
-      ...bank,
-      name: bank.id === bankId ? input.value : bank.name,
-      disabled: bank.id === bankId,
-      editMode: bank.id === bankId ? 'edit' : bank.editMode,
-      className: bank.id === bankId ? 'null' : bank.className,
-    })))
+    setBanks(banks.map((bank) => (
+      bank.id === bankId
+        ? {
+          ...bank,
+          name: input.value,
+          disabled: true,
+          editMode: 'edit',
+          className: 'null',
+          deleteMode: 'delete',
+        }
+        : bank
+    )))
   }
 
   const handleOnBlur = (event: FocusEvent<HTMLInputElement>, bankId: string) => {
@@ -185,7 +192,7 @@ const BankManagement: React.FC = () => {
       <Container>
         <FormContainer>
           <Form ref={formRef} onSubmit={handleNewBank}>
-            <Input icon={MdTitle} name="name" placeholder="Bank" cleanError={() => formRef.current?.setErrors({})} />
+            <Input icon={MdTitle} name="name" placeholder="Bank" cleanError={() => formRef.current?.setErrors({})} maxLength={20} />
             <Button type="submit">Save</Button>
           </Form>
         </FormContainer>

@@ -5,7 +5,7 @@ interface CardProps {
 }
 
 export const Container = styled.div`
-  width: 100vw;
+  width: 100%;
   max-width: 1120px;
   margin: 0 auto;
   padding: 2.5rem 1rem;
@@ -34,6 +34,7 @@ export const Card = styled.div`
     display: flex;
     flex-direction: column;
   }
+
   header {
     display: flex;
     align-items: center;
@@ -42,6 +43,7 @@ export const Card = styled.div`
       font-size: 1rem;
     }
   }
+
   h1 {
     margin-top: 1rem;
     font-size: 2.25rem;
@@ -64,15 +66,18 @@ export const FormContainer = styled.section`
     flex-direction: column;
     align-items: center;
   }
+
   button:nth-child(1) {
     width: 9.5rem;
     margin: 0;
   }
+
   button {
     width: 5.5rem;
     height: 2.5rem;
     margin: 0 0 0 .3rem;
   }
+
   form {
     display: flex;
     flex-direction: row;
@@ -81,6 +86,7 @@ export const FormContainer = styled.section`
     @media(max-width: 720px) {
       margin-top: 1rem;
     }
+
     div {
       height: 2.6rem;
       width: 15rem;
@@ -96,72 +102,144 @@ export const TableContainer = styled.section`
   @media(max-width: 720px){
     height: 45rem;
   }
+
   table {
     width: 100%;
     border-spacing: 0 .5rem;
     @media(max-width: 720px) {
       width: 100vw;
     }
+
     thead {
-      @media(max-width: 720px) {
-        display: flex;
-        width: 100vw;
-      }
-    }
-    tr {
-      @media(max-width: 720px) {
-        display: flex;
-        padding: .5rem 0 0 0;
-        width: 100vw;
-      }
-    }
-    th {
-      width: 11rem;
-      color: var(--light-gray);
-      font-weight: normal;
-      padding: 1.25rem 1.5rem;
-      text-align: left;
-      font-size: 1.25rem;
-      line-height: 1.5rem;
-      @media(max-width: 720px) {
-        width: 33.3vw;
-        font-size: 1rem;
-        padding: 0 0 0 1.5rem;
-      }
-    }
-    td {
-      width: 11rem;
-      padding: 1.25rem 1.5rem;
-      border: 0;
-      background: var(--white);
-      font-size: 1rem;
-      font-weight: normal;
-      text-align: left;
-      @media(max-width: 720px) {
-        width: 33.3vw;
-        padding: 1rem 1.5rem;
-        text-align: left;
-        display: flex;
-        align-items: center;
-      }
-      color: var(--light-gray);
-      &.description {
-        color: var(--blue-wood);
-      }
-      &.income {
-        color: var(--green);
+
+      tr {
         @media(max-width: 720px) {
           display: flex;
-          align-items: center;
-          padding-left: 1.5rem;
+          padding: .5rem 0 0 0;
+        }
+
+        th {
+          color: var(--light-gray);
+          font-weight: normal;
+          padding: 1rem .5rem;
+          text-align: left;
+          font-size: 1.25rem;
+          line-height: 1.5rem;
+          @media(max-width: 720px) {
+            font-size: 1rem;
+            padding: 0 0 0 .5rem;
+          }
+        }
+
+        th:first-child {
+          padding-left: 1rem;
+        }
+
+        th:nth-child(2) {
+          @media(max-width: 720px) {
+            width: 23%;
+          }
+        }
+
+        th:nth-child(3) {
+          @media(max-width: 720px) {
+            width: 21%;
+          }
+        }
+
+        th:last-child {
+          padding-right: 1rem;
+          @media(max-width: 720px) {
+            width: 21%;
+          }
         }
       }
     }
-    td:first-child {
-      border-radius: .5rem 0 0 .5rem;
-    }
-    td:last-child {
-      border-radius: 0 .5rem .5rem 0;
+
+    tbody {
+      width: 100%;
+
+      tr {
+        width: 100%;
+        @media(max-width: 720px) {
+          display: flex;
+          padding: .5rem 0 0 0;
+        }
+
+        td {
+          padding: 1.25rem .5rem;
+          border: 0;
+          background: var(--white);
+          font-size: 1rem;
+          font-weight: normal;
+          text-align: left;
+          color: var(--light-gray);
+          @media(max-width: 720px) {
+            text-align: left;
+            display: flex;
+            align-items: center;
+            padding-right: 0;
+          }
+
+          &.description {
+            color: var(--blue-wood);
+          }
+
+          &.income {
+            color: var(--green);
+          }
+        }
+
+        td:first-child {
+          width: 17%;
+          border-radius: .5rem 0 0 .5rem;
+          padding-left: 1rem;
+          @media(max-width: 720px) {
+            width: 35%;
+          }
+        }
+
+        td:nth-child(2) {
+          width: 13%;
+          @media(max-width: 720px) {
+            width: 23%;
+          }
+        }
+
+        td:nth-child(3) {
+          width: 11%;
+          @media(max-width: 720px) {
+            width: 21%;
+          }
+        }
+
+        td:nth-child(4) {
+          width: 12%;
+        }
+
+        td:nth-child(5) {
+          width: 11%;
+        }
+
+        td:nth-child(6) {
+          width: 11%;
+        }
+
+        td:nth-child(7) {
+          width: 12.5%;
+        }
+
+        td:last-child {
+          width: 12.5%;
+          border-radius: 0 .5rem .5rem 0;
+          padding-right: 1rem;
+          @media(max-width: 720px) {
+            width: 21%;
+          }
+        }
+      }
+
+
     }
   }
 `

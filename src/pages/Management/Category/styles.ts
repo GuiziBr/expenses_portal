@@ -66,74 +66,129 @@ export const TableContainer = styled.section`
         display: flex;
         width: 100vw;
       }
-    }
+      tr {
+        @media(max-width: 720px) {
+          display: flex;
+          padding: .5rem 0 0 0;
+          width: 100%;
+        }
 
-    tr {
-      @media(max-width: 720px) {
-        display: flex;
-        padding: .5rem 0 0 0;
-        width: 100vw;
-      }
-    }
+        th {
+          width: 11rem;
+          color: var(--light-gray);
+          font-weight: normal;
+          padding: 1.25rem 2rem;
+          text-align: left;
+          font-size: 1.25rem;
+          line-height: 1.5rem;
+          @media(max-width: 720px) {
+            width: 20%;
+            font-size: 1rem;
+            padding: 0 0 0 .5rem;
+          }
+        }
 
-    th {
-      width: 11rem;
-      color: var(--light-gray);
-      font-weight: normal;
-      padding: 1.25rem 2rem;
-      text-align: left;
-      font-size: 1.25rem;
-      line-height: 1.5rem;
-      @media(max-width: 720px) {
-        width: 33.3vw;
-        font-size: 1rem;
-        padding: 0 0 0 1rem;
-      }
-    }
+        th:first-child {
+          border-radius: .5rem 0 0 .5rem;
+          @media(max-width: 720px) {
+            padding-left: 1rem;
+            width: 30%;
+          }
+        }
+        th:nth-child(2) {
+          @media(max-width: 720px) {
+            width: 30%;
+          }
+        }
 
-    td {
-      width: 11rem;
-      padding: .63rem 2rem;
-      border: 0;
-      background: var(--white);
-      font-size: 1rem;
-      font-weight: normal;
-      @media(max-width: 720px) {
-        padding: .44rem 1rem;
-        text-align: left;
-        display: flex;
-        align-items: center;
-      }
-      color: var(--light-gray);
-      &.edit-button, &.delete-button {
-        width: 1rem;
-        margin: 0;
-      }
-      button {
-        width: 1rem;
-        margin: 0;
-        height: 2.55rem;
-        background: none;
-        padding: 0;
-     }
-     input {
-      border: 0;
-      background-color: transparent;
-      &.editable {
-        color: var(--light-orange);
-      }
-      @media(max-width: 720px) {
-        width: 5.7rem;
+        th:last-child() {
+          @media(max-width: 720px) {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          }
+        }
+
       }
 
-     }
-    }
-    td:first-child {
-      border-radius: .5rem 0 0 .5rem;
     }
 
-    td:last-child {
-      border-radius: 0 .5rem .5rem 0;
+    tbody {
+      tr {
+        @media(max-width: 720px) {
+          display: flex;
+          padding: .5rem 0 0 0;
+          width: 100vw;
+        }
+
+        td {
+          width: 11rem;
+          padding: .63rem 2rem;
+          border: 0;
+          background: var(--white);
+          font-size: 1rem;
+          font-weight: normal;
+          color: var(--light-gray);
+          @media(max-width: 720px) {
+            padding: .44rem 0 .44rem .5rem;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            width: 20%;
+          }
+          &.edit-button, &.delete-button {
+            width: 1rem;
+            margin: 0;
+          }
+          button {
+            width: 1rem;
+            margin: 0;
+            height: 2.55rem;
+            background: none;
+            padding: 0;
+          }
+          input {
+            border: 0;
+            background-color: transparent;
+            &.editable {
+              color: var(--light-orange);
+            }
+            @media(max-width: 720px) {
+              width: 100%;
+            }
+          }
+        }
+
+        td:first-child {
+          border-radius: .5rem 0 0 .5rem;
+          @media(max-width: 720px) {
+            padding-left: 1rem;
+            width: 30%;
+          }
+        }
+        td:nth-child(2) {
+          @media(max-width: 720px) {
+            width: 30%;
+          }
+        }
+
+        td:nth-child(3) {
+          @media(max-width: 720px) {
+            display: flex;
+            align-items: center;
+            justify-content: left;
+          }
+        }
+
+        td:last-child {
+          border-radius: 0 .5rem .5rem 0;
+          @media(max-width: 720px) {
+            display: flex;
+            align-items: center;
+            justify-content: left;
+          }
+        }
+      }
     }
   }
 `

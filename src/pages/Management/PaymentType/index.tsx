@@ -3,11 +3,13 @@ import { Form } from '@unform/web'
 import { AxiosRequestConfig } from 'axios'
 import React, { FocusEvent, useCallback, useEffect, useRef, useState } from 'react'
 import { AiFillEdit, AiOutlineSave } from 'react-icons/ai'
+import { BsCreditCard } from 'react-icons/bs'
 import { FaTrashAlt } from 'react-icons/fa'
 import { GiConfirmed } from 'react-icons/gi'
 import { MdTitle } from 'react-icons/md'
 import * as Yup from 'yup'
 import Button from '../../../components/Button'
+import CheckboxInput from '../../../components/Checkbox'
 import Header from '../../../components/Header'
 import Input from '../../../components/Input'
 import constants from '../../../constants/constants'
@@ -28,10 +30,12 @@ interface IPaymentType {
   editMode: 'edit' | 'save'
   deleteMode: 'delete' | 'confirm'
   className: string | null
+  hasStatement: boolean
 }
 
 interface IPayload {
   description: string
+  hasStatement: Array<string>
 }
 
 const PaymentTypeManagement: React.FC = () => {
@@ -54,16 +58,18 @@ const PaymentTypeManagement: React.FC = () => {
         disabled: true,
         editMode: 'edit',
         deleteMode: 'delete',
+        hasStatement: paymentType.hasStatement,
       }))
     setPaymentTypes(paymentTypesList)
   }, [])
 
-  const handleNewPaymentType = async (payload: IPayload) => {
+  const handleNewPaymentType = async (data: IPayload) => {
     try {
       formRef.current?.setErrors({})
-      await newPaymentTypeSchema.validate(payload, { abortEarly: false })
+      await newPaymentTypeSchema.validate(data, { abortEarly: false })
       const token = sessionStorage.getItem(constants.sessionStorage.token)
       const config: AxiosRequestConfig = { headers: { Authorization: `Bearer ${token}` }}
+      const payload = { description: data.description, hasStatement: !!data.hasStatement[0] }
       await api.post('/paymentType', payload, config)
       addToast({
         type: 'success',
@@ -109,18 +115,20 @@ const PaymentTypeManagement: React.FC = () => {
   }
 
   const handleEditPaymentType = (paymentTypeId: string) => {
-    setPaymentTypes(paymentTypes.map((paymentType) => ({
-      ...paymentType,
-      disabled: paymentType.id !== paymentTypeId && paymentType.editMode === 'edit',
-      editMode: paymentType.id === paymentTypeId ? 'save' : paymentType.editMode,
-      className: paymentType.id === paymentTypeId ? 'editable' : null,
-    })))
+    setPaymentTypes(paymentTypes.map((paymentType) => {
+      const isSamePaymentType = paymentType.id === paymentTypeId
+      return {
+        ...paymentType,
+        disabled: !isSamePaymentType && paymentType.editMode === 'edit',
+        editMode: isSamePaymentType ? 'save' : paymentType.editMode,
+        className: isSamePaymentType || paymentType.className === 'editable' ? 'editable' : null,
+      }
+    }))
   }
 
   const handleDeletePaymentType = (paymentTypeId: string) => {
     setPaymentTypes(paymentTypes.map((paymentType) => ({
       ...paymentType,
-      disabled: paymentType.id !== paymentTypeId && paymentType.deleteMode === 'delete',
       deleteMode: paymentType.id === paymentTypeId ? 'confirm' : paymentType.deleteMode,
     })))
   }
@@ -131,9 +139,10 @@ const PaymentTypeManagement: React.FC = () => {
 
   const handleUpdatePaymentType = async (paymentTypeId: string) => {
     const input: HTMLInputElement = document.querySelector(`input#input-${paymentTypeId}`)
+    const checkbox: HTMLInputElement = document.querySelector(`input#checkbox-${paymentTypeId}`)
     const selectedPaymentType = paymentTypes.find((paymentType) => paymentType.id === paymentTypeId)
-    if (input.value && input.value !== selectedPaymentType?.description) {
-      const payload = { description: input.value }
+    if ((input.value && input.value !== selectedPaymentType?.description) || (checkbox.checked !== selectedPaymentType.hasStatement)) {
+      const payload = { description: input.value, hasStatement: checkbox.checked }
       const token = sessionStorage.getItem(constants.sessionStorage.token)
       const config: AxiosRequestConfig = { headers: { Authorization: `Bearer ${token}` }}
       try {
@@ -154,13 +163,19 @@ const PaymentTypeManagement: React.FC = () => {
         input.value = selectedPaymentType.description
       }
     }
-    setPaymentTypes(paymentTypes.map((paymentType) => ({
-      ...paymentType,
-      description: paymentType.id === paymentTypeId ? input.value : paymentType.description,
-      disabled: paymentType.id === paymentTypeId,
-      editMode: paymentType.id === paymentTypeId ? 'edit' : paymentType.editMode,
-      className: paymentType.id === paymentTypeId ? 'null' : paymentType.className,
-    })))
+    setPaymentTypes(paymentTypes.map((paymentType) => (
+      paymentType.id === paymentTypeId
+        ? {
+          ...paymentType,
+          description: input.value,
+          disabled: true,
+          editMode: 'edit',
+          className: null,
+          hasStatement: checkbox.checked,
+          deleteMode: 'delete',
+        }
+        : paymentType
+    )))
   }
 
   const handleOnBlur = (event: FocusEvent<HTMLInputElement>, paymentTypeId: string) => {
@@ -185,7 +200,19 @@ const PaymentTypeManagement: React.FC = () => {
       <Container>
         <FormContainer>
           <Form ref={formRef} onSubmit={handleNewPaymentType}>
-            <Input icon={MdTitle} name="description" placeholder="Payment Type" cleanError={() => formRef.current?.setErrors({})} />
+            <Input
+              icon={MdTitle}
+              name="description"
+              placeholder="Payment Type"
+              cleanError={() => formRef.current?.setErrors({})}
+              maxLength={20}
+            />
+            <CheckboxInput
+              icon={BsCreditCard}
+              name="hasStatement"
+              options={[{ id: 'hasStatement', value: 'hasStatement', label: 'Statement' }]}
+              defaultOnChange={() => {}}
+            />
             <Button type="submit">Save</Button>
           </Form>
         </FormContainer>
@@ -195,7 +222,8 @@ const PaymentTypeManagement: React.FC = () => {
               <thead>
                 <tr>
                   <th>Payment Type</th>
-                  <th>Created</th>
+                  <th>{isDeskTopScreen ? 'Statement' : <BsCreditCard />}</th>
+                  {isDeskTopScreen && <th>Created</th>}
                   {isDeskTopScreen && <th>Updated</th>}
                   <th>Edit</th>
                   <th>Delete</th>
@@ -216,7 +244,16 @@ const PaymentTypeManagement: React.FC = () => {
                         onFocus={(event) => handleOnFocus(event.target)}
                       />
                     </td>
-                    <td>{paymentType.createdAt}</td>
+                    <td>
+                      <input
+                        type="checkbox"
+                        id={`checkbox-${paymentType.id}`}
+                        value="hasStatement"
+                        disabled={paymentType.disabled}
+                        defaultChecked={paymentType.hasStatement}
+                      />
+                    </td>
+                    {isDeskTopScreen && <td className="date-created">{paymentType.createdAt}</td>}
                     {isDeskTopScreen && <td className="date-updated">{paymentType.updatedAt}</td>}
                     <td>
                       <Button

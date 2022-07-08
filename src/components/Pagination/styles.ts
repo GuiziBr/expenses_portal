@@ -18,7 +18,7 @@ export const Container = styled.div`
 export const PaginationButton = styled.div`
   display: flex;
   @media(max-width: 720px) {
-    margin-top: 4rem;
+    margin-top: 5rem;
   }
 `
 export const PaginationItem = styled.div`

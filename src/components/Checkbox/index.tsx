@@ -10,10 +10,11 @@ interface CheckboxProps extends InputHTMLAttributes<HTMLInputElement> {
     id: string
     value: string
     label: string
-  }[]
+  }[],
+  defaultOnChange?: (optionId: string) => void
 }
 
-const CheckboxInput: React.FC<CheckboxProps> = ({ name, options, icon: Icon, ...rest }) => {
+const CheckboxInput: React.FC<CheckboxProps> = ({ name, options, icon: Icon, defaultOnChange, ...rest }) => {
   const inputRefs = useRef<HTMLInputElement[]>([])
   const { fieldName, registerField, defaultValue = [] } = useField(name)
 
@@ -54,7 +55,7 @@ const CheckboxInput: React.FC<CheckboxProps> = ({ name, options, icon: Icon, ...
             value={option.value}
             type="checkbox"
             id={option.id}
-            onChange={() => changeCheckbox(option.id)}
+            onChange={() => (defaultOnChange ? defaultOnChange(option.id) : changeCheckbox(option.id))}
             {...rest}
           />
           {option.label}

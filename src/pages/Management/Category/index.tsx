@@ -109,18 +109,20 @@ const CategoryManagement: React.FC = () => {
   }
 
   const handleEditCategory = (categoryId: string) => {
-    setCategories(categories.map((category) => ({
-      ...category,
-      disabled: category.id !== categoryId && category.editMode === 'edit',
-      editMode: category.id === categoryId ? 'save' : category.editMode,
-      className: category.id === categoryId ? 'editable' : null,
-    })))
+    setCategories(categories.map((category) => {
+      const isSameCategory = category.id === categoryId
+      return {
+        ...category,
+        disabled: !isSameCategory && category.editMode === 'edit',
+        editMode: isSameCategory ? 'save' : category.editMode,
+        className: isSameCategory || category.className === 'editable' ? 'editable' : null,
+      }
+    }))
   }
 
   const handleDeleteCategory = (categoryId: string) => {
     setCategories(categories.map((category) => ({
       ...category,
-      disabled: category.id !== categoryId && category.deleteMode === 'delete',
       deleteMode: category.id === categoryId ? 'confirm' : category.deleteMode,
     })))
   }
@@ -154,13 +156,18 @@ const CategoryManagement: React.FC = () => {
         input.value = selectedCategory.description
       }
     }
-    setCategories(categories.map((category) => ({
-      ...category,
-      description: category.id === categoryId ? input.value : category.description,
-      disabled: category.id === categoryId,
-      editMode: category.id === categoryId ? 'edit' : category.editMode,
-      className: category.id === categoryId ? 'null' : category.className,
-    })))
+    setCategories(categories.map((category) => (
+      category.id === categoryId
+        ? {
+          ...category,
+          description: input.value,
+          disabled: true,
+          editMode: 'edit',
+          className: null,
+          deleteMode: 'delete',
+        }
+        : category
+    )))
   }
 
   const handleOnBlur = (event: FocusEvent<HTMLInputElement>, categoryId: string) => {
@@ -185,7 +192,13 @@ const CategoryManagement: React.FC = () => {
       <Container>
         <FormContainer>
           <Form ref={formRef} onSubmit={handleNewCategory}>
-            <Input icon={MdTitle} name="description" placeholder="Category" cleanError={() => formRef.current?.setErrors({})} />
+            <Input
+              icon={MdTitle}
+              name="description"
+              placeholder="Category"
+              cleanError={() => formRef.current?.setErrors({})}
+              maxLength={20}
+            />
             <Button type="submit">Save</Button>
           </Form>
         </FormContainer>
