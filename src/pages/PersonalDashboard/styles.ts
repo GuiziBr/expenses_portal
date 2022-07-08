@@ -133,6 +133,9 @@ export const TableContainer = styled.section`
 
         th:first-child {
           padding-left: 1rem;
+          @media(max-width: 720px) {
+            width: 35%;
+          }
         }
 
         th:nth-child(2) {
