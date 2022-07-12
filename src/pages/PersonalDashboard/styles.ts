@@ -89,9 +89,19 @@ export const FormContainer = styled.section`
 
     div {
       height: 2.6rem;
-      width: 15rem;
+      width: 12rem;
       margin-right: .3rem;
       border-color: var(--container-background);
+      margin-top: .5rem;
+
+      svg {
+        margin-right: .8rem;
+      }
+    }
+
+    button {
+      margin-top: .5rem;
+      margin-left: 0;
     }
   }
 `
@@ -121,7 +131,7 @@ export const TableContainer = styled.section`
         th {
           color: var(--light-gray);
           font-weight: normal;
-          padding: 1rem .5rem;
+          padding: 1rem .5rem .5rem .5rem;
           text-align: left;
           font-size: 1.25rem;
           line-height: 1.5rem;
