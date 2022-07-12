@@ -11,7 +11,6 @@ export default {
       { id: 'split', value: 'split', label: 'Split' },
     ],
   },
-  monthDateFormat: 'yyyy-MM',
   dateFormat: 'yyyy-MM-dd',
   expenseType: {
     income: 'income',

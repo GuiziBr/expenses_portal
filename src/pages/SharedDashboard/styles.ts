@@ -41,6 +41,7 @@ export const Card = styled.div`
       font-size: 1rem;
     }
   }
+
   h1 {
     margin-top: 1rem;
     font-size: 2.25rem;
@@ -63,15 +64,18 @@ export const FormContainer = styled.section`
     flex-direction: column;
     align-items: center;
   }
+
   button:nth-child(1) {
     width: 9.5rem;
     margin: 0;
   }
+
   button {
     width: 5.5rem;
     height: 2.5rem;
     margin: 0 0 0 .3rem;
   }
+
   form {
     display: flex;
     flex-direction: row;
@@ -80,11 +84,22 @@ export const FormContainer = styled.section`
     @media(max-width: 720px) {
       margin-top: 1rem;
     }
+
     div {
       height: 2.6rem;
-      width: 15rem;
+      width: 12.5rem;
       margin-right: .3rem;
       border-color: var(--container-background);
+      margin-top: .5rem;
+
+      svg {
+        margin-right: .8rem;
+      }
+    }
+
+    button {
+      margin-top: .5rem;
+      margin-left: 0;
     }
   }
 `
@@ -114,7 +129,7 @@ export const TableContainer = styled.section`
         th {
           color: var(--light-gray);
           font-weight: normal;
-          padding: 1rem .5rem;
+          padding: 1rem .5rem .5rem .5rem;
           text-align: left;
           font-size: 1.25rem;
           line-height: 1.5rem;

@@ -1,7 +1,7 @@
 import { FormHandles } from '@unform/core'
 import { Form } from '@unform/web'
 import { AxiosRequestConfig } from 'axios'
-import { format } from 'date-fns'
+import { format, startOfMonth } from 'date-fns'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { MdDateRange } from 'react-icons/md'
 import Modal from 'react-modal'
@@ -38,21 +38,26 @@ interface Expense {
   mobileFormatDueDate: string
 }
 
-interface Request {
-  date: string
+interface IDates {
+  startDate?: string
+  endDate?: string
 }
 
 const SharedDashboard: React.FC = () => {
+  const defaultDate = format(new Date(), constants.dateFormat)
   const formRef = useRef<FormHandles>(null)
   const [expenses, setExpenses] = useState<Expense[]>([])
   const [pages, setPages] = useState([])
   const [currentPage, setCurrentPage] = useState(1)
-  const [currentDate, setCurrentDate] = useState<string>()
+  const [currentDates, setCurrentDates] = useState<IDates>({
+    startDate: format(startOfMonth(new Date()), constants.dateFormat),
+    endDate: defaultDate,
+  })
+  const { balance, getBalance } = useExpense()
   const [isNewExpenseModalOpen, setIsNewExpenseModalOpen] = useState(false)
   const [isDeskTopScreen] = useState<boolean>(window.innerWidth > 720)
-  const defaultDate = format(new Date(), constants.monthDateFormat)
-
-  const { balance, getBalance } = useExpense()
+  const [maxStartDate, setMaxStartDate] = useState<string>(defaultDate)
+  const [minEndDate, setMinEndDate] = useState<string>()
 
   Modal.setAppElement('#root')
 
@@ -69,11 +74,16 @@ const SharedDashboard: React.FC = () => {
 
   const getOffset = () => (currentPage * currentPageLimit) - currentPageLimit
 
-  const loadExpenses = useCallback(async (date?: string) => {
+  const loadExpenses = useCallback(async (dates?: IDates) => {
     const token = sessionStorage.getItem(constants.sessionStorage.token)
     const config: AxiosRequestConfig = {
       headers: { Authorization: `Bearer ${token}` },
-      params: { date: date || currentDate, offset: getOffset(), limit: currentPageLimit },
+      params: {
+        ...dates.startDate && { startDate: dates.startDate },
+        ...dates.endDate && { endDate: dates.endDate },
+        offset: getOffset(),
+        limit: currentPageLimit,
+      },
     }
     const { data, headers } = await api.get('/expenses/shared', config)
     const expenseList = data
@@ -82,9 +92,9 @@ const SharedDashboard: React.FC = () => {
 
     updatePageNumbers(headers[constants.headers.totalCount])
     setExpenses(expenseList)
-    if (date) {
-      setCurrentDate(date)
-      await getBalance(date)
+    if (dates.startDate || dates.endDate) {
+      setCurrentDates(dates)
+      await getBalance(dates)
     }
   }, [currentPage])
 
@@ -94,18 +104,20 @@ const SharedDashboard: React.FC = () => {
 
   async function handleCloseNewExpenseModal() {
     setIsNewExpenseModalOpen(false)
-    await loadExpenses()
+    await loadExpenses(currentDates)
   }
 
-  const handleSubmit = useCallback(async (data: Request) => {
-    await loadExpenses(data.date)
-    setCurrentPage(1)
-  }, [loadExpenses])
+  const handleSubmit = useCallback(async (dates: IDates) => {
+    if (dates.startDate || dates.endDate) {
+      await loadExpenses(dates)
+      setCurrentPage(1)
+    }
+  }, [])
 
   useEffect(() => {
     async function loadDashboard(): Promise<void> {
-      await loadExpenses()
-      await getBalance(currentDate)
+      await loadExpenses(currentDates)
+      await getBalance(currentDates)
     }
     loadDashboard()
   }, [loadExpenses])
@@ -145,7 +157,23 @@ const SharedDashboard: React.FC = () => {
         <FormContainer>
           <Button type="button" onClick={handleOpenNewExpenseModal}>Create Expense</Button>
           <Form ref={formRef} onSubmit={handleSubmit}>
-            <Input icon={MdDateRange} name="date" type="month" defaultValue={defaultDate} max={defaultDate} />
+            <Input
+              icon={MdDateRange}
+              name="startDate"
+              type="date"
+              defaultValue={currentDates.startDate}
+              max={maxStartDate}
+              onChange={(e) => setMinEndDate(e.currentTarget.value)}
+            />
+            <Input
+              icon={MdDateRange}
+              name="endDate"
+              type="date"
+              defaultValue={defaultDate}
+              max={defaultDate}
+              min={minEndDate}
+              onChange={(e) => setMaxStartDate(e.currentTarget.value)}
+            />
             <Button type="submit">Search</Button>
           </Form>
         </FormContainer>

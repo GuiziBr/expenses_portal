@@ -14,9 +14,14 @@ interface BalanceState {
   }
 }
 
+interface IDates {
+  startDate?: string
+  endDate?: string
+}
+
 interface ExpenseContextData {
   balance: BalanceState
-  getBalance(date?: string): Promise<void>
+  getBalance(Dates: IDates): Promise<void>
   createExpense(payload: Payload, config: AxiosRequestConfig): Promise<void>
 }
 
@@ -36,11 +41,11 @@ const BalanceContext = createContext<ExpenseContextData>({} as ExpenseContextDat
 
 export const ExpenseProvider: React.FC = ({ children }) => {
   const [balance, setBalance] = useState<BalanceState>({} as BalanceState)
-  const defaultDate = format(new Date(), constants.monthDateFormat)
-
-  const getBalance = useCallback(async (date: string = defaultDate) => {
+  const defaultDate = format(new Date(), constants.dateFormat)
+  const getBalance = useCallback(async ({ startDate, endDate = defaultDate }: IDates) => {
     const token = sessionStorage.getItem(constants.sessionStorage.token)
-    const config: AxiosRequestConfig = { headers: { Authorization: `Bearer ${token}` }, params: { date }}
+    const params = { ...startDate && { startDate }, ...endDate && { endDate }}
+    const config: AxiosRequestConfig = { headers: { Authorization: `Bearer ${token}` }, params }
     const response = await api.get('/balance', config)
     const { data: { personalBalance, sharedBalance }} = response
     setBalance({ personalBalance, sharedBalance })
