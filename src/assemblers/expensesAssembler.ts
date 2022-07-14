@@ -28,9 +28,9 @@ interface FormattedExpense {
   bank?: string
   store?: string
   dueDate: Date
-  formattedDueDate: string | null
+  formattedDueDate?: string | null
   mobileFormatDate: string
-  mobileFormatDueDate: string
+  mobileFormatDueDate?: string
 }
 
 interface Payload {
@@ -57,9 +57,9 @@ export const assembleExpense = (expense: Expense): FormattedExpense => ({
   bank: expense.bank?.name,
   store: expense.store?.name,
   dueDate: expense.due_date,
-  formattedDueDate: formatDate(expense.due_date),
+  ...expense.due_date && { formattedDueDate: formatDate(expense.due_date) },
   mobileFormatDate: formatDate(expense.date, false),
-  mobileFormatDueDate: formatDate(expense.due_date, false),
+  ...expense.due_date && { mobileFormatDueDate: formatDate(expense.due_date, false) },
 })
 
 export const assemblePersonalExpense = (expense: Omit<Expense, 'type'>): Omit<FormattedExpense, 'type'> => ({
@@ -87,6 +87,6 @@ export const assemblePayload = (data: Payload) => ({
   personal: data.options[0] === constants.expenseModel.personal,
   split: data.options[0] === constants.expenseModel.split,
   payment_type_id: data.paymentType,
-  bank_id: data.bank,
-  store_id: data.store,
+  ...data.bank && { bank_id: data.bank },
+  ...data.store && { store_id: data.store },
 })

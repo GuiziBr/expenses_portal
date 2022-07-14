@@ -30,6 +30,8 @@ export default {
       existingExpense: 'This expense is already registered for this day',
       creation: 'Error on creating expense',
       login: 'Error on login',
+      bankRequired: 'You must select a bank for this payment type',
     },
   },
+  businessErrors: { bankRequired: 'bankRequired' },
 }

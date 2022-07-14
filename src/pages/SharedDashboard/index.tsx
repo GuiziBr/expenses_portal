@@ -33,9 +33,9 @@ interface Expense {
   bank?: string
   store?: string
   dueDate: Date
-  formattedDueDate: string
+  formattedDueDate?: string
   mobileFormatDate: string
-  mobileFormatDueDate: string
+  mobileFormatDueDate?: string
 }
 
 interface IDates {

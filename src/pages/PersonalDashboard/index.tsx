@@ -27,12 +27,13 @@ interface IExpense {
   formattedDate: string
   type: 'income' | 'outcome'
   date: Date
+  dueDate: Date
   paymentType: string
   bank?: string
   store?: string
-  formattedDueDate: string
+  formattedDueDate?: string
   mobileFormatDate: string
-  mobileFormatDueDate: string
+  mobileFormatDueDate?: string
 }
 
 interface IDates {
