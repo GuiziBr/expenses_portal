@@ -37,6 +37,7 @@ interface Category {
 interface PaymentType {
   id: string
   description: string
+  hasStatement: boolean
 }
 
 interface Bank {
@@ -55,13 +56,15 @@ interface CheckboxOption {
   label: string
 }
 
-interface Expense {
+interface INewExpense {
   description: string
   category: string
   date: string
   amount: string
   options: [string]
   paymentType: string
+  bank?: string
+  store?: string
 }
 
 export function NewExpenseModal({ isOpen, onRequestClose, isDeskTopScreen }: NewExpenseModalProps) {
@@ -103,14 +106,26 @@ export function NewExpenseModal({ isOpen, onRequestClose, isDeskTopScreen }: New
     setStores(sortList(data, 'name'))
   }, [])
 
-  const handleSubmit = useCallback(async (data: Expense) => {
+  const getErrorDescription = (error: any): string => {
+    if (!error.response?.data) return error.message
+    return error.response.data.message === errors.alreadyExistingExpense
+      ? errors.toastErrors.description.existingExpense
+      : errors.toastErrors.description.creation
+  }
+
+  const handleSubmit = useCallback(async (data: INewExpense) => {
     try {
       formRef.current?.setErrors({})
       await newExpenseSchema.validate(data, { abortEarly: false })
       const token = sessionStorage.getItem(constants.sessionStorage.token)
       const config: AxiosRequestConfig = { headers: { Authorization: `Bearer ${token}` }}
+
+      const selectedPaymentType = paymentTypes.find((paymentType) => paymentType.id === data.paymentType)
+      if (selectedPaymentType.hasStatement && !data.bank) throw Error(errors.businessErrors.bankRequired)
+
       const payload = assemblePayload(data)
       await createExpense(payload, config)
+
       addToast({
         type: 'success',
         title: constants.toastSuccess.title,
@@ -122,14 +137,11 @@ export function NewExpenseModal({ isOpen, onRequestClose, isDeskTopScreen }: New
       if (err instanceof Yup.ValidationError) {
         const error = getValidationErrors(err)
         formRef.current?.setErrors(error)
-        return
       }
       addToast({
         type: 'error',
         title: errors.toastErrors.title.creation,
-        description: err.response.data.message === errors.alreadyExistingExpense
-          ? errors.toastErrors.description.existingExpense
-          : errors.toastErrors.description.creation,
+        description: getErrorDescription(err),
       })
     }
   }, [addToast])
