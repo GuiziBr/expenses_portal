@@ -5,6 +5,7 @@ import { format, startOfMonth } from 'date-fns'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { MdDateRange } from 'react-icons/md'
 import Modal from 'react-modal'
+import { RiArrowDownSLine, RiArrowUpSLine } from 'react-icons/ri'
 import { assemblePersonalExpense } from '../../assemblers/expensesAssembler'
 import total from '../../assets/total.svg'
 import Button from '../../components/Button'
@@ -138,23 +139,25 @@ const PersonalDashboard: React.FC = () => {
         <FormContainer>
           <Button type="button" onClick={handleOpenNewExpenseModal}>Create Expense</Button>
           <Form ref={formRef} onSubmit={handleSubmit}>
-            <Input
-              icon={MdDateRange}
-              name="startDate"
-              type="date"
-              defaultValue={currentDates.startDate}
-              max={maxStartDate}
-              onChange={(e) => setMinEndDate(e.currentTarget.value)}
-            />
-            <Input
-              icon={MdDateRange}
-              name="endDate"
-              type="date"
-              defaultValue={defaultDate}
-              max={defaultDate}
-              min={minEndDate}
-              onChange={(e) => setMaxStartDate(e.currentTarget.value)}
-            />
+            <div className="inputs">
+              <Input
+                icon={MdDateRange}
+                name="startDate"
+                type="date"
+                defaultValue={currentDates.startDate}
+                max={maxStartDate}
+                onChange={(e) => setMinEndDate(e.currentTarget.value)}
+              />
+              <Input
+                icon={MdDateRange}
+                name="endDate"
+                type="date"
+                defaultValue={defaultDate}
+                max={defaultDate}
+                min={minEndDate}
+                onChange={(e) => setMaxStartDate(e.currentTarget.value)}
+              />
+            </div>
             <Button type="submit">Search</Button>
           </Form>
         </FormContainer>
@@ -164,14 +167,16 @@ const PersonalDashboard: React.FC = () => {
               <table>
                 <thead>
                   <tr>
-                    <th>Expense</th>
-                    {isDeskTopScreen && <th>Category</th>}
-                    <th>Amount</th>
-                    {isDeskTopScreen && <th>Method</th>}
-                    <th>Purchase</th>
-                    <th>{`${isDeskTopScreen ? 'Due Date' : 'Due'}`}</th>
-                    {isDeskTopScreen && <th>Bank</th>}
-                    {isDeskTopScreen && <th>Store</th>}
+                    <th onClick={() => console.log('HERE')}>
+                      <p>Expense</p>
+                    </th>
+                    {isDeskTopScreen && <th><p>Category</p></th>}
+                    <th><p>Amount</p></th>
+                    {isDeskTopScreen && <th><p>Method</p></th>}
+                    <th><p>Purchase</p></th>
+                    <th>{isDeskTopScreen ? <p>Due Date</p> : <p>Due</p>}</th>
+                    {isDeskTopScreen && <th><p>Bank</p></th>}
+                    {isDeskTopScreen && <th><p>Store</p></th>}
                   </tr>
                 </thead>
                 <tbody>

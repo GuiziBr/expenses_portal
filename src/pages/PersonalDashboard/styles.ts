@@ -67,41 +67,74 @@ export const FormContainer = styled.section`
     align-items: center;
   }
 
-  button:nth-child(1) {
-    width: 9.5rem;
-    margin: 0;
-  }
-
   button {
     width: 5.5rem;
     height: 2.5rem;
     margin: 0 0 0 .3rem;
   }
 
+  button:nth-child(1) {
+    width: 9.5rem;
+    margin: 0;
+
+    @media(max-width: 720px){
+      width: 12rem;
+    }
+  }
+
   form {
     display: flex;
-    flex-direction: row;
     justify-content: flex-end;
     align-items: center;
+
     @media(max-width: 720px) {
-      margin-top: 1rem;
+      flex-direction: column;
+      width: 100vw;
     }
 
-    div {
-      height: 2.6rem;
-      width: 12rem;
-      margin-right: .3rem;
-      border-color: var(--container-background);
-      margin-top: .5rem;
+    .inputs {
+      display: flex;
 
-      svg {
-        margin-right: .8rem;
+      @media(max-width: 720px) {
+        margin-top: 1rem;
+        margin-bottom: .5rem;
+      }
+
+      div {
+        height: 2.6rem;
+        width: 12rem;
+        margin-right: .3rem;
+        border-color: var(--container-background);
+        margin-top: .5rem;
+
+        @media(max-width: 720px) {
+          width: 50%;
+          margin-left: 0;
+          margin-right: 0;
+          padding-left: .5rem;
+          padding-right: .5rem;
+
+        }
+
+        svg {
+          margin-right: .8rem;
+        }
+      }
+
+      div:first-child {
+        @media(max-width: 720px) {
+          margin-right: .5rem;
+        }
       }
     }
 
     button {
       margin-top: .5rem;
       margin-left: 0;
+
+      @media(max-width: 720px) {
+        width: 12rem;
+      }
     }
   }
 `
@@ -135,6 +168,12 @@ export const TableContainer = styled.section`
           text-align: left;
           font-size: 1.25rem;
           line-height: 1.5rem;
+
+          p {
+            cursor: pointer;
+            width: 50%;
+          }
+
           @media(max-width: 720px) {
             font-size: 1rem;
             padding: 0 0 0 .5rem;
@@ -158,6 +197,10 @@ export const TableContainer = styled.section`
           @media(max-width: 720px) {
             width: 21%;
           }
+        }
+
+        th:nth-child(6) p {
+          width: 80%;
         }
 
         th:last-child {
