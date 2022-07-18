@@ -113,7 +113,7 @@ export function NewExpenseModal({ isOpen, onRequestClose, isDeskTopScreen }: New
       : errors.toastErrors.description.creation
   }
 
-  const handleSubmit = useCallback(async (data: INewExpense) => {
+  const handleSubmit = async (data: INewExpense) => {
     try {
       formRef.current?.setErrors({})
       await newExpenseSchema.validate(data, { abortEarly: false })
@@ -137,6 +137,7 @@ export function NewExpenseModal({ isOpen, onRequestClose, isDeskTopScreen }: New
       if (err instanceof Yup.ValidationError) {
         const error = getValidationErrors(err)
         formRef.current?.setErrors(error)
+        return
       }
       addToast({
         type: 'error',
@@ -144,10 +145,10 @@ export function NewExpenseModal({ isOpen, onRequestClose, isDeskTopScreen }: New
         description: getErrorDescription(err),
       })
     }
-  }, [addToast])
+  }
 
   useEffect(() => {
-    async function loadExpenses(): Promise<void> {
+    async function loadFormParams(): Promise<void> {
       await Promise.all([
         loadCategories(),
         loadPaymentTypes(),
@@ -155,7 +156,7 @@ export function NewExpenseModal({ isOpen, onRequestClose, isDeskTopScreen }: New
         loadStores(),
       ])
     }
-    loadExpenses()
+    loadFormParams()
   }, [])
 
   const checkboxOptions: CheckboxOption[] = constants.createExpenseCheckboxOptions[isDeskTopScreen ? 'desktopLabel' : 'mobileLabel']
