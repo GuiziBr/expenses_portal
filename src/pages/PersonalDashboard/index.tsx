@@ -74,7 +74,7 @@ const PersonalDashboard: React.FC = () => {
 
   const getOffset = () => (currentPage * currentPageLimit) - currentPageLimit
 
-  const loadExpenses = useCallback(async (dates?: IDates) => {
+  const loadExpenses = useCallback(async (dates?: IDates, orderBy?: string) => {
     const token = sessionStorage.getItem(constants.sessionStorage.token)
     const config: AxiosRequestConfig = {
       headers: { Authorization: `Bearer ${token}` },
@@ -83,12 +83,11 @@ const PersonalDashboard: React.FC = () => {
         ...dates.endDate && { endDate: dates.endDate },
         offset: getOffset(),
         limit: currentPageLimit,
+        orderBy,
       },
     }
     const { data, headers } = await api.get('/expenses/personal', config)
-    const expenseList = data
-      .sort((a: { date: string }, b: { date: string }) => ((a.date < b.date) ? 1 : -1))
-      .map(assemblePersonalExpense)
+    const expenseList = data.map(assemblePersonalExpense)
 
     updatePageNumbers(headers[constants.headers.totalCount])
     setExpenses(expenseList)
@@ -102,9 +101,9 @@ const PersonalDashboard: React.FC = () => {
     setIsNewExpenseModalOpen(true)
   }
 
-  async function handleCloseNewExpenseModal() {
+  async function handleCloseNewExpenseModal(shouldLoadExpenses?: boolean) {
     setIsNewExpenseModalOpen(false)
-    await loadExpenses(currentDates)
+    if (shouldLoadExpenses) await loadExpenses(currentDates)
   }
 
   const handleSubmit = useCallback(async (dates: IDates) => {
@@ -167,7 +166,7 @@ const PersonalDashboard: React.FC = () => {
               <table>
                 <thead>
                   <tr>
-                    <th onClick={() => console.log('HERE')}>
+                    <th onClick={() => loadExpenses(currentDates, 'description')}>
                       <p>Expense</p>
                     </th>
                     {isDeskTopScreen && <th><p>Category</p></th>}
