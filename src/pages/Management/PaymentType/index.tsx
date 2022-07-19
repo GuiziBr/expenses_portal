@@ -20,18 +20,7 @@ import api from '../../../services/apiClient'
 import formatDate from '../../../utils/formatDate'
 import getValidationErrors from '../../../utils/getValidationErrors'
 import { Container, FormContainer, PageTitle, TableContainer } from './styles'
-
-interface IPaymentType {
-  id: string
-  description: string
-  createdAt: string
-  updatedAt: string
-  disabled: boolean
-  editMode: 'edit' | 'save'
-  deleteMode: 'delete' | 'confirm'
-  className: string | null
-  hasStatement: boolean
-}
+import { IPaymentType } from '../../../domains/management'
 
 interface IPayload {
   description: string

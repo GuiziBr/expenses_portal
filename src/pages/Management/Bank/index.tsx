@@ -12,27 +12,13 @@ import Header from '../../../components/Header'
 import Input from '../../../components/Input'
 import constants from '../../../constants/constants'
 import errors from '../../../constants/errors'
+import { IBank, IPayload } from '../../../domains/management'
 import { useToast } from '../../../hooks/toast'
 import { newBankSchema } from '../../../schemas'
 import api from '../../../services/apiClient'
 import formatDate from '../../../utils/formatDate'
 import getValidationErrors from '../../../utils/getValidationErrors'
 import { Container, FormContainer, PageTitle, TableContainer } from './styles'
-
-interface IBank {
-  id: string
-  name: string
-  createdAt: string
-  updatedAt: string
-  disabled: boolean
-  editMode: 'edit' | 'save'
-  deleteMode: 'delete' | 'confirm'
-  className: string | null
-}
-
-interface IPayload {
-  name: string
-}
 
 const BankManagement: React.FC = () => {
   const [banks, setBanks] = useState<IBank[]>([])
