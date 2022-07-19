@@ -133,6 +133,15 @@ export const TableContainer = styled.section`
           text-align: left;
           font-size: 1.25rem;
           line-height: 1.5rem;
+
+          p {
+            cursor: pointer;
+            width: 50%;
+            &:hover {
+              filter: brightness(0.7);
+            }
+          }
+
           @media(max-width: 720px) {
             font-size: 1rem;
             padding: 0 0 0 .5rem;
@@ -156,6 +165,10 @@ export const TableContainer = styled.section`
           @media(max-width: 720px) {
             width: 21%;
           }
+        }
+
+        th:nth-child(6) p {
+          width: 80%;
         }
 
         th:last-child {
@@ -187,7 +200,6 @@ export const TableContainer = styled.section`
         font-weight: normal;
         color: var(--light-gray);
         @media(max-width: 720px) {
-          width: 25%;
           text-align: left;
           display: flex;
           align-items: center;
@@ -256,5 +268,4 @@ export const TableContainer = styled.section`
       }
     }
   }
-
 `

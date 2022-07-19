@@ -20,7 +20,7 @@ import api from '../../services/apiClient'
 import { formatAmount } from '../../utils/formatAmount'
 import { Card, CardContainer, Container, FormContainer, TableContainer } from './styles'
 
-interface Expense {
+interface IExpense {
   id: string
   description: string
   category: string
@@ -43,10 +43,27 @@ interface IDates {
   endDate?: string
 }
 
+const COLUMN_NAMES = {
+  description: 'description',
+  amount: 'amount',
+  date: 'date',
+  dueDate: 'due_date',
+  category: 'category',
+  paymentType: 'payment_type',
+  bank: 'bank',
+  store: 'store',
+}
+
+interface IOrderByTypes {
+  orderBy: string
+  orderType: 'asc' | 'desc'
+  isCurrent?: boolean
+}
+
 const SharedDashboard: React.FC = () => {
   const defaultDate = format(new Date(), constants.dateFormat)
   const formRef = useRef<FormHandles>(null)
-  const [expenses, setExpenses] = useState<Expense[]>([])
+  const [expenses, setExpenses] = useState<IExpense[]>([])
   const [pages, setPages] = useState([])
   const [currentPage, setCurrentPage] = useState(1)
   const [currentDates, setCurrentDates] = useState<IDates>({
@@ -58,6 +75,9 @@ const SharedDashboard: React.FC = () => {
   const [isDeskTopScreen] = useState<boolean>(window.innerWidth > 720)
   const [maxStartDate, setMaxStartDate] = useState<string>(defaultDate)
   const [minEndDate, setMinEndDate] = useState<string>()
+  const [orderByColumns, setOrderByColumns] = useState<IOrderByTypes[]>(
+    Object.values(COLUMN_NAMES).map((columnName) => ({ orderBy: columnName, orderType: 'asc', isCurrent: false })),
+  )
 
   Modal.setAppElement('#root')
 
@@ -74,7 +94,12 @@ const SharedDashboard: React.FC = () => {
 
   const getOffset = () => (currentPage * currentPageLimit) - currentPageLimit
 
-  const loadExpenses = useCallback(async (dates?: IDates) => {
+  const getOrderByType = (columnName?: string): 'asc' | 'desc' => {
+    const currentOrder = orderByColumns.find((orderByColumn) => orderByColumn.orderBy === columnName)
+    return currentOrder.orderType === 'asc' ? 'desc' : 'asc'
+  }
+
+  const loadExpenses = async (dates?: IDates, orderParams?: IOrderByTypes) => {
     const token = sessionStorage.getItem(constants.sessionStorage.token)
     const config: AxiosRequestConfig = {
       headers: { Authorization: `Bearer ${token}` },
@@ -83,6 +108,7 @@ const SharedDashboard: React.FC = () => {
         ...dates.endDate && { endDate: dates.endDate },
         offset: getOffset(),
         limit: currentPageLimit,
+        ...orderParams && { ...orderParams },
       },
     }
     const { data, headers } = await api.get('/expenses/shared', config)
@@ -92,27 +118,40 @@ const SharedDashboard: React.FC = () => {
 
     updatePageNumbers(headers[constants.headers.totalCount])
     setExpenses(expenseList)
-    if (dates.startDate || dates.endDate) {
-      setCurrentDates(dates)
-      await getBalance(dates)
-    }
-  }, [currentPage])
+  }
 
   function handleOpenNewExpenseModal() {
     setIsNewExpenseModalOpen(true)
   }
 
-  async function handleCloseNewExpenseModal() {
+  async function handleCloseNewExpenseModal(shouldLoadExpenses?: boolean) {
     setIsNewExpenseModalOpen(false)
-    await loadExpenses(currentDates)
+    if (shouldLoadExpenses) await loadExpenses(currentDates)
   }
 
-  const handleSubmit = useCallback(async (dates: IDates) => {
+  const handleSubmit = async (dates: IDates): Promise<void> => {
     if (dates.startDate || dates.endDate) {
       await loadExpenses(dates)
+      setCurrentDates(dates)
       setCurrentPage(1)
     }
-  }, [])
+  }
+
+  const handleSortTable = async (columnName: string): Promise<void> => {
+    const orderParams: IOrderByTypes = columnName && {
+      orderBy: columnName,
+      orderType: getOrderByType(columnName),
+    }
+    await loadExpenses(currentDates, orderParams)
+    setOrderByColumns(orderByColumns.map((orderByColumn) => {
+      const isSameColumn = orderByColumn.orderBy === columnName
+      return {
+        orderBy: orderByColumn.orderBy,
+        orderType: isSameColumn ? orderParams.orderType : orderByColumn.orderType,
+        isCurrent: isSameColumn,
+      }
+    }))
+  }
 
   useEffect(() => {
     async function loadDashboard(): Promise<void> {
@@ -120,7 +159,15 @@ const SharedDashboard: React.FC = () => {
       await getBalance(currentDates)
     }
     loadDashboard()
-  }, [loadExpenses])
+  }, [])
+
+  useEffect(() => {
+    async function refreshExpenses(): Promise<void> {
+      const currentOrderParams = orderByColumns.find((orderByColumn) => orderByColumn.isCurrent)
+      await loadExpenses(currentDates, currentOrderParams)
+    }
+    refreshExpenses()
+  }, [currentPage])
 
   return (
     <>
@@ -183,14 +230,16 @@ const SharedDashboard: React.FC = () => {
               <table>
                 <thead>
                   <tr>
-                    <th>Expense</th>
-                    {isDeskTopScreen && <th>Category</th>}
-                    <th>Amount</th>
-                    {isDeskTopScreen && <th>Method</th>}
-                    <th>Purchase</th>
-                    <th>{`${isDeskTopScreen ? 'Due Date' : 'Due'}`}</th>
-                    {isDeskTopScreen && <th>Bank</th>}
-                    {isDeskTopScreen && <th>Store</th>}
+                    <th onClick={() => handleSortTable(COLUMN_NAMES.description)}>
+                      <p>Expense</p>
+                    </th>
+                    {isDeskTopScreen && <th onClick={() => handleSortTable(COLUMN_NAMES.category)}><p>Category</p></th>}
+                    <th onClick={() => handleSortTable(COLUMN_NAMES.amount)}><p>Amount</p></th>
+                    {isDeskTopScreen && <th onClick={() => handleSortTable(COLUMN_NAMES.paymentType)}><p>Method</p></th>}
+                    <th onClick={() => handleSortTable(COLUMN_NAMES.date)}><p>Purchase</p></th>
+                    <th onClick={() => handleSortTable(COLUMN_NAMES.dueDate)}>{isDeskTopScreen ? <p>Due Date</p> : <p>Due</p>}</th>
+                    {isDeskTopScreen && <th onClick={() => handleSortTable(COLUMN_NAMES.bank)}><p>Bank</p></th>}
+                    {isDeskTopScreen && <th onClick={() => handleSortTable(COLUMN_NAMES.store)}><p>Store</p></th>}
                   </tr>
                 </thead>
                 <tbody>

@@ -25,7 +25,7 @@ import { FormContainer } from './styles'
 
 interface NewExpenseModalProps {
   isOpen: boolean
-  onRequestClose: () => void
+  onRequestClose: (shouldLoadExpenses?: boolean) => void
   isDeskTopScreen: boolean
 }
 
@@ -132,7 +132,7 @@ export function NewExpenseModal({ isOpen, onRequestClose, isDeskTopScreen }: New
         description: constants.toastSuccess.description,
       })
       formRef.current?.reset()
-      onRequestClose()
+      onRequestClose(true)
     } catch (err) {
       if (err instanceof Yup.ValidationError) {
         const error = getValidationErrors(err)
@@ -167,11 +167,11 @@ export function NewExpenseModal({ isOpen, onRequestClose, isDeskTopScreen }: New
   return (
     <Modal
       isOpen={isOpen}
-      onRequestClose={onRequestClose}
+      onRequestClose={() => onRequestClose()}
       overlayClassName="react-modal-overlay"
       className="react-modal-content"
     >
-      <button type="button" onClick={onRequestClose} className="react-modal-close">
+      <button type="button" onClick={() => onRequestClose()} className="react-modal-close">
         <img src={closeImg} alt="Close Modal" />
       </button>
       <FormContainer>
