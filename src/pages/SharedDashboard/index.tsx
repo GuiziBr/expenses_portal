@@ -130,7 +130,7 @@ const SharedDashboard: React.FC = () => {
 
   const handleSubmit = async (dates: IDates): Promise<void> => {
     if (dates.startDate || dates.endDate) {
-      await loadExpenses(dates)
+      await Promise.all([loadExpenses(dates), getBalance(dates)])
       setCurrentDates(dates)
       setCurrentPage(1)
     }
