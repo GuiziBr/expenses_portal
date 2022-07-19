@@ -2,7 +2,7 @@ import { FormHandles } from '@unform/core'
 import { Form } from '@unform/web'
 import { AxiosRequestConfig } from 'axios'
 import { format, startOfMonth } from 'date-fns'
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { MdDateRange } from 'react-icons/md'
 import Modal from 'react-modal'
 import { assembleExpense } from '../../assemblers/expensesAssembler'
@@ -113,7 +113,6 @@ const SharedDashboard: React.FC = () => {
     }
     const { data, headers } = await api.get('/expenses/shared', config)
     const expenseList = data
-      .sort((a: { date: string }, b: { date: string }) => ((a.date < b.date) ? 1 : -1))
       .map(assembleExpense)
 
     updatePageNumbers(headers[constants.headers.totalCount])
