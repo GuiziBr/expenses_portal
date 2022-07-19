@@ -58,4 +58,14 @@ export default {
       title: 'Store',
     },
   ],
+  columnNames: {
+    description: 'description',
+    amount: 'amount',
+    date: 'date',
+    dueDate: 'due_date',
+    category: 'category',
+    paymentType: 'payment_type',
+    bank: 'bank',
+    store: 'store',
+  },
 }

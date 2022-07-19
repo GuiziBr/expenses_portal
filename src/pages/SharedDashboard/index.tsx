@@ -15,50 +15,11 @@ import Input from '../../components/Input'
 import { NewExpenseModal } from '../../components/NewExpenseModal'
 import Pagination from '../../components/Pagination'
 import constants from '../../constants/constants'
+import { IDates, IExpense, IOrderByTypes } from '../../domains/dashboards'
 import { useExpense } from '../../hooks/expense'
 import api from '../../services/apiClient'
 import { formatAmount } from '../../utils/formatAmount'
 import { Card, CardContainer, Container, FormContainer, TableContainer } from './styles'
-
-interface IExpense {
-  id: string
-  description: string
-  category: string
-  amount: number
-  formattedAmount: string
-  formattedDate: string
-  type: 'income' | 'outcome'
-  date: Date
-  paymentType: string
-  bank?: string
-  store?: string
-  dueDate: Date
-  formattedDueDate?: string
-  mobileFormatDate: string
-  mobileFormatDueDate?: string
-}
-
-interface IDates {
-  startDate?: string
-  endDate?: string
-}
-
-const COLUMN_NAMES = {
-  description: 'description',
-  amount: 'amount',
-  date: 'date',
-  dueDate: 'due_date',
-  category: 'category',
-  paymentType: 'payment_type',
-  bank: 'bank',
-  store: 'store',
-}
-
-interface IOrderByTypes {
-  orderBy: string
-  orderType: 'asc' | 'desc'
-  isCurrent?: boolean
-}
 
 const SharedDashboard: React.FC = () => {
   const defaultDate = format(new Date(), constants.dateFormat)
@@ -76,14 +37,14 @@ const SharedDashboard: React.FC = () => {
   const [maxStartDate, setMaxStartDate] = useState<string>(defaultDate)
   const [minEndDate, setMinEndDate] = useState<string>()
   const [orderByColumns, setOrderByColumns] = useState<IOrderByTypes[]>(
-    Object.values(COLUMN_NAMES).map((columnName) => ({ orderBy: columnName, orderType: 'asc', isCurrent: false })),
+    Object.values(constants.columnNames).map((columnName) => ({ orderBy: columnName, orderType: 'asc', isCurrent: false })),
   )
 
   Modal.setAppElement('#root')
 
-  const currentPageLimit = isDeskTopScreen ? constants.desktopPageLimit : constants.mobilePageLimit
+  const currentPageLimit: number = isDeskTopScreen ? constants.desktopPageLimit : constants.mobilePageLimit
 
-  const updatePageNumbers = (totalCount: number) => {
+  const updatePageNumbers = (totalCount: number): void => {
     const totalPages: Number = Math.ceil(totalCount / currentPageLimit)
     const arrayPages = []
     for (let i = 1; i <= totalPages; i++) {
@@ -92,14 +53,14 @@ const SharedDashboard: React.FC = () => {
     setPages(arrayPages)
   }
 
-  const getOffset = () => (currentPage * currentPageLimit) - currentPageLimit
+  const getOffset = (): number => (currentPage * currentPageLimit) - currentPageLimit
 
   const getOrderByType = (columnName?: string): 'asc' | 'desc' => {
     const currentOrder = orderByColumns.find((orderByColumn) => orderByColumn.orderBy === columnName)
     return currentOrder.orderType === 'asc' ? 'desc' : 'asc'
   }
 
-  const loadExpenses = async (dates?: IDates, orderParams?: IOrderByTypes) => {
+  const loadExpenses = async (dates?: IDates, orderParams?: IOrderByTypes): Promise<void> => {
     const token = sessionStorage.getItem(constants.sessionStorage.token)
     const config: AxiosRequestConfig = {
       headers: { Authorization: `Bearer ${token}` },
@@ -119,13 +80,18 @@ const SharedDashboard: React.FC = () => {
     setExpenses(expenseList)
   }
 
-  function handleOpenNewExpenseModal() {
+  function handleOpenNewExpenseModal(): void {
     setIsNewExpenseModalOpen(true)
   }
 
-  async function handleCloseNewExpenseModal(shouldLoadExpenses?: boolean) {
+  async function handleCloseNewExpenseModal(shouldLoadExpenses?: boolean): Promise<void> {
     setIsNewExpenseModalOpen(false)
-    if (shouldLoadExpenses) await loadExpenses(currentDates)
+    if (shouldLoadExpenses) {
+      await Promise.all([
+        loadExpenses(currentDates),
+        getBalance(currentDates),
+      ])
+    }
   }
 
   const handleSubmit = async (dates: IDates): Promise<void> => {
@@ -231,16 +197,22 @@ const SharedDashboard: React.FC = () => {
               <table>
                 <thead>
                   <tr>
-                    <th onClick={() => handleSortTable(COLUMN_NAMES.description)}>
+                    <th onClick={() => handleSortTable(constants.columnNames.description)}>
                       <p>Expense</p>
                     </th>
-                    {isDeskTopScreen && <th onClick={() => handleSortTable(COLUMN_NAMES.category)}><p>Category</p></th>}
-                    <th onClick={() => handleSortTable(COLUMN_NAMES.amount)}><p>Amount</p></th>
-                    {isDeskTopScreen && <th onClick={() => handleSortTable(COLUMN_NAMES.paymentType)}><p>Method</p></th>}
-                    <th onClick={() => handleSortTable(COLUMN_NAMES.date)}><p>Purchase</p></th>
-                    <th onClick={() => handleSortTable(COLUMN_NAMES.dueDate)}>{isDeskTopScreen ? <p>Due Date</p> : <p>Due</p>}</th>
-                    {isDeskTopScreen && <th onClick={() => handleSortTable(COLUMN_NAMES.bank)}><p>Bank</p></th>}
-                    {isDeskTopScreen && <th onClick={() => handleSortTable(COLUMN_NAMES.store)}><p>Store</p></th>}
+                    {isDeskTopScreen && (
+                    <th onClick={() => handleSortTable(constants.columnNames.category)}>
+                      <p>Category</p>
+                    </th>
+                    )}
+                    <th onClick={() => handleSortTable(constants.columnNames.amount)}><p>Amount</p></th>
+                    {isDeskTopScreen && <th onClick={() => handleSortTable(constants.columnNames.paymentType)}><p>Method</p></th>}
+                    <th onClick={() => handleSortTable(constants.columnNames.date)}><p>Purchase</p></th>
+                    <th onClick={() => handleSortTable(constants.columnNames.dueDate)}>
+                      {isDeskTopScreen ? <p>Due Date</p> : <p>Due</p>}
+                    </th>
+                    {isDeskTopScreen && <th onClick={() => handleSortTable(constants.columnNames.bank)}><p>Bank</p></th>}
+                    {isDeskTopScreen && <th onClick={() => handleSortTable(constants.columnNames.store)}><p>Store</p></th>}
                   </tr>
                 </thead>
                 <tbody>
