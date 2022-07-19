@@ -203,23 +203,25 @@ const SharedDashboard: React.FC = () => {
         <FormContainer>
           <Button type="button" onClick={handleOpenNewExpenseModal}>Create Expense</Button>
           <Form ref={formRef} onSubmit={handleSubmit}>
-            <Input
-              icon={MdDateRange}
-              name="startDate"
-              type="date"
-              defaultValue={currentDates.startDate}
-              max={maxStartDate}
-              onChange={(e) => setMinEndDate(e.currentTarget.value)}
-            />
-            <Input
-              icon={MdDateRange}
-              name="endDate"
-              type="date"
-              defaultValue={defaultDate}
-              max={defaultDate}
-              min={minEndDate}
-              onChange={(e) => setMaxStartDate(e.currentTarget.value)}
-            />
+            <div className="inputs">
+              <Input
+                icon={MdDateRange}
+                name="startDate"
+                type="date"
+                defaultValue={currentDates.startDate}
+                max={maxStartDate}
+                onChange={(e) => setMinEndDate(e.currentTarget.value)}
+              />
+              <Input
+                icon={MdDateRange}
+                name="endDate"
+                type="date"
+                defaultValue={defaultDate}
+                max={defaultDate}
+                min={minEndDate}
+                onChange={(e) => setMaxStartDate(e.currentTarget.value)}
+              />
+            </div>
             <Button type="submit">Search</Button>
           </Form>
         </FormContainer>
