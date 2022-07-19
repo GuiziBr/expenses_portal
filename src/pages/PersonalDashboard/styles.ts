@@ -172,6 +172,9 @@ export const TableContainer = styled.section`
           p {
             cursor: pointer;
             width: 50%;
+            &:hover {
+              filter: brightness(0.7);
+            }
           }
 
           @media(max-width: 720px) {
@@ -294,8 +297,6 @@ export const TableContainer = styled.section`
           }
         }
       }
-
-
     }
   }
 `
