@@ -34,10 +34,14 @@ export default {
     desktopTitles: {
       shared: 'Shared Dashboard',
       personal: 'Personal Dashboard',
+      consolidated: 'Consolidated Balance',
+      management: 'Management',
     },
     mobileTitles: {
       shared: 'Shared',
       personal: 'Personal',
+      consolidated: 'Result',
+      management: 'Manage',
     },
   },
   dropdownItems: [
