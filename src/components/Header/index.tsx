@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { AiFillCloseSquare } from 'react-icons/ai'
 import { RiArrowDownSLine, RiArrowUpSLine } from 'react-icons/ri'
 import { Link } from 'react-router-dom'
 import constants from '../../constants/constants'
@@ -8,7 +9,7 @@ import { Container } from './styles'
 
 interface HeaderProps {
   size?: 'small' | 'large'
-  current: 'PersonalDashboard' | 'SharedDashboard' | 'CreateExpense' | 'Management'
+  current: 'PersonalDashboard' | 'SharedDashboard' | 'CreateExpense' | 'Management' | 'ConsolidatedBalance'
 }
 
 const Header: React.FC<HeaderProps> = ({ size = 'large', current }) => {
@@ -46,18 +47,27 @@ const Header: React.FC<HeaderProps> = ({ size = 'large', current }) => {
           >
             {getMenuTitle('personal')}
           </Link>
+          <Link
+            className={getClassName('ConsolidatedBalance')}
+            to="/consolidatedBalance"
+            onClick={() => refreshPage('/consolidatedBalance')}
+          >
+            {getMenuTitle('consolidated')}
+          </Link>
         </nav>
         <nav>
           <div onMouseLeave={() => setDropdown(false)} onMouseEnter={() => setDropdown(!dropdown)}>
             <button onClick={() => setDropdown(!dropdown)} type="button" className={getClassName('Management')}>
-              Management
+              {getMenuTitle('management')}
             </button>
             {dropdown
               ? <RiArrowUpSLine size={20} className={getClassName('Management')} />
               : <RiArrowDownSLine size={20} className={getClassName('Management')} />}
             <Dropdown onClickFunction={refreshPage} isDropdownActive={dropdown} />
           </div>
-          <Link to="/" onClick={signOut}>Logout</Link>
+          <Link to="/" onClick={signOut}>
+            {isDeskTopScreen ? 'Logout' : <AiFillCloseSquare size={20} color="orange" />}
+          </Link>
         </nav>
       </header>
     </Container>

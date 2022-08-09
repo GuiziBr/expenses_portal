@@ -95,6 +95,9 @@ export const Container = styled.div<ContainerProps>`
         }
         .management-menu {
           height: 8rem;
+          @media(max-width: 720px) {
+            height: 9rem;
+          }
          }
       }
     }

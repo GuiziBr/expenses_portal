@@ -103,7 +103,7 @@ export const FormContainer = styled.section`
         width: 12rem;
         margin-right: .3rem;
         border-color: var(--container-background);
-        margin-top: .5rem;
+        margin-top: 0;
 
         @media(max-width: 720px) {
           width: 50%;
@@ -127,7 +127,7 @@ export const FormContainer = styled.section`
     }
 
     button {
-      margin-top: .5rem;
+      margin-top: 0;
       margin-left: 0;
 
       @media(max-width: 720px) {
