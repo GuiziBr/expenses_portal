@@ -92,7 +92,7 @@ export const FormContainer = styled.section`
       width: 100vw;
     }
 
-    .inputs {
+    .inputs, .filters {
       display: flex;
 
       @media(max-width: 720px) {
@@ -102,10 +102,11 @@ export const FormContainer = styled.section`
 
       div {
         height: 2.6rem;
-        width: 12rem;
+        width: 10.5rem;
         margin-right: .3rem;
         border-color: var(--container-background);
         margin-top: 0;
+        padding: 1rem .5rem;
 
         @media(max-width: 720px) {
           width: 50%;
@@ -113,11 +114,10 @@ export const FormContainer = styled.section`
           margin-right: 0;
           padding-left: .5rem;
           padding-right: .5rem;
-
         }
 
         svg {
-          margin-right: .8rem;
+          margin-right: .7rem;
         }
       }
 
@@ -125,6 +125,20 @@ export const FormContainer = styled.section`
         @media(max-width: 720px) {
           margin-right: .5rem;
         }
+      }
+    }
+
+    .filters {
+      div {
+        svg {
+          margin-right: 0;
+        }
+      }
+      div:first-child {
+        width: 9rem;
+      }
+      div:last-child {
+        width: 11rem;
       }
     }
 
