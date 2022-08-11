@@ -16,13 +16,20 @@ export interface IExpense {
   mobileFormatDueDate?: string
 }
 
-export interface IDates {
+export interface IFilters {
   startDate?: string
   endDate?: string
+  filterBy?: string
+  filterValue?: string
 }
 
 export interface IOrderByTypes {
   orderBy: string
   orderType: 'asc' | 'desc'
   isCurrent?: boolean
+}
+
+export interface IFilterValues {
+  id: string
+  description: string
 }

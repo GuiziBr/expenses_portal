@@ -8,6 +8,8 @@ interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
   name: string
   icon: React.ComponentType<IconBaseProps>
   options: Option[]
+  onChangeFunc?: (value: string) => void
+  shouldDisable?: boolean
 }
 
 interface Option {
@@ -16,7 +18,7 @@ interface Option {
   name?: string
 }
 
-const Select: React.FC<SelectProps> = ({ name, icon: Icon, options, placeholder }) => {
+const Select: React.FC<SelectProps> = ({ name, icon: Icon, options, placeholder, onChangeFunc, shouldDisable }) => {
   const selectRef = useRef<HTMLSelectElement>(null)
   const [isFocused, setIsFocused] = useState(false)
   const [isFilled, setIsFilled] = useState(false)
@@ -31,6 +33,10 @@ const Select: React.FC<SelectProps> = ({ name, icon: Icon, options, placeholder 
     setIsFilled(!!selectRef.current?.value)
   }, [])
 
+  const handleOnChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    if (onChangeFunc) onChangeFunc(e.currentTarget.value)
+  }
+
   useEffect(() => {
     registerField({
       name: fieldName,
@@ -42,8 +48,15 @@ const Select: React.FC<SelectProps> = ({ name, icon: Icon, options, placeholder 
   return (
     <Container isErrored={!!error} isFocused={isFocused} isFilled={isFilled}>
       {Icon && <Icon size={20} />}
-      <select onBlur={handleSelectBlur} onFocus={handleSelectFocus} ref={selectRef} defaultValue="">
-        <option value="" disabled hidden>{placeholder}</option>
+      <select
+        onBlur={handleSelectBlur}
+        onFocus={handleSelectFocus}
+        ref={selectRef}
+        defaultValue=""
+        onChange={(e) => handleOnChange(e)}
+        disabled={shouldDisable}
+      >
+        <option value="">{placeholder}</option>
         {options.map((option: Option) => <option key={option.id} value={option.id}>{option.description || option.name}</option>)}
       </select>
       {error && (

@@ -3,6 +3,7 @@ import { Form } from '@unform/web'
 import { AxiosRequestConfig } from 'axios'
 import { format, startOfMonth } from 'date-fns'
 import React, { useEffect, useRef, useState } from 'react'
+import { HiOutlineSelector } from 'react-icons/hi'
 import { MdDateRange } from 'react-icons/md'
 import Modal from 'react-modal'
 import { assemblePersonalExpense } from '../../assemblers/expensesAssembler'
@@ -12,8 +13,9 @@ import Header from '../../components/Header'
 import Input from '../../components/Input'
 import { NewExpenseModal } from '../../components/NewExpenseModal'
 import Pagination from '../../components/Pagination'
+import Select from '../../components/Select'
 import constants from '../../constants/constants'
-import { IDates, IExpense, IOrderByTypes } from '../../domains/dashboards'
+import { IExpense, IFilters, IFilterValues, IOrderByTypes } from '../../domains/dashboards'
 import { useExpense } from '../../hooks/expense'
 import api from '../../services/apiClient'
 import { formatAmount } from '../../utils/formatAmount'
@@ -24,8 +26,8 @@ const PersonalDashboard: React.FC = () => {
   const formRef = useRef<FormHandles>(null)
   const [expenses, setExpenses] = useState<IExpense[]>([])
   const [pages, setPages] = useState([])
-  const [currentPage, setCurrentPage] = useState(1)
-  const [currentDates, setCurrentDates] = useState<IDates>({
+  const [currentPage, setCurrentPage] = useState<number | null>(null)
+  const [currentFilters, setCurrentFilters] = useState<IFilters>({
     startDate: format(startOfMonth(new Date()), constants.dateFormat),
     endDate: defaultDate,
   })
@@ -37,10 +39,11 @@ const PersonalDashboard: React.FC = () => {
     Object.values(constants.columnNames).map((columnName) => ({ orderBy: columnName, orderType: 'asc', isCurrent: false })),
   )
   const [isNewExpenseModalOpen, setIsNewExpenseModalOpen] = useState(false)
+  const [filterValues, setFilterValues] = useState([])
+  const shouldDisableFilterValues = filterValues.length === 0
+  const currentPageLimit: number = isDeskTopScreen ? constants.desktopPageLimit : constants.mobilePageLimit
 
   Modal.setAppElement('#root')
-
-  const currentPageLimit: number = isDeskTopScreen ? constants.desktopPageLimit : constants.mobilePageLimit
 
   const updatePageNumbers = (totalCount: number): void => {
     const totalPages: Number = Math.ceil(totalCount / currentPageLimit)
@@ -51,52 +54,55 @@ const PersonalDashboard: React.FC = () => {
     setPages(arrayPages)
   }
 
-  const getOffset = (): number => (currentPage * currentPageLimit) - currentPageLimit
+  const getOffset = (): number => ((currentPage || 1) * currentPageLimit) - currentPageLimit
 
   const getOrderByType = (columnName?: string): 'asc' | 'desc' => {
     const currentOrder = orderByColumns.find((orderByColumn) => orderByColumn.orderBy === columnName)
     return currentOrder.orderType === 'asc' ? 'desc' : 'asc'
   }
 
-  const loadExpenses = async (dates?: IDates, orderParams?: IOrderByTypes): Promise<void> => {
+  const loadExpenses = async (filters?: IFilters, orderParams?: IOrderByTypes): Promise<void> => {
     const token = sessionStorage.getItem(constants.sessionStorage.token)
     const config: AxiosRequestConfig = {
       headers: { Authorization: `Bearer ${token}` },
       params: {
-        ...dates.startDate && { startDate: dates.startDate },
-        ...dates.endDate && { endDate: dates.endDate },
+        ...filters.startDate && { startDate: filters.startDate },
+        ...filters.endDate && { endDate: filters.endDate },
         offset: getOffset(),
         limit: currentPageLimit,
         ...orderParams && { ...orderParams },
+        ...filters.filterBy && {
+          filterBy: constants.filterValues[filters.filterBy],
+          filterValue: filters.filterValue,
+        },
       },
     }
     const { data, headers } = await api.get('/expenses/personal', config)
-    const expenseList = data.map(assemblePersonalExpense)
 
     updatePageNumbers(headers[constants.headers.totalCount])
-    setExpenses(expenseList)
+    setExpenses(data.map(assemblePersonalExpense))
   }
 
-  function handleOpenNewExpenseModal(): void {
+  const handleOpenNewExpenseModal = (): void => {
     setIsNewExpenseModalOpen(true)
   }
 
-  async function handleCloseNewExpenseModal(shouldLoadExpenses?: boolean): Promise<void> {
+  const handleCloseNewExpenseModal = async (shouldLoadExpenses?: boolean): Promise<void> => {
     setIsNewExpenseModalOpen(false)
     if (shouldLoadExpenses) {
       await Promise.all([
-        loadExpenses(currentDates),
-        getBalance(currentDates),
+        loadExpenses(currentFilters),
+        getBalance(currentFilters),
       ])
     }
   }
 
-  const handleSubmit = async (dates: IDates): Promise<void> => {
-    if (dates.startDate || dates.endDate) {
-      await Promise.all([loadExpenses(dates), getBalance(dates)])
-      setCurrentDates(dates)
-      setCurrentPage(1)
-    }
+  const handleSubmit = async (filters: IFilters): Promise<void> => {
+    if (!filters.startDate && !filters.endDate) return
+    if (filters.filterBy && !filters.filterValue) return
+    await Promise.all([loadExpenses(filters), getBalance(filters)])
+    setCurrentFilters(filters)
+    setCurrentPage(1)
   }
 
   const handleSortTable = async (columnName: string): Promise<void> => {
@@ -104,7 +110,7 @@ const PersonalDashboard: React.FC = () => {
       orderBy: columnName,
       orderType: getOrderByType(columnName),
     }
-    await loadExpenses(currentDates, orderParams)
+    await loadExpenses(currentFilters, orderParams)
     setOrderByColumns(orderByColumns.map((orderByColumn) => {
       const isSameColumn = orderByColumn.orderBy === columnName
       return {
@@ -115,18 +121,39 @@ const PersonalDashboard: React.FC = () => {
     }))
   }
 
+  const sortList = (data:IFilterValues[], field: string): IFilterValues[] => data.sort((a, b) => ((a[field] > b[field]) ? 1 : -1))
+
+  const loadFilterValues = (async (filterType: string): Promise<IFilterValues[]> => {
+    const token = sessionStorage.getItem(constants.sessionStorage.token)
+    const config = { headers: { Authorization: `Bearer ${token}` }}
+    const { data } = await api.get(`/${filterType}`, config)
+    return data
+  })
+
+  const handleSelectFilter = async (option: string): Promise<void> => {
+    if (!option) {
+      setFilterValues([])
+      return
+    }
+    const filters = await loadFilterValues(option)
+    const sortingKey = Object.keys(filters[0])[1]
+    setFilterValues(sortList(filters, sortingKey))
+  }
+
   useEffect(() => {
     async function loadDashboard(): Promise<void> {
-      await loadExpenses(currentDates)
-      await getBalance(currentDates)
+      await loadExpenses(currentFilters)
+      await getBalance(currentFilters)
     }
     loadDashboard()
   }, [])
 
   useEffect(() => {
     async function refreshExpenses(): Promise<void> {
-      const currentOrderParams = orderByColumns.find((orderByColumn) => orderByColumn.isCurrent)
-      await loadExpenses(currentDates, currentOrderParams)
+      if (currentPage) {
+        const currentOrderParams = orderByColumns.find((orderByColumn) => orderByColumn.isCurrent)
+        await loadExpenses(currentFilters, currentOrderParams)
+      }
     }
     refreshExpenses()
   }, [currentPage])
@@ -148,12 +175,28 @@ const PersonalDashboard: React.FC = () => {
         <FormContainer>
           <Button type="button" onClick={handleOpenNewExpenseModal}>Create Expense</Button>
           <Form ref={formRef} onSubmit={handleSubmit}>
+            <div className="filters">
+              <Select
+                icon={HiOutlineSelector}
+                name="filterBy"
+                options={constants.columnFilters}
+                placeholder="Filter by"
+                onChangeFunc={(option) => handleSelectFilter(option)}
+              />
+              <Select
+                icon={HiOutlineSelector}
+                name="filterValue"
+                options={filterValues}
+                placeholder="Filter value"
+                shouldDisable={filterValues.length === 0}
+              />
+            </div>
             <div className="inputs">
               <Input
                 icon={MdDateRange}
                 name="startDate"
                 type="date"
-                defaultValue={currentDates.startDate}
+                defaultValue={currentFilters.startDate}
                 max={maxStartDate}
                 onChange={(e) => setMinEndDate(e.currentTarget.value)}
               />
@@ -206,7 +249,7 @@ const PersonalDashboard: React.FC = () => {
                 </tbody>
               </table>
             </TableContainer>
-            <Pagination currentPage={currentPage} setCurrentPage={setCurrentPage} pages={pages} />
+            <Pagination currentPage={currentPage || 1} setCurrentPage={setCurrentPage} pages={pages} />
           </>
         )}
       </Container>

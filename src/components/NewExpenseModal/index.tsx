@@ -12,6 +12,15 @@ import { assemblePayload } from '../../assemblers/expensesAssembler'
 import closeImg from '../../assets/close.svg'
 import constants from '../../constants/constants'
 import errors from '../../constants/errors'
+import {
+  IBank,
+  ICategory,
+  ICheckboxOption,
+  INewExpense,
+  INewExpenseModalProps,
+  IPaymentType,
+  IStore,
+} from '../../domains/newDashboardModal'
 import { useExpense } from '../../hooks/expense'
 import { useToast } from '../../hooks/toast'
 import { newExpenseSchema } from '../../schemas'
@@ -23,58 +32,14 @@ import Input from '../Input'
 import Select from '../Select'
 import { FormContainer } from './styles'
 
-interface NewExpenseModalProps {
-  isOpen: boolean
-  onRequestClose: (shouldLoadExpenses?: boolean) => void
-  isDeskTopScreen: boolean
-}
-
-interface Category {
-  id: string
-  description: string
-}
-
-interface PaymentType {
-  id: string
-  description: string
-  hasStatement: boolean
-}
-
-interface Bank {
-  id: string
-  name: string
-}
-
-interface Store {
-  id: string
-  name: string
-}
-
-interface CheckboxOption {
-  id: string
-  value: string
-  label: string
-}
-
-interface INewExpense {
-  description: string
-  category: string
-  date: string
-  amount: string
-  options: [string]
-  paymentType: string
-  bank?: string
-  store?: string
-}
-
-export function NewExpenseModal({ isOpen, onRequestClose, isDeskTopScreen }: NewExpenseModalProps) {
+export function NewExpenseModal({ isOpen, onRequestClose, isDeskTopScreen }: INewExpenseModalProps) {
   const formRef = useRef<FormHandles>(null)
   const { createExpense } = useExpense()
   const { addToast } = useToast()
-  const [categories, setCategories] = useState<Category[]>([])
-  const [paymentTypes, setPaymentTypes] = useState<PaymentType[]>([])
-  const [banks, setBanks] = useState<Bank[]>([])
-  const [stores, setStores] = useState<Store[]>([])
+  const [categories, setCategories] = useState<ICategory[]>([])
+  const [paymentTypes, setPaymentTypes] = useState<IPaymentType[]>([])
+  const [banks, setBanks] = useState<IBank[]>([])
+  const [stores, setStores] = useState<IStore[]>([])
 
   const sortList = (data:[], field: string) => data.sort((a, b) => ((a[field] > b[field]) ? 1 : -1))
 
@@ -159,7 +124,7 @@ export function NewExpenseModal({ isOpen, onRequestClose, isDeskTopScreen }: New
     loadFormParams()
   }, [])
 
-  const checkboxOptions: CheckboxOption[] = constants.createExpenseCheckboxOptions[isDeskTopScreen ? 'desktopLabel' : 'mobileLabel']
+  const checkboxOptions: ICheckboxOption[] = constants.createExpenseCheckboxOptions[isDeskTopScreen ? 'desktopLabel' : 'mobileLabel']
 
   const dateMax = format(endOfDay(new Date()), constants.dateFormat)
   const dateMin = format(new Date(getYear(new Date()), 0, 1), constants.dateFormat)
