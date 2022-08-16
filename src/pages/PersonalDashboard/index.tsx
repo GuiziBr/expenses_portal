@@ -40,7 +40,6 @@ const PersonalDashboard: React.FC = () => {
   )
   const [isNewExpenseModalOpen, setIsNewExpenseModalOpen] = useState(false)
   const [filterValues, setFilterValues] = useState([])
-  const shouldDisableFilterValues = filterValues.length === 0
   const currentPageLimit: number = isDeskTopScreen ? constants.desktopPageLimit : constants.mobilePageLimit
 
   Modal.setAppElement('#root')

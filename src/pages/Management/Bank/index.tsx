@@ -1,7 +1,7 @@
 import { FormHandles } from '@unform/core'
 import { Form } from '@unform/web'
 import { AxiosRequestConfig } from 'axios'
-import React, { FocusEvent, useCallback, useEffect, useRef, useState } from 'react'
+import React, { FocusEvent, useEffect, useRef, useState } from 'react'
 import { AiFillEdit, AiOutlineSave } from 'react-icons/ai'
 import { FaTrashAlt } from 'react-icons/fa'
 import { GiConfirmed } from 'react-icons/gi'
@@ -10,6 +10,7 @@ import * as Yup from 'yup'
 import Button from '../../../components/Button'
 import Header from '../../../components/Header'
 import Input from '../../../components/Input'
+import Pagination from '../../../components/Pagination'
 import constants from '../../../constants/constants'
 import errors from '../../../constants/errors'
 import { IBank, IPayload } from '../../../domains/management'
@@ -25,24 +26,46 @@ const BankManagement: React.FC = () => {
   const formRef = useRef<FormHandles>(null)
   const { addToast } = useToast()
   const [isDeskTopScreen] = useState<boolean>(window.innerWidth > 720)
+  const [currentPage, setCurrentPage] = useState<number | null>(null)
+  const [pages, setPages] = useState([])
 
-  const loadBanks = useCallback(async () => {
+  const currentPageLimit: number = isDeskTopScreen ? constants.desktopPageLimit : constants.mobilePageLimit
+
+  const updatePageNumbers = (totalCount: number): void => {
+    const totalPages: Number = Math.ceil(totalCount / currentPageLimit)
+    const arrayPages = []
+    for (let i = 1; i <= totalPages; i++) {
+      arrayPages.push(i)
+    }
+    setPages(arrayPages)
+  }
+
+  const getOffset = (): number => ((currentPage || 1) * currentPageLimit) - currentPageLimit
+
+  const loadBanks = async () => {
     const token = sessionStorage.getItem(constants.sessionStorage.token)
-    const config: AxiosRequestConfig = { headers: { Authorization: `Bearer ${token}` }}
-    const { data } = await api.get('/banks', config)
+    const config: AxiosRequestConfig = {
+      headers: { Authorization: `Bearer ${token}` },
+      params: {
+        offset: getOffset(),
+        limit: currentPageLimit,
+      },
+    }
+    const { data, headers } = await api.get('/banks', config)
     const banksList: IBank[] = data
       .sort((a: { name: string }, b: { name: string }) => ((a.name > b.name) ? 1 : -1))
       .map((bank: any) => ({
         id: bank.id,
         name: bank.name,
         createdAt: formatDate(bank.created_at),
-        updatedAt: formatDate(bank.updated_at),
+        ...bank.updatedAt && { updatedAt: formatDate(bank.updated_at) },
         disabled: true,
         editMode: 'edit',
         deleteMode: 'delete',
       }))
+    updatePageNumbers(headers[constants.headers.totalCount])
     setBanks(banksList)
-  }, [])
+  }
 
   const handleNewBank = async (payload: IPayload) => {
     try {
@@ -58,6 +81,7 @@ const BankManagement: React.FC = () => {
       })
       formRef.current?.reset()
       await loadBanks()
+      setCurrentPage(1)
     } catch (err) {
       if (err instanceof Yup.ValidationError) {
         const error = getValidationErrors(err)
@@ -169,7 +193,14 @@ const BankManagement: React.FC = () => {
       await loadBanks()
     }
     loadDashboard()
-  }, [loadBanks])
+  }, [])
+
+  useEffect(() => {
+    async function refreshBanks(): Promise<void> {
+      if (currentPage) await loadBanks()
+    }
+    refreshBanks()
+  }, [currentPage])
 
   return (
     <>
@@ -183,59 +214,62 @@ const BankManagement: React.FC = () => {
           </Form>
         </FormContainer>
         {banks.length > 0 && (
-          <TableContainer>
-            <table>
-              <thead>
-                <tr>
-                  <th>Bank</th>
-                  <th>Created</th>
-                  {isDeskTopScreen && <th>Updated</th>}
-                  <th>Edit</th>
-                  <th>Delete</th>
-                </tr>
-              </thead>
-              <tbody>
-                {banks.map((bank) => (
-                  <tr key={bank.id} id={bank.id}>
-                    <td onDoubleClick={() => handleEditBank(bank.id)}>
-                      <input
-                        name="bank-name"
-                        type="text"
-                        defaultValue={bank.name}
-                        disabled={bank.disabled}
-                        onBlur={(event) => handleOnBlur(event, bank.id)}
-                        id={`input-${bank.id}`}
-                        className={bank.className}
-                        onFocus={(event) => handleOnFocus(event.target)}
-                      />
-                    </td>
-                    <td>{bank.createdAt}</td>
-                    {isDeskTopScreen && <td className="date-updated">{bank.updatedAt}</td>}
-                    <td>
-                      <Button
-                        type="button"
-                        onClick={() => (bank.editMode === 'edit'
-                          ? handleEditBank(bank.id)
-                          : handleUpdateBank(bank.id))}
-                      >
-                        { bank.editMode === 'edit' ? <AiFillEdit color="#5636D3" /> : <AiOutlineSave color="#5636D3" /> }
-                      </Button>
-                    </td>
-                    <td>
-                      <Button
-                        type="button"
-                        onClick={() => (bank.deleteMode === 'delete'
-                          ? handleDeleteBank(bank.id)
-                          : handleConfirmDelete(bank.id))}
-                      >
-                        {bank.deleteMode === 'delete' ? <FaTrashAlt color="#FF872C" /> : <GiConfirmed color="#FF872C" />}
-                      </Button>
-                    </td>
+          <>
+            <TableContainer>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Bank</th>
+                    <th>Created</th>
+                    {isDeskTopScreen && <th>Updated</th>}
+                    <th>Edit</th>
+                    <th>Delete</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </TableContainer>
+                </thead>
+                <tbody>
+                  {banks.map((bank) => (
+                    <tr key={bank.id} id={bank.id}>
+                      <td onDoubleClick={() => handleEditBank(bank.id)}>
+                        <input
+                          name="bank-name"
+                          type="text"
+                          defaultValue={bank.name}
+                          disabled={bank.disabled}
+                          onBlur={(event) => handleOnBlur(event, bank.id)}
+                          id={`input-${bank.id}`}
+                          className={bank.className}
+                          onFocus={(event) => handleOnFocus(event.target)}
+                        />
+                      </td>
+                      <td>{bank.createdAt}</td>
+                      {isDeskTopScreen && <td className="date-updated">{bank.updatedAt}</td>}
+                      <td>
+                        <Button
+                          type="button"
+                          onClick={() => (bank.editMode === 'edit'
+                            ? handleEditBank(bank.id)
+                            : handleUpdateBank(bank.id))}
+                        >
+                          { bank.editMode === 'edit' ? <AiFillEdit color="#5636D3" /> : <AiOutlineSave color="#5636D3" /> }
+                        </Button>
+                      </td>
+                      <td>
+                        <Button
+                          type="button"
+                          onClick={() => (bank.deleteMode === 'delete'
+                            ? handleDeleteBank(bank.id)
+                            : handleConfirmDelete(bank.id))}
+                        >
+                          {bank.deleteMode === 'delete' ? <FaTrashAlt color="#FF872C" /> : <GiConfirmed color="#FF872C" />}
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </TableContainer>
+            <Pagination currentPage={currentPage || 1} setCurrentPage={setCurrentPage} pages={pages} />
+          </>
         )}
       </Container>
     </>

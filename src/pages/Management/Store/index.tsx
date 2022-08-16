@@ -1,7 +1,7 @@
 import { FormHandles } from '@unform/core'
 import { Form } from '@unform/web'
 import { AxiosRequestConfig } from 'axios'
-import React, { FocusEvent, useCallback, useEffect, useRef, useState } from 'react'
+import React, { FocusEvent, useEffect, useRef, useState } from 'react'
 import { AiFillEdit, AiOutlineSave } from 'react-icons/ai'
 import { FaTrashAlt } from 'react-icons/fa'
 import { GiConfirmed } from 'react-icons/gi'
@@ -10,6 +10,7 @@ import * as Yup from 'yup'
 import Button from '../../../components/Button'
 import Header from '../../../components/Header'
 import Input from '../../../components/Input'
+import Pagination from '../../../components/Pagination'
 import constants from '../../../constants/constants'
 import errors from '../../../constants/errors'
 import { IPayload, IStore } from '../../../domains/management'
@@ -25,24 +26,46 @@ const StoreManagement: React.FC = () => {
   const formRef = useRef<FormHandles>(null)
   const { addToast } = useToast()
   const [isDeskTopScreen] = useState<boolean>(window.innerWidth > 720)
+  const [currentPage, setCurrentPage] = useState<number | null>(null)
+  const [pages, setPages] = useState([])
 
-  const loadStores = useCallback(async () => {
+  const currentPageLimit: number = isDeskTopScreen ? constants.desktopPageLimit : constants.mobilePageLimit
+
+  const updatePageNumbers = (totalCount: number): void => {
+    const totalPages: Number = Math.ceil(totalCount / currentPageLimit)
+    const arrayPages = []
+    for (let i = 1; i <= totalPages; i++) {
+      arrayPages.push(i)
+    }
+    setPages(arrayPages)
+  }
+
+  const getOffset = (): number => ((currentPage || 1) * currentPageLimit) - currentPageLimit
+
+  const loadStores = async () => {
     const token = sessionStorage.getItem(constants.sessionStorage.token)
-    const config: AxiosRequestConfig = { headers: { Authorization: `Bearer ${token}` }}
-    const { data } = await api.get('/stores', config)
+    const config: AxiosRequestConfig = {
+      headers: { Authorization: `Bearer ${token}` },
+      params: {
+        offset: getOffset(),
+        limit: currentPageLimit,
+      },
+    }
+    const { data, headers } = await api.get('/stores', config)
     const storesList: IStore[] = data
       .sort((a: { name: string }, b: { name: string }) => ((a.name > b.name) ? 1 : -1))
       .map((store: any) => ({
         id: store.id,
         name: store.name,
         createdAt: formatDate(store.created_at),
-        updatedAt: formatDate(store.updated_at),
+        ...store.updatedAt && { updatedAt: formatDate(store.updated_at) },
         disabled: true,
         editMode: 'edit',
         deleteMode: 'delete',
       }))
+    updatePageNumbers(headers[constants.headers.totalCount])
     setStores(storesList)
-  }, [])
+  }
 
   const handleNewStore = async (payload: IPayload) => {
     try {
@@ -58,6 +81,7 @@ const StoreManagement: React.FC = () => {
       })
       formRef.current?.reset()
       await loadStores()
+      setCurrentPage(1)
     } catch (err) {
       if (err instanceof Yup.ValidationError) {
         const error = getValidationErrors(err)
@@ -169,7 +193,14 @@ const StoreManagement: React.FC = () => {
       await loadStores()
     }
     loadDashboard()
-  }, [loadStores])
+  }, [])
+
+  useEffect(() => {
+    async function refreshStores(): Promise<void> {
+      if (currentPage) await loadStores()
+    }
+    refreshStores()
+  }, [currentPage])
 
   return (
     <>
@@ -183,59 +214,62 @@ const StoreManagement: React.FC = () => {
           </Form>
         </FormContainer>
         {stores.length > 0 && (
-          <TableContainer>
-            <table>
-              <thead>
-                <tr>
-                  <th>Store</th>
-                  <th>Created</th>
-                  {isDeskTopScreen && <th>Updated</th>}
-                  <th>Edit</th>
-                  <th>Delete</th>
-                </tr>
-              </thead>
-              <tbody>
-                {stores.map((store) => (
-                  <tr key={store.id} id={store.id}>
-                    <td className="name" onDoubleClick={() => handleEditStore(store.id)}>
-                      <input
-                        name="store-name"
-                        type="text"
-                        defaultValue={store.name}
-                        disabled={store.disabled}
-                        onBlur={(event) => handleOnBlur(event, store.id)}
-                        id={`input-${store.id}`}
-                        className={store.className}
-                        onFocus={(event) => handleOnFocus(event.target)}
-                      />
-                    </td>
-                    <td>{store.createdAt}</td>
-                    {isDeskTopScreen && <td className="date-updated">{store.updatedAt}</td>}
-                    <td>
-                      <Button
-                        type="button"
-                        onClick={() => (store.editMode === 'edit'
-                          ? handleEditStore(store.id)
-                          : handleUpdateStore(store.id))}
-                      >
-                        { store.editMode === 'edit' ? <AiFillEdit color="#5636D3" /> : <AiOutlineSave color="#5636D3" /> }
-                      </Button>
-                    </td>
-                    <td>
-                      <Button
-                        type="button"
-                        onClick={() => (store.deleteMode === 'delete'
-                          ? handleDeleteStore(store.id)
-                          : handleConfirmDelete(store.id))}
-                      >
-                        {store.deleteMode === 'delete' ? <FaTrashAlt color="#FF872C" /> : <GiConfirmed color="#FF872C" />}
-                      </Button>
-                    </td>
+          <>
+            <TableContainer>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Store</th>
+                    <th>Created</th>
+                    {isDeskTopScreen && <th>Updated</th>}
+                    <th>Edit</th>
+                    <th>Delete</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </TableContainer>
+                </thead>
+                <tbody>
+                  {stores.map((store) => (
+                    <tr key={store.id} id={store.id}>
+                      <td className="name" onDoubleClick={() => handleEditStore(store.id)}>
+                        <input
+                          name="store-name"
+                          type="text"
+                          defaultValue={store.name}
+                          disabled={store.disabled}
+                          onBlur={(event) => handleOnBlur(event, store.id)}
+                          id={`input-${store.id}`}
+                          className={store.className}
+                          onFocus={(event) => handleOnFocus(event.target)}
+                        />
+                      </td>
+                      <td>{store.createdAt}</td>
+                      {isDeskTopScreen && <td className="date-updated">{store.updatedAt}</td>}
+                      <td>
+                        <Button
+                          type="button"
+                          onClick={() => (store.editMode === 'edit'
+                            ? handleEditStore(store.id)
+                            : handleUpdateStore(store.id))}
+                        >
+                          { store.editMode === 'edit' ? <AiFillEdit color="#5636D3" /> : <AiOutlineSave color="#5636D3" /> }
+                        </Button>
+                      </td>
+                      <td>
+                        <Button
+                          type="button"
+                          onClick={() => (store.deleteMode === 'delete'
+                            ? handleDeleteStore(store.id)
+                            : handleConfirmDelete(store.id))}
+                        >
+                          {store.deleteMode === 'delete' ? <FaTrashAlt color="#FF872C" /> : <GiConfirmed color="#FF872C" />}
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </TableContainer>
+            <Pagination currentPage={currentPage || 1} setCurrentPage={setCurrentPage} pages={pages} />
+          </>
         )}
 
       </Container>
