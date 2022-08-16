@@ -12,15 +12,16 @@ import Button from '../../../components/Button'
 import CheckboxInput from '../../../components/Checkbox'
 import Header from '../../../components/Header'
 import Input from '../../../components/Input'
+import Pagination from '../../../components/Pagination'
 import constants from '../../../constants/constants'
 import errors from '../../../constants/errors'
+import { IPaymentType } from '../../../domains/management'
 import { useToast } from '../../../hooks/toast'
 import { newPaymentTypeSchema } from '../../../schemas'
 import api from '../../../services/apiClient'
 import formatDate from '../../../utils/formatDate'
 import getValidationErrors from '../../../utils/getValidationErrors'
 import { Container, FormContainer, PageTitle, TableContainer } from './styles'
-import { IPaymentType } from '../../../domains/management'
 
 interface IPayload {
   description: string
@@ -32,23 +33,44 @@ const PaymentTypeManagement: React.FC = () => {
   const formRef = useRef<FormHandles>(null)
   const { addToast } = useToast()
   const [isDeskTopScreen] = useState<boolean>(window.innerWidth > 720)
+  const [currentPage, setCurrentPage] = useState<number | null>(null)
+  const [pages, setPages] = useState([])
+
+  const currentPageLimit: number = isDeskTopScreen ? constants.desktopPageLimit : constants.mobilePageLimit
+
+  const updatePageNumbers = (totalCount: number): void => {
+    const totalPages: Number = Math.ceil(totalCount / currentPageLimit)
+    const arrayPages = []
+    for (let i = 1; i <= totalPages; i++) {
+      arrayPages.push(i)
+    }
+    setPages(arrayPages)
+  }
+  const getOffset = (): number => ((currentPage || 1) * currentPageLimit) - currentPageLimit
 
   const loadPaymentTypes = useCallback(async () => {
     const token = sessionStorage.getItem(constants.sessionStorage.token)
-    const config: AxiosRequestConfig = { headers: { Authorization: `Bearer ${token}` }}
-    const { data } = await api.get('/paymentType', config)
+    const config: AxiosRequestConfig = {
+      headers: { Authorization: `Bearer ${token}` },
+      params: {
+        offset: getOffset(),
+        limit: currentPageLimit,
+      },
+    }
+    const { data, headers } = await api.get('/paymentType', config)
     const paymentTypesList: IPaymentType[] = data
       .sort((a: { description: string }, b: { description: string }) => ((a.description > b.description) ? 1 : -1))
       .map((paymentType: any) => ({
         id: paymentType.id,
         description: paymentType.description,
         createdAt: formatDate(paymentType.created_at),
-        updatedAt: formatDate(paymentType.updated_at),
+        ...paymentType.updatedAt && { updatedAt: formatDate(paymentType.updated_at) },
         disabled: true,
         editMode: 'edit',
         deleteMode: 'delete',
         hasStatement: paymentType.hasStatement,
       }))
+    updatePageNumbers(headers[constants.headers.totalCount])
     setPaymentTypes(paymentTypesList)
   }, [])
 
@@ -67,6 +89,7 @@ const PaymentTypeManagement: React.FC = () => {
       })
       formRef.current?.reset()
       await loadPaymentTypes()
+      setCurrentPage(1)
     } catch (err) {
       if (err instanceof Yup.ValidationError) {
         const error = getValidationErrors(err)
@@ -206,69 +229,72 @@ const PaymentTypeManagement: React.FC = () => {
           </Form>
         </FormContainer>
         {paymentTypes.length > 0 && (
-          <TableContainer>
-            <table>
-              <thead>
-                <tr>
-                  <th>Payment Type</th>
-                  <th>{isDeskTopScreen ? 'Statement' : <BsCreditCard />}</th>
-                  {isDeskTopScreen && <th>Created</th>}
-                  {isDeskTopScreen && <th>Updated</th>}
-                  <th>Edit</th>
-                  <th>Delete</th>
-                </tr>
-              </thead>
-              <tbody>
-                {paymentTypes.map((paymentType) => (
-                  <tr key={paymentType.id} id={paymentType.id}>
-                    <td className="description" onDoubleClick={() => handleEditPaymentType(paymentType.id)}>
-                      <input
-                        name="payment-description"
-                        type="text"
-                        defaultValue={paymentType.description}
-                        disabled={paymentType.disabled}
-                        onBlur={(event) => handleOnBlur(event, paymentType.id)}
-                        id={`input-${paymentType.id}`}
-                        className={paymentType.className}
-                        onFocus={(event) => handleOnFocus(event.target)}
-                      />
-                    </td>
-                    <td>
-                      <input
-                        type="checkbox"
-                        id={`checkbox-${paymentType.id}`}
-                        value="hasStatement"
-                        disabled={paymentType.disabled}
-                        defaultChecked={paymentType.hasStatement}
-                      />
-                    </td>
-                    {isDeskTopScreen && <td className="date-created">{paymentType.createdAt}</td>}
-                    {isDeskTopScreen && <td className="date-updated">{paymentType.updatedAt}</td>}
-                    <td>
-                      <Button
-                        type="button"
-                        onClick={() => (paymentType.editMode === 'edit'
-                          ? handleEditPaymentType(paymentType.id)
-                          : handleUpdatePaymentType(paymentType.id))}
-                      >
-                        { paymentType.editMode === 'edit' ? <AiFillEdit color="#5636D3" /> : <AiOutlineSave color="#5636D3" /> }
-                      </Button>
-                    </td>
-                    <td>
-                      <Button
-                        type="button"
-                        onClick={() => (paymentType.deleteMode === 'delete'
-                          ? handleDeletePaymentType(paymentType.id)
-                          : handleConfirmDelete(paymentType.id))}
-                      >
-                        {paymentType.deleteMode === 'delete' ? <FaTrashAlt color="#FF872C" /> : <GiConfirmed color="#FF872C" />}
-                      </Button>
-                    </td>
+          <>
+            <TableContainer>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Payment Type</th>
+                    <th>{isDeskTopScreen ? 'Statement' : <BsCreditCard />}</th>
+                    {isDeskTopScreen && <th>Created</th>}
+                    {isDeskTopScreen && <th>Updated</th>}
+                    <th>Edit</th>
+                    <th>Delete</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </TableContainer>
+                </thead>
+                <tbody>
+                  {paymentTypes.map((paymentType) => (
+                    <tr key={paymentType.id} id={paymentType.id}>
+                      <td className="description" onDoubleClick={() => handleEditPaymentType(paymentType.id)}>
+                        <input
+                          name="payment-description"
+                          type="text"
+                          defaultValue={paymentType.description}
+                          disabled={paymentType.disabled}
+                          onBlur={(event) => handleOnBlur(event, paymentType.id)}
+                          id={`input-${paymentType.id}`}
+                          className={paymentType.className}
+                          onFocus={(event) => handleOnFocus(event.target)}
+                        />
+                      </td>
+                      <td>
+                        <input
+                          type="checkbox"
+                          id={`checkbox-${paymentType.id}`}
+                          value="hasStatement"
+                          disabled={paymentType.disabled}
+                          defaultChecked={paymentType.hasStatement}
+                        />
+                      </td>
+                      {isDeskTopScreen && <td className="date-created">{paymentType.createdAt}</td>}
+                      {isDeskTopScreen && <td className="date-updated">{paymentType.updatedAt}</td>}
+                      <td>
+                        <Button
+                          type="button"
+                          onClick={() => (paymentType.editMode === 'edit'
+                            ? handleEditPaymentType(paymentType.id)
+                            : handleUpdatePaymentType(paymentType.id))}
+                        >
+                          { paymentType.editMode === 'edit' ? <AiFillEdit color="#5636D3" /> : <AiOutlineSave color="#5636D3" /> }
+                        </Button>
+                      </td>
+                      <td>
+                        <Button
+                          type="button"
+                          onClick={() => (paymentType.deleteMode === 'delete'
+                            ? handleDeletePaymentType(paymentType.id)
+                            : handleConfirmDelete(paymentType.id))}
+                        >
+                          {paymentType.deleteMode === 'delete' ? <FaTrashAlt color="#FF872C" /> : <GiConfirmed color="#FF872C" />}
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </TableContainer>
+            <Pagination currentPage={currentPage || 1} setCurrentPage={setCurrentPage} pages={pages} />
+          </>
         )}
       </Container>
     </>

@@ -1,7 +1,7 @@
 import { FormHandles } from '@unform/core'
 import { Form } from '@unform/web'
 import { AxiosRequestConfig } from 'axios'
-import React, { FocusEvent, useCallback, useEffect, useRef, useState } from 'react'
+import React, { FocusEvent, useEffect, useRef, useState } from 'react'
 import { AiFillEdit, AiOutlineSave } from 'react-icons/ai'
 import { FaTrashAlt } from 'react-icons/fa'
 import { GiConfirmed } from 'react-icons/gi'
@@ -10,6 +10,7 @@ import * as Yup from 'yup'
 import Button from '../../../components/Button'
 import Header from '../../../components/Header'
 import Input from '../../../components/Input'
+import Pagination from '../../../components/Pagination'
 import constants from '../../../constants/constants'
 import errors from '../../../constants/errors'
 import { ICategory, IPayload } from '../../../domains/management'
@@ -25,24 +26,46 @@ const CategoryManagement: React.FC = () => {
   const formRef = useRef<FormHandles>(null)
   const { addToast } = useToast()
   const [isDeskTopScreen] = useState<boolean>(window.innerWidth > 720)
+  const [currentPage, setCurrentPage] = useState<number | null>(null)
+  const [pages, setPages] = useState([])
 
-  const loadCategories = useCallback(async () => {
+  const currentPageLimit: number = isDeskTopScreen ? constants.desktopPageLimit : constants.mobilePageLimit
+
+  const updatePageNumbers = (totalCount: number): void => {
+    const totalPages: Number = Math.ceil(totalCount / currentPageLimit)
+    const arrayPages = []
+    for (let i = 1; i <= totalPages; i++) {
+      arrayPages.push(i)
+    }
+    setPages(arrayPages)
+  }
+
+  const getOffset = (): number => ((currentPage || 1) * currentPageLimit) - currentPageLimit
+
+  const loadCategories = async () => {
     const token = sessionStorage.getItem(constants.sessionStorage.token)
-    const config: AxiosRequestConfig = { headers: { Authorization: `Bearer ${token}` }}
-    const { data } = await api.get('/categories', config)
+    const config: AxiosRequestConfig = {
+      headers: { Authorization: `Bearer ${token}` },
+      params: {
+        offset: getOffset(),
+        limit: currentPageLimit,
+      },
+    }
+    const { data, headers } = await api.get('/categories', config)
     const categoriesList: ICategory[] = data
       .sort((a: { description: string }, b: { description: string }) => ((a.description > b.description) ? 1 : -1))
       .map((category: any) => ({
         id: category.id,
         description: category.description,
         createdAt: formatDate(category.created_at),
-        updatedAt: formatDate(category.updated_at),
+        ...category.updatedAt && { updatedAt: formatDate(category.updated_at) },
         disabled: true,
         editMode: 'edit',
         deleteMode: 'delete',
       }))
+    updatePageNumbers(headers[constants.headers.totalCount])
     setCategories(categoriesList)
-  }, [])
+  }
 
   const handleNewCategory = async (payload: IPayload) => {
     try {
@@ -58,6 +81,7 @@ const CategoryManagement: React.FC = () => {
       })
       formRef.current?.reset()
       await loadCategories()
+      setCurrentPage(1)
     } catch (err) {
       if (err instanceof Yup.ValidationError) {
         const error = getValidationErrors(err)
@@ -169,7 +193,14 @@ const CategoryManagement: React.FC = () => {
       await loadCategories()
     }
     loadDashboard()
-  }, [loadCategories])
+  }, [])
+
+  useEffect(() => {
+    async function refreshCategories(): Promise<void> {
+      if (currentPage) await loadCategories()
+    }
+    refreshCategories()
+  }, [currentPage])
 
   return (
     <>
@@ -189,59 +220,62 @@ const CategoryManagement: React.FC = () => {
           </Form>
         </FormContainer>
         {categories.length > 0 && (
-          <TableContainer>
-            <table>
-              <thead>
-                <tr>
-                  <th>Category</th>
-                  <th>Created</th>
-                  {isDeskTopScreen && <th>Updated</th>}
-                  <th>Edit</th>
-                  <th>Delete</th>
-                </tr>
-              </thead>
-              <tbody>
-                {categories.map((category) => (
-                  <tr key={category.id} id={category.id}>
-                    <td className="description" onDoubleClick={() => handleEditCategory(category.id)}>
-                      <input
-                        name="category-description"
-                        type="text"
-                        defaultValue={category.description}
-                        disabled={category.disabled}
-                        onBlur={(event) => handleOnBlur(event, category.id)}
-                        id={`input-${category.id}`}
-                        className={category.className}
-                        onFocus={(event) => handleOnFocus(event.target)}
-                      />
-                    </td>
-                    <td className="date-created">{category.createdAt}</td>
-                    {isDeskTopScreen && <td className="date-updated">{category.updatedAt}</td>}
-                    <td>
-                      <Button
-                        type="button"
-                        onClick={() => (category.editMode === 'edit'
-                          ? handleEditCategory(category.id)
-                          : handleUpdateCategory(category.id))}
-                      >
-                        { category.editMode === 'edit' ? <AiFillEdit color="#5636D3" /> : <AiOutlineSave color="#5636D3" /> }
-                      </Button>
-                    </td>
-                    <td>
-                      <Button
-                        type="button"
-                        onClick={() => (category.deleteMode === 'delete'
-                          ? handleDeleteCategory(category.id)
-                          : handleConfirmDelete(category.id))}
-                      >
-                        {category.deleteMode === 'delete' ? <FaTrashAlt color="#FF872C" /> : <GiConfirmed color="#FF872C" />}
-                      </Button>
-                    </td>
+          <>
+            <TableContainer>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Category</th>
+                    <th>Created</th>
+                    {isDeskTopScreen && <th>Updated</th>}
+                    <th>Edit</th>
+                    <th>Delete</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </TableContainer>
+                </thead>
+                <tbody>
+                  {categories.map((category) => (
+                    <tr key={category.id} id={category.id}>
+                      <td className="description" onDoubleClick={() => handleEditCategory(category.id)}>
+                        <input
+                          name="category-description"
+                          type="text"
+                          defaultValue={category.description}
+                          disabled={category.disabled}
+                          onBlur={(event) => handleOnBlur(event, category.id)}
+                          id={`input-${category.id}`}
+                          className={category.className}
+                          onFocus={(event) => handleOnFocus(event.target)}
+                        />
+                      </td>
+                      <td className="date-created">{category.createdAt}</td>
+                      {isDeskTopScreen && <td className="date-updated">{category.updatedAt}</td>}
+                      <td>
+                        <Button
+                          type="button"
+                          onClick={() => (category.editMode === 'edit'
+                            ? handleEditCategory(category.id)
+                            : handleUpdateCategory(category.id))}
+                        >
+                          { category.editMode === 'edit' ? <AiFillEdit color="#5636D3" /> : <AiOutlineSave color="#5636D3" /> }
+                        </Button>
+                      </td>
+                      <td>
+                        <Button
+                          type="button"
+                          onClick={() => (category.deleteMode === 'delete'
+                            ? handleDeleteCategory(category.id)
+                            : handleConfirmDelete(category.id))}
+                        >
+                          {category.deleteMode === 'delete' ? <FaTrashAlt color="#FF872C" /> : <GiConfirmed color="#FF872C" />}
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </TableContainer>
+            <Pagination currentPage={currentPage || 1} setCurrentPage={setCurrentPage} pages={pages} />
+          </>
         )}
       </Container>
     </>
