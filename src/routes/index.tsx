@@ -1,6 +1,6 @@
 import React from 'react'
 import { Switch } from 'react-router-dom'
-import ConsolidatedBalance from '../pages/ConsolidatedBalance'
+import SharedBalance from '../pages/ConsolidatedBalance'
 import BankManagement from '../pages/Management/Bank'
 import CategoryManagement from '../pages/Management/Category'
 import PaymentTypeManagement from '../pages/Management/PaymentType'
@@ -15,7 +15,7 @@ const Routes: React.FC = () => (
     <Route path="/" exact component={SignIn} />
     <Route path="/sharedDashboard" component={SharedDashboard} isPrivate />
     <Route path="/personalDashboard" component={PersonalDashboard} isPrivate />
-    <Route path="/consolidatedBalance" component={ConsolidatedBalance} isPrivate />
+    <Route path="/sharedBalance" component={SharedBalance} isPrivate />
     <Route path="/paymentTypeManagement" component={PaymentTypeManagement} isPrivate />
     <Route path="/categoryManagement" component={CategoryManagement} isPrivate />
     <Route path="/bankManagement" component={BankManagement} isPrivate />

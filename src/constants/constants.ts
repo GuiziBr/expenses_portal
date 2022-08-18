@@ -34,13 +34,13 @@ export default {
     desktopTitles: {
       shared: 'Shared Dashboard',
       personal: 'Personal Dashboard',
-      consolidated: 'Consolidated Balance',
+      sharedBalance: 'Shared Balance',
       management: 'Management',
     },
     mobileTitles: {
       shared: 'Shared',
       personal: 'Personal',
-      consolidated: 'Result',
+      sharedBalance: 'Balance',
       management: 'Manage',
     },
   },
@@ -96,4 +96,14 @@ export default {
     banks: 'bank',
     stores: 'store',
   },
+  sharedBalanceTypes: [
+    {
+      id: 'categories',
+      description: 'Category',
+    },
+    {
+      id: 'payments',
+      description: 'Payment Type',
+    },
+  ],
 }

@@ -66,20 +66,23 @@ export const FormContainer = styled.section`
   form {
     display: flex;
     align-items: center;
+    justify-content: center;
     @media(max-width: 720px) {
       width: 100vw;
     }
 
-    div {
-      height: 2.6rem;
-    }
-
     button {
-      margin: 0 0 0 0.3rem;
+      margin: 0;
       height: 2.5rem;
       @media(max-width: 720px) {
         width: 12rem;
       }
+    }
+
+    div {
+      height: 2.6rem;
+      margin-top: 0%;
+      margin-right: .3rem;
     }
   }
 `
@@ -120,11 +123,11 @@ export const Table = styled.div`
           text-align: center;
         }
 
-        .bank-name {
+        .bank-name, .category-name {
           border-radius: .5rem 0 0 .5rem;
           width: 50%;
         }
-        .bank-total {
+        .bank-total, .category-total {
           border-radius: 0 .5rem .5rem 0;
           width: 50%;
         }
@@ -145,7 +148,7 @@ export const Table = styled.div`
         border-radius: .5rem .5rem .5rem .5rem;
       }
 
-      .requester {
+      .requester, .category-total {
         color: var(--green);
         background: var(--cleared-blue);
         border-radius: .5rem .5rem .5rem .5rem;

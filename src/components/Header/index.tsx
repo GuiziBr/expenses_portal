@@ -9,7 +9,7 @@ import { Container } from './styles'
 
 interface HeaderProps {
   size?: 'small' | 'large'
-  current: 'PersonalDashboard' | 'SharedDashboard' | 'CreateExpense' | 'Management' | 'ConsolidatedBalance'
+  current: 'PersonalDashboard' | 'SharedDashboard' | 'CreateExpense' | 'Management' | 'SharedBalance'
 }
 
 const Header: React.FC<HeaderProps> = ({ size = 'large', current }) => {
@@ -48,11 +48,11 @@ const Header: React.FC<HeaderProps> = ({ size = 'large', current }) => {
             {getMenuTitle('personal')}
           </Link>
           <Link
-            className={getClassName('ConsolidatedBalance')}
-            to="/consolidatedBalance"
-            onClick={() => refreshPage('/consolidatedBalance')}
+            className={getClassName('SharedBalance')}
+            to="/sharedBalance"
+            onClick={() => refreshPage('/sharedBalance')}
           >
-            {getMenuTitle('consolidated')}
+            {getMenuTitle('sharedBalance')}
           </Link>
         </nav>
         <nav>
