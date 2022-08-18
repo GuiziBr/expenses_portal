@@ -216,7 +216,7 @@ export const TableContainer = styled.section`
           }
         }
 
-        th:nth-child(6) p {
+        th:nth-child(5) p {
           width: 80%;
         }
 
