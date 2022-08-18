@@ -1,7 +1,7 @@
 import { FormHandles } from '@unform/core'
 import { Form } from '@unform/web'
 import { AxiosRequestConfig } from 'axios'
-import { format, startOfMonth } from 'date-fns'
+import { format, startOfMonth, endOfMonth } from 'date-fns'
 import React, { useEffect, useRef, useState } from 'react'
 import { HiOutlineSelector } from 'react-icons/hi'
 import { MdDateRange } from 'react-icons/md'
@@ -26,13 +26,14 @@ import { Card, CardContainer, Container, FormContainer, TableContainer } from '.
 const SharedDashboard: React.FC = () => {
   const { balance, getBalance } = useExpense()
   const defaultDate = format(new Date(), constants.dateFormat)
+  const endOfMonthDate = format(endOfMonth(new Date()), constants.dateFormat)
   const formRef = useRef<FormHandles>(null)
   const [expenses, setExpenses] = useState<IExpense[]>([])
   const [pages, setPages] = useState([])
   const [currentPage, setCurrentPage] = useState<number | null>(null)
   const [currentFilters, setCurrentFilters] = useState<IFilters>({
     startDate: format(startOfMonth(new Date()), constants.dateFormat),
-    endDate: defaultDate,
+    endDate: endOfMonthDate,
   })
   const [isNewExpenseModalOpen, setIsNewExpenseModalOpen] = useState(false)
   const [maxStartDate, setMaxStartDate] = useState<string>(defaultDate)
@@ -226,8 +227,7 @@ const SharedDashboard: React.FC = () => {
                 icon={MdDateRange}
                 name="endDate"
                 type="date"
-                defaultValue={defaultDate}
-                max={defaultDate}
+                defaultValue={endOfMonthDate}
                 min={minEndDate}
                 onChange={(e) => setMaxStartDate(e.currentTarget.value)}
               />
@@ -251,10 +251,10 @@ const SharedDashboard: React.FC = () => {
                     )}
                     <th onClick={() => handleSortTable(constants.columnNames.amount)}><p>Amount</p></th>
                     {isDeskTopScreen && <th onClick={() => handleSortTable(constants.columnNames.paymentType)}><p>Method</p></th>}
-                    <th onClick={() => handleSortTable(constants.columnNames.date)}><p>Purchase</p></th>
                     <th onClick={() => handleSortTable(constants.columnNames.dueDate)}>
                       {isDeskTopScreen ? <p>Due Date</p> : <p>Due</p>}
                     </th>
+                    <th onClick={() => handleSortTable(constants.columnNames.date)}><p>Purchase</p></th>
                     {isDeskTopScreen && <th onClick={() => handleSortTable(constants.columnNames.bank)}><p>Bank</p></th>}
                     {isDeskTopScreen && <th onClick={() => handleSortTable(constants.columnNames.store)}><p>Store</p></th>}
                   </tr>
@@ -266,8 +266,8 @@ const SharedDashboard: React.FC = () => {
                       {isDeskTopScreen && <td>{expense.category}</td>}
                       <td className={expense.type}>{expense.formattedAmount}</td>
                       {isDeskTopScreen && <td>{expense.paymentType}</td>}
-                      <td>{isDeskTopScreen ? expense.formattedDate : expense.mobileFormatDate}</td>
                       <td>{isDeskTopScreen ? expense.formattedDueDate : expense.mobileFormatDueDate}</td>
+                      <td>{isDeskTopScreen ? expense.formattedDate : expense.mobileFormatDate}</td>
                       {isDeskTopScreen && <td>{expense.bank}</td>}
                       {isDeskTopScreen && <td>{expense.store}</td>}
                     </tr>
