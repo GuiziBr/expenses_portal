@@ -129,6 +129,16 @@ export function NewExpenseModal({ isOpen, onRequestClose, isDeskTopScreen }: INe
   const dateMax = format(endOfDay(new Date()), constants.dateFormat)
   const dateMin = format(new Date(getYear(new Date()), 0, 1), constants.dateFormat)
 
+  const clearFieldError = (fieldName: string): void => {
+    if (formRef.current?.getFieldError(fieldName)) {
+      formRef.current?.setFieldError(fieldName, '')
+    }
+  }
+
+  const handleOnChangeInput = (fieldName: string): void => clearFieldError(fieldName)
+
+  const handleOnChangeSelect = (_value?: string, fieldName?: string): void => clearFieldError(fieldName)
+
   return (
     <Modal
       isOpen={isOpen}
@@ -142,13 +152,55 @@ export function NewExpenseModal({ isOpen, onRequestClose, isDeskTopScreen }: INe
       <FormContainer>
         <Form ref={formRef} onSubmit={handleSubmit}>
           <h2>Create Expense</h2>
-          <Input icon={MdTitle} name="description" placeholder="Expense description" maxLength={35} />
-          <Select icon={HiOutlineSelector} name="category" options={categories} placeholder="Select category" />
-          <Select icon={HiOutlineSelector} name="paymentType" options={paymentTypes} placeholder="Select payment type" />
-          <Select icon={HiOutlineSelector} name="bank" options={banks} placeholder="Select bank" />
-          <Select icon={HiOutlineSelector} name="store" options={stores} placeholder="Select store" />
-          <Input icon={MdDateRange} name="date" type="date" max={dateMax} min={dateMin} />
-          <Input icon={HiOutlineCurrencyDollar} name="amount" placeholder="99.99" isCurrency maxLength={8} />
+          <Input
+            icon={MdTitle}
+            name="description"
+            placeholder="Expense description"
+            maxLength={35}
+            onChange={() => handleOnChangeInput('description')}
+          />
+          <Select
+            icon={HiOutlineSelector}
+            name="category"
+            options={categories}
+            placeholder="Select category"
+            onChangeFunc={handleOnChangeSelect}
+          />
+          <Select
+            icon={HiOutlineSelector}
+            name="paymentType"
+            options={paymentTypes}
+            placeholder="Select payment type"
+            onChangeFunc={handleOnChangeSelect}
+          />
+          <Select
+            icon={HiOutlineSelector}
+            name="bank"
+            options={banks}
+            placeholder="Select bank"
+          />
+          <Select
+            icon={HiOutlineSelector}
+            name="store"
+            options={stores}
+            placeholder="Select store"
+          />
+          <Input
+            icon={MdDateRange}
+            name="date"
+            type="date"
+            max={dateMax}
+            min={dateMin}
+            onChange={() => handleOnChangeInput('date')}
+          />
+          <Input
+            icon={HiOutlineCurrencyDollar}
+            name="amount"
+            placeholder="99.99"
+            isCurrency
+            maxLength={8}
+            onChange={() => handleOnChangeInput('amount')}
+          />
           <CheckboxInput icon={IoMdCheckboxOutline} name="options" options={checkboxOptions} />
           <Button type="submit">Save</Button>
         </Form>

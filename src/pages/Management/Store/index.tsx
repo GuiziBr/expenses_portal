@@ -188,6 +188,12 @@ const StoreManagement: React.FC = () => {
     }
   }
 
+  const handleOnChangeInput = (fieldName: string): void => {
+    if (formRef.current?.getFieldError(fieldName)) {
+      formRef.current?.setFieldError(fieldName, '')
+    }
+  }
+
   useEffect(() => {
     async function loadDashboard(): Promise<void> {
       await loadStores()
@@ -209,7 +215,14 @@ const StoreManagement: React.FC = () => {
       <Container>
         <FormContainer>
           <Form ref={formRef} onSubmit={handleNewStore}>
-            <Input icon={MdTitle} name="name" placeholder="Store" cleanError={() => formRef.current?.setErrors({})} maxLength={20} />
+            <Input
+              icon={MdTitle}
+              name="name"
+              placeholder="Store"
+              cleanError={() => formRef.current?.setErrors({})}
+              maxLength={20}
+              onChange={() => handleOnChangeInput('name')}
+            />
             <Button type="submit">Save</Button>
           </Form>
         </FormContainer>

@@ -11,6 +11,8 @@ export default {
     paymentType: 'Payment type is required',
     bank: 'Bank name is required',
     store: 'Store name is required',
+    month: 'Month is required',
+    balanceType: 'Balance type is required',
   },
   alreadyExistingExpense: 'This expense is already registered',
   alreadyExistingPaymentType: 'Payment type already exists',

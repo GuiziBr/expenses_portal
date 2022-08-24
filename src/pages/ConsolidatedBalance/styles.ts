@@ -71,18 +71,38 @@ export const FormContainer = styled.section`
       width: 100vw;
     }
 
-    button {
-      margin: 0;
-      height: 2.5rem;
-      @media(max-width: 720px) {
-        width: 12rem;
+    div {
+      height: 2.6rem;
+      margin-top: 0;
+      margin-right: .3rem;
+      svg {
+        margin-right: .5rem;
+      }
+      div {
+        margin-left: 1rem;
+        align-items: center;
+        margin-left: .5rem;
       }
     }
 
-    div {
-      height: 2.6rem;
-      margin-top: 0%;
-      margin-right: .3rem;
+    div:first-child {
+      width: 15rem;
+    }
+
+    div:nth-child(2) {
+      width: 14rem;
+      input {
+        width: 3.5rem;
+      }
+    }
+
+    button {
+      margin: 0;
+      height: 2.5rem;
+      width: 5.5rem;
+      @media(max-width: 720px) {
+        width: 12rem;
+      }
     }
   }
 `

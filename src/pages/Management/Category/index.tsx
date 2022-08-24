@@ -188,6 +188,12 @@ const CategoryManagement: React.FC = () => {
     }
   }
 
+  const handleOnChangeInput = (fieldName: string): void => {
+    if (formRef.current?.getFieldError(fieldName)) {
+      formRef.current?.setFieldError(fieldName, '')
+    }
+  }
+
   useEffect(() => {
     async function loadDashboard(): Promise<void> {
       await loadCategories()
@@ -215,6 +221,7 @@ const CategoryManagement: React.FC = () => {
               placeholder="Category"
               cleanError={() => formRef.current?.setErrors({})}
               maxLength={20}
+              onChange={() => handleOnChangeInput('description')}
             />
             <Button type="submit">Save</Button>
           </Form>
