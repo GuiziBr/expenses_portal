@@ -23,3 +23,8 @@ export const newCategorySchema = Yup.object().shape({ description: Yup.string().
 export const newBankSchema = Yup.object().shape({ name: Yup.string().required(errors.schemaValidationError.bank) })
 
 export const newStoreSchema = Yup.object().shape({ name: Yup.string().required(errors.schemaValidationError.bank) })
+
+export const sharedBalanceSchema = Yup.object().shape({
+  month: Yup.string().required(errors.schemaValidationError.month),
+  balanceType: Yup.string().required(errors.schemaValidationError.balanceType),
+})

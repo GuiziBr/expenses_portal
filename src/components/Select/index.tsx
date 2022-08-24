@@ -8,7 +8,7 @@ interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
   name: string
   icon: React.ComponentType<IconBaseProps>
   options: Option[]
-  onChangeFunc?: (value: string) => void
+  onChangeFunc?: (value: string, fieldName?: string) => void
   shouldDisable?: boolean
 }
 
@@ -33,8 +33,8 @@ const Select: React.FC<SelectProps> = ({ name, icon: Icon, options, placeholder,
     setIsFilled(!!selectRef.current?.value)
   }, [])
 
-  const handleOnChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    if (onChangeFunc) onChangeFunc(e.currentTarget.value)
+  const handleOnChange = (e: React.ChangeEvent<HTMLSelectElement>, selectFieldName: string) => {
+    if (onChangeFunc) onChangeFunc(e.currentTarget.value, selectFieldName)
   }
 
   useEffect(() => {
@@ -53,7 +53,7 @@ const Select: React.FC<SelectProps> = ({ name, icon: Icon, options, placeholder,
         onFocus={handleSelectFocus}
         ref={selectRef}
         defaultValue=""
-        onChange={(e) => handleOnChange(e)}
+        onChange={(e) => handleOnChange(e, fieldName)}
         disabled={shouldDisable}
       >
         <option value="">{placeholder}</option>

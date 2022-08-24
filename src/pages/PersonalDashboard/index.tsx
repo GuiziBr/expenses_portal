@@ -1,7 +1,7 @@
 import { FormHandles } from '@unform/core'
 import { Form } from '@unform/web'
 import { AxiosRequestConfig } from 'axios'
-import { format, startOfMonth, endOfMonth } from 'date-fns'
+import { endOfMonth, format, startOfMonth } from 'date-fns'
 import React, { useEffect, useRef, useState } from 'react'
 import { HiOutlineSelector } from 'react-icons/hi'
 import { MdDateRange } from 'react-icons/md'
@@ -98,8 +98,6 @@ const PersonalDashboard: React.FC = () => {
   }
 
   const handleSubmit = async (filters: IFilters): Promise<void> => {
-    if (!filters.startDate && !filters.endDate) return
-    if (filters.filterBy && !filters.filterValue) return
     await Promise.all([loadExpenses(filters), getBalance(filters)])
     setCurrentFilters(filters)
     setCurrentPage(1)

@@ -4,6 +4,7 @@ import { AxiosRequestConfig } from 'axios'
 import React, { Fragment, useRef, useState } from 'react'
 import { HiOutlineSelector } from 'react-icons/hi'
 import { MdDateRange } from 'react-icons/md'
+import * as Yup from 'yup'
 import income from '../../assets/income.svg'
 import outcome from '../../assets/outcome.svg'
 import total from '../../assets/total.svg'
@@ -12,9 +13,11 @@ import Header from '../../components/Header'
 import Input from '../../components/Input'
 import Select from '../../components/Select'
 import constants from '../../constants/constants'
-import { ISharedReport, IFormData, IPayment, ICategory } from '../../domains/sharedBalance'
+import { ICategory, IFormData, IPayment, ISharedReport } from '../../domains/sharedBalance'
+import { sharedBalanceSchema } from '../../schemas'
 import api from '../../services/apiClient'
 import { formatAmount } from '../../utils/formatAmount'
+import getValidationErrors from '../../utils/getValidationErrors'
 import { Card, CardContainer, Container, FormContainer, Table, TableContainer } from './styles'
 
 const SharedBalance: React.FC = () => {
@@ -31,10 +34,19 @@ const SharedBalance: React.FC = () => {
     setSharedReport(data)
   }
 
-  const handleSubmit = async ({ month: date, balanceType }: IFormData) => {
-    if (!date || !balanceType) return
-    const month = Number(date.split('-')[1])
-    await loadSharedBalance(month, balanceType)
+  const handleSubmit = async (data: IFormData): Promise<void> => {
+    try {
+      formRef.current?.setErrors({})
+      await sharedBalanceSchema.validate(data, { abortEarly: false })
+      const { month: date, balanceType } = data
+      const month = Number(date.split('-')[1])
+      await loadSharedBalance(month, balanceType)
+    } catch (err) {
+      if (err instanceof Yup.ValidationError) {
+        const error = getValidationErrors(err)
+        formRef.current?.setErrors(error)
+      }
+    }
   }
 
   const Payments = ({ payments, className }) => (
@@ -77,6 +89,16 @@ const SharedBalance: React.FC = () => {
     ))
   )
 
+  const clearFieldError = (fieldName: string): void => {
+    if (formRef.current?.getFieldError(fieldName)) {
+      formRef.current?.setFieldError(fieldName, '')
+    }
+  }
+
+  const handleOnChangeInput = (fieldName: string): void => clearFieldError(fieldName)
+
+  const handleOnChangeSelect = (_value?: string, fieldName?: string): void => clearFieldError(fieldName)
+
   return (
     <>
       <Header current="SharedBalance" />
@@ -115,8 +137,9 @@ const SharedBalance: React.FC = () => {
               name="balanceType"
               options={constants.sharedBalanceTypes}
               placeholder="Select type"
+              onChangeFunc={handleOnChangeSelect}
             />
-            <Input icon={MdDateRange} name="month" type="month" />
+            <Input icon={MdDateRange} name="month" type="month" onChange={() => handleOnChangeInput('month')} />
             <Button type="submit">Search</Button>
           </Form>
         </FormContainer>

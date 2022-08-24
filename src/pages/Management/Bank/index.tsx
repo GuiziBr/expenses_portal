@@ -180,6 +180,12 @@ const BankManagement: React.FC = () => {
     )))
   }
 
+  const handleOnChangeInput = (fieldName: string): void => {
+    if (formRef.current?.getFieldError(fieldName)) {
+      formRef.current?.setFieldError(fieldName, '')
+    }
+  }
+
   const handleOnBlur = (event: FocusEvent<HTMLInputElement>, bankId: string) => {
     const input = banks.find((bank) => bank.id === bankId)
     if (input) {
@@ -209,7 +215,14 @@ const BankManagement: React.FC = () => {
       <Container>
         <FormContainer>
           <Form ref={formRef} onSubmit={handleNewBank}>
-            <Input icon={MdTitle} name="name" placeholder="Bank" cleanError={() => formRef.current?.setErrors({})} maxLength={20} />
+            <Input
+              icon={MdTitle}
+              name="name"
+              placeholder="Bank"
+              cleanError={() => formRef.current?.setErrors({})}
+              maxLength={20}
+              onChange={() => handleOnChangeInput('name')}
+            />
             <Button type="submit">Save</Button>
           </Form>
         </FormContainer>
