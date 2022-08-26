@@ -16,13 +16,12 @@ export const newExpenseSchema = Yup.object().shape({
   store: Yup.string(),
 })
 
-export const newPaymentTypeSchema = Yup.object().shape({ description: Yup.string().required(errors.schemaValidationError.paymentType) })
-
-export const newCategorySchema = Yup.object().shape({ description: Yup.string().required(errors.schemaValidationError.category) })
-
-export const newBankSchema = Yup.object().shape({ name: Yup.string().required(errors.schemaValidationError.bank) })
-
-export const newStoreSchema = Yup.object().shape({ name: Yup.string().required(errors.schemaValidationError.bank) })
+export const newEntitySchema = {
+  banks: Yup.object().shape({ name: Yup.string().required(errors.schemaValidationError.bank) }),
+  categories: Yup.object().shape({ description: Yup.string().required(errors.schemaValidationError.category) }),
+  paymentType: Yup.object().shape({ description: Yup.string().required(errors.schemaValidationError.paymentType) }),
+  stores: Yup.object().shape({ name: Yup.string().required(errors.schemaValidationError.store) }),
+}
 
 export const sharedBalanceSchema = Yup.object().shape({
   month: Yup.string().required(errors.schemaValidationError.month),
