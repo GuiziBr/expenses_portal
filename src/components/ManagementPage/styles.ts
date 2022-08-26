@@ -39,11 +39,34 @@ export const FormContainer = styled.div`
         width: 5rem;
       }
     }
+    div:nth-child(2) {
+      height: 2.6rem;
+      width: 15rem;
+      margin-top: 0;
+      margin-left: .5rem;
+      margin-right: .5rem;
+      align-items: center;
+      @media(max-width: 720px) {
+        margin-top: 1rem;
+        width: 80%;
+      }
+      input {
+        width: 1rem;
+      }
+      label {
+        margin-right: 0;
+      }
+    }
     button {
       margin: 0;
       margin-left: .3rem;
       height: 2.5rem;
       width: 5.5rem;
+      @media(max-width: 720px){
+        margin-top: 1rem;
+        width: 80%;
+        padding: 0;
+      }
     }
   }
 `
@@ -95,6 +118,7 @@ export const TableContainer = styled.section`
             padding-left: 1rem;
           }
         }
+
         th:nth-child(2) {
           @media(max-width: 720px) {
             width: 30%;
@@ -164,6 +188,11 @@ export const TableContainer = styled.section`
           @media(max-width: 720px) {
             padding-left: 1rem;
             width: 35%;
+          }
+          .statement {
+            @media(max-width: 720px) {
+              width: 100%;
+            }
           }
         }
         td:nth-child(2) {

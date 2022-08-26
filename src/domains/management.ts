@@ -1,27 +1,30 @@
-type IDefaultParams = {
+export interface IEntity {
   id: string
-  name: string
+  name?: string
+  description?: string
+  disabled?: boolean
+  className: string
   createdAt: string
   updatedAt: string
-  disabled: boolean
   editMode: 'edit' | 'save'
   deleteMode: 'delete' | 'confirm'
-  className: string | null
+  hasStatement?: boolean
 }
 
-export interface IBank extends IDefaultParams {}
+export interface IBank extends IEntity {}
 
-export interface ICategory extends Omit<IDefaultParams, 'name'> {
+export interface ICategory extends Omit<IEntity, 'name'> {
   description: string
 }
 
-export interface IPaymentType extends Omit<IDefaultParams, 'name'> {
+export interface IPaymentType extends Omit<IEntity, 'name'> {
   description: string
-  hasStatement: boolean
 }
 
-export interface IStore extends IDefaultParams {}
+export interface IStore extends IEntity {}
 
 export interface IPayload {
-  name: string
+  name?: string
+  description?: string
+  hasStatement?: Array<string>
 }
