@@ -32,6 +32,6 @@ export interface ISharedReport {
 }
 
 export interface IFormData {
-  month: string
+  date: string
   balanceType: string
 }
