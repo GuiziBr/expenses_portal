@@ -24,6 +24,6 @@ export const newEntitySchema = {
 }
 
 export const sharedBalanceSchema = Yup.object().shape({
-  month: Yup.string().required(errors.schemaValidationError.month),
+  date: Yup.string().required(errors.schemaValidationError.month),
   balanceType: Yup.string().required(errors.schemaValidationError.balanceType),
 })

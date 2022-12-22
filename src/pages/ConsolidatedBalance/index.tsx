@@ -26,10 +26,10 @@ const SharedBalance: React.FC = () => {
   const formRef = useRef<FormHandles>(null)
   const [shareType, setShareType] = useState<string>('')
 
-  const loadSharedBalance = async (month: number, balanceType: string): Promise<void> => {
+  const loadSharedBalance = async (year: number, month: number, balanceType: string): Promise<void> => {
     const token = sessionStorage.getItem(constants.sessionStorage.token)
     const config: AxiosRequestConfig = { headers: { Authorization: `Bearer ${token}` }}
-    const { data } = await api.get(`/balance/consolidated/${month}`, config)
+    const { data } = await api.get(`/balance/consolidated/${year}/${month}`, config)
     setShareType(balanceType)
     setSharedReport(data)
   }
@@ -38,9 +38,11 @@ const SharedBalance: React.FC = () => {
     try {
       formRef.current?.setErrors({})
       await sharedBalanceSchema.validate(data, { abortEarly: false })
-      const { month: date, balanceType } = data
-      const month = Number(date.split('-')[1])
-      await loadSharedBalance(month, balanceType)
+      const { date: dateString, balanceType } = data
+      const [yearString, monthString] = dateString.split('-')
+      const year = Number(yearString)
+      const month = Number(monthString)
+      await loadSharedBalance(year, month, balanceType)
     } catch (err) {
       if (err instanceof Yup.ValidationError) {
         const error = getValidationErrors(err)
@@ -139,7 +141,7 @@ const SharedBalance: React.FC = () => {
               placeholder="Select type"
               onChangeFunc={handleOnChangeSelect}
             />
-            <Input icon={MdDateRange} name="month" type="month" onChange={() => handleOnChangeInput('month')} />
+            <Input icon={MdDateRange} name="date" type="month" onChange={() => handleOnChangeInput('month')} />
             <Button type="submit">Search</Button>
           </Form>
         </FormContainer>
